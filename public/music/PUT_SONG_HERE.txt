@@ -1,0 +1,1 @@
+Put your mp3 here as song.mp3 (or update CONFIG.song.src in components/LovePage.tsx).
