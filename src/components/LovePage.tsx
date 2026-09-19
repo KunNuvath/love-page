@@ -13,31 +13,47 @@ import {
   X,
   Sparkles,
   Music,
+  Edit3,
+  RotateCcw,
+  Check,
+  Save,
+  User,
+  MessageSquare,
+  Tag,
+  SlidersHorizontal,
 } from "lucide-react";
 
 /**
- * ---------------------------------------------------------------
- * EDIT EVERYTHING BELOW THIS LINE TO PERSONALIZE THE PAGE
- * ---------------------------------------------------------------
+ * ===============================================================
+ * 🎨 DEFAULT LOVE PAGE CONFIGURATION
+ * ===============================================================
+ * You can also edit these values live using the "Personalize" sidebar button on the page!
  */
-const CONFIG = {
-  name: "Lina",
-  from: "Miguel",
+const DEFAULT_CONFIG = {
+  // Names
+  recipientName: "Lina",
+  senderName: "Miguel",
+
+  // Scrapbook Header & Badges
   curatedBy: "Curated by Vath",
-  stamp: "MEMORIES",
-  volume: "VOL. 01 / ORIGINAL",
-  heading: "To the love of my life",
+  stampText: "MEMORIES",
+  badgeText: "VOL. 01 / ORIGINAL",
+
+  // Main Love Letter / Note Topic & Message
+  topic: "To the love of my life",
   message: `Every day with you feels like a gift I didn't know I needed.
 Thank you for your laugh, your patience, and the way you make
 ordinary moments feel extraordinary. I love you more than words
 can say.`,
-  // Song configuration
+
+  // Song Details (place your audio file inside /public/music/)
   song: {
     src: "/music/miguel-sure-thing.mp3",
     title: "Miguel - Sure Thing",
   },
-  // Default captions for the 6 polaroids (3 in a row)
-  defaultPolaroids: [
+
+  // 6 Polaroid Photos (3 in a row)
+  polaroids: [
     { id: 1, caption: "Us", src: "" },
     { id: 2, caption: "First Date", src: "" },
     { id: 3, caption: "Sweet Moments", src: "" },
@@ -45,12 +61,12 @@ can say.`,
     { id: 5, caption: "Laughs & Coffee", src: "" },
     { id: 6, caption: "Forever & Always", src: "" },
   ],
+
+  // Creation Name & Copyright (Displayed at the bottom of the page — code only)
+  creationName: "Love Scrapbook Memory Book",
+  creator: "Vath",
+  copyright: `© ${new Date().getFullYear()} Vath. All rights reserved.`,
 };
-/**
- * ---------------------------------------------------------------
- * END OF EDITABLE CONTENT
- * ---------------------------------------------------------------
- */
 
 // Subtle floating background hearts
 function FloatingHearts() {
@@ -89,12 +105,25 @@ function FloatingHearts() {
 }
 
 // Retro Scrapbook Music Player
-function ScrapbookMusicPlayer() {
+function ScrapbookMusicPlayer({
+  song,
+}: {
+  song: { src: string; title: string };
+}) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
+
+  // Reload audio when source changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.load();
+      setPlaying(false);
+      setHasError(false);
+    }
+  }, [song.src]);
 
   const toggle = async () => {
     if (!audioRef.current) return;
@@ -144,12 +173,12 @@ function ScrapbookMusicPlayer() {
           <div className="flex items-center gap-1.5">
             <Music className="h-3.5 w-3.5 text-[#cf493e]" />
             <span className="font-typewriter text-xs font-bold uppercase tracking-wider text-[#3d332a]">
-              {CONFIG.song.title}
+              {song.title}
             </span>
           </div>
           <span className="font-handwriting text-sm text-[#7e6d5e]">
             {hasError
-              ? "Audio playback issue — check console"
+              ? "Audio format or file error — check console"
               : playing
               ? "Now Playing ~ sweet melody"
               : "Click play to listen"}
@@ -180,7 +209,7 @@ function ScrapbookMusicPlayer() {
 
       <audio
         ref={audioRef}
-        src={CONFIG.song.src}
+        src={song.src}
         loop
         preload="metadata"
         onTimeUpdate={handleTimeUpdate}
@@ -222,8 +251,14 @@ function PolaroidCard({
     const saved = localStorage.getItem(`polaroid_photo_${id}`);
     if (saved) {
       setSrc(saved);
+    } else if (initialSrc) {
+      setSrc(initialSrc);
     }
-  }, [id]);
+  }, [id, initialSrc]);
+
+  useEffect(() => {
+    setCaption(initialCaption);
+  }, [initialCaption]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -365,16 +400,291 @@ function PolaroidCard({
   );
 }
 
+// Interactive Customization Sidebar
+interface EditSidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+  config: typeof DEFAULT_CONFIG;
+  onChange: (updated: typeof DEFAULT_CONFIG) => void;
+  onReset: () => void;
+}
+
+function EditSidebar({
+  isOpen,
+  onClose,
+  config,
+  onChange,
+  onReset,
+}: EditSidebarProps) {
+  const [savedSuccess, setSavedSuccess] = useState(false);
+
+  const handleFieldChange = (key: keyof typeof DEFAULT_CONFIG, value: unknown) => {
+    onChange({
+      ...config,
+      [key]: value,
+    });
+  };
+
+  const handleSongChange = (field: "title" | "src", value: string) => {
+    onChange({
+      ...config,
+      song: {
+        ...config.song,
+        [field]: value,
+      },
+    });
+  };
+
+  const handleSave = () => {
+    try {
+      localStorage.setItem("custom_love_page_config", JSON.stringify(config));
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 2000);
+    } catch (e) {
+      console.error("Failed to save config:", e);
+    }
+  };
+
+  return (
+    <>
+      {/* Backdrop */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs transition-opacity"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Slide-over Drawer */}
+      <div
+        className={`fixed top-0 right-0 z-50 h-full w-full max-w-md bg-[#faf7ef] border-l border-[#dfd4c5] shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {/* Drawer Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#dfd4c5] bg-[#f4eee1]">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="h-5 w-5 text-[#cf493e]" />
+            <h2 className="font-typewriter text-sm font-bold tracking-wider text-[#3d332a] uppercase">
+              Customize Page
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-full hover:bg-[#e8decb] text-[#5e5145] transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Form Content */}
+        <div className="flex-1 overflow-y-auto p-5 space-y-6 text-sm text-[#3d332a]">
+          {/* Section: Scrapbook Header */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#cf493e] border-b border-[#dfd4c5] pb-1">
+              <Tag className="h-3.5 w-3.5" />
+              <span>Scrapbook Headers</span>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold mb-1 text-[#6e5e50]">
+                Curated By Header
+              </label>
+              <input
+                type="text"
+                value={config.curatedBy}
+                onChange={(e) => handleFieldChange("curatedBy", e.target.value)}
+                placeholder="e.g. Curated by Vath"
+                className="w-full px-3 py-2 rounded border border-[#d8ccb9] bg-white focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 font-handwriting text-xl text-[#3d332a]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold mb-1 text-[#6e5e50]">
+                Stamp Text
+              </label>
+              <input
+                type="text"
+                value={config.stampText}
+                onChange={(e) =>
+                  handleFieldChange("stampText", e.target.value)
+                }
+                placeholder="e.g. MEMORIES"
+                className="w-full px-3 py-1.5 rounded border border-[#d8ccb9] bg-white focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 font-typewriter text-xs uppercase"
+              />
+            </div>
+          </div>
+
+          {/* Section: Names */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#cf493e] border-b border-[#dfd4c5] pb-1">
+              <User className="h-3.5 w-3.5" />
+              <span>Names</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold mb-1 text-[#6e5e50]">
+                  Recipient Name
+                </label>
+                <input
+                  type="text"
+                  value={config.recipientName}
+                  onChange={(e) =>
+                    handleFieldChange("recipientName", e.target.value)
+                  }
+                  placeholder="e.g. Lina"
+                  className="w-full px-3 py-1.5 rounded border border-[#d8ccb9] bg-white focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold mb-1 text-[#6e5e50]">
+                  Sender Name
+                </label>
+                <input
+                  type="text"
+                  value={config.senderName}
+                  onChange={(e) =>
+                    handleFieldChange("senderName", e.target.value)
+                  }
+                  placeholder="e.g. Miguel"
+                  className="w-full px-3 py-1.5 rounded border border-[#d8ccb9] bg-white focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 font-medium"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section: Topic & Love Message */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#cf493e] border-b border-[#dfd4c5] pb-1">
+              <MessageSquare className="h-3.5 w-3.5" />
+              <span>Letter Topic & Message</span>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold mb-1 text-[#6e5e50]">
+                Letter Heading / Topic
+              </label>
+              <input
+                type="text"
+                value={config.topic}
+                onChange={(e) => handleFieldChange("topic", e.target.value)}
+                placeholder="e.g. To the love of my life"
+                className="w-full px-3 py-2 rounded border border-[#d8ccb9] bg-white focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 font-handwriting text-xl"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold mb-1 text-[#6e5e50]">
+                Personal Love Message
+              </label>
+              <textarea
+                rows={5}
+                value={config.message}
+                onChange={(e) => handleFieldChange("message", e.target.value)}
+                placeholder="Write your heartfelt message here..."
+                className="w-full px-3 py-2 rounded border border-[#d8ccb9] bg-white focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 font-handwriting text-lg leading-relaxed resize-y"
+              />
+            </div>
+          </div>
+
+          {/* Section: Music */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#cf493e] border-b border-[#dfd4c5] pb-1">
+              <Music className="h-3.5 w-3.5" />
+              <span>Background Song</span>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold mb-1 text-[#6e5e50]">
+                Song Title
+              </label>
+              <input
+                type="text"
+                value={config.song.title}
+                onChange={(e) => handleSongChange("title", e.target.value)}
+                placeholder="e.g. Miguel - Sure Thing"
+                className="w-full px-3 py-1.5 rounded border border-[#d8ccb9] bg-white focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 font-typewriter text-xs uppercase"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold mb-1 text-[#6e5e50]">
+                Audio Source URL / Path
+              </label>
+              <input
+                type="text"
+                value={config.song.src}
+                onChange={(e) => handleSongChange("src", e.target.value)}
+                placeholder="e.g. /music/miguel-sure-thing.mp3"
+                className="w-full px-3 py-1.5 rounded border border-[#d8ccb9] bg-white focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 font-mono text-xs"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Drawer Footer Actions */}
+        <div className="p-4 border-t border-[#dfd4c5] bg-[#f4eee1] flex items-center justify-between gap-3">
+          <button
+            onClick={onReset}
+            className="flex items-center gap-1.5 px-3 py-2 rounded text-xs font-semibold text-[#6e5e50] hover:bg-[#e8decb] transition-colors"
+            title="Reset to default settings"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            <span>Reset</span>
+          </button>
+
+          <button
+            onClick={handleSave}
+            className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded bg-[#cf493e] text-white text-xs font-bold tracking-wider uppercase hover:bg-[#b83b31] transition-all transform active:scale-98 shadow-md"
+          >
+            {savedSuccess ? (
+              <>
+                <Check className="h-4 w-4" />
+                <span>Saved to Browser!</span>
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                <span>Save Changes</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
 export default function LovePage() {
   const [revealed, setRevealed] = useState(false);
-  const [lightboxData, setLightboxData] = useState<{ src: string; caption: string } | null>(
-    null
-  );
+  const [config, setConfig] = useState(DEFAULT_CONFIG);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [lightboxData, setLightboxData] = useState<{
+    src: string;
+    caption: string;
+  } | null>(null);
 
+  // Load user customized config from localStorage
   useEffect(() => {
+    const saved = localStorage.getItem("custom_love_page_config");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setConfig((prev) => ({ ...prev, ...parsed }));
+      } catch (e) {
+        console.error("Failed to parse saved config:", e);
+      }
+    }
     const t = setTimeout(() => setRevealed(true), 150);
     return () => clearTimeout(t);
   }, []);
+
+  const handleResetConfig = () => {
+    localStorage.removeItem("custom_love_page_config");
+    setConfig(DEFAULT_CONFIG);
+  };
 
   // Rotations for 6 polaroid cards (3 in a row)
   const rotations = [
@@ -389,6 +699,27 @@ export default function LovePage() {
   return (
     <main className="relative min-h-screen py-8 sm:py-14 px-3 sm:px-6 flex flex-col items-center justify-start overflow-x-hidden">
       <FloatingHearts />
+
+      {/* Floating Customize / Edit Sidebar Button */}
+      <div className="fixed top-4 right-4 sm:top-6 sm:right-6 z-30">
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/95 text-[#cf493e] shadow-lg border border-[#e4d6c4] hover:bg-[#fff9f2] hover:scale-105 active:scale-95 transition-all text-xs sm:text-sm font-semibold tracking-wide"
+          title="Customize page text and options"
+        >
+          <Edit3 className="h-4 w-4 text-[#cf493e]" />
+          <span>Edit Page</span>
+        </button>
+      </div>
+
+      {/* Customization Sidebar Component */}
+      <EditSidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        config={config}
+        onChange={setConfig}
+        onReset={handleResetConfig}
+      />
 
       {/* Lightbox Modal */}
       {lightboxData && (
@@ -435,7 +766,7 @@ export default function LovePage() {
         <div className="flex items-start justify-between">
           <div className="inline-block -rotate-6 px-3 py-1.5 stamp-memories">
             <span className="font-typewriter text-xs sm:text-sm font-bold tracking-[0.25em] block">
-              {CONFIG.stamp}
+              {config.stampText}
             </span>
             <div className="w-full border-b border-dashed border-[#cf493e]/60 mt-0.5" />
           </div>
@@ -460,14 +791,14 @@ export default function LovePage() {
         <div className="mb-8">
           <div className="inline-block">
             <h1 className="font-handwriting text-3xl sm:text-4xl text-[#36322d] tracking-wide">
-              {CONFIG.curatedBy}
+              {config.curatedBy}
             </h1>
             <div className="w-full border-b border-dotted border-[#b3a492] mt-1" />
           </div>
 
           <div className="mt-3.5 inline-block">
             <span className="font-typewriter text-[11px] sm:text-xs font-bold tracking-widest px-2.5 py-1 highlighter-badge text-[#2c475d] rounded-[2px] block">
-              {CONFIG.volume}
+              {DEFAULT_CONFIG.badgeText}
             </span>
             <div className="w-full border-b border-dotted border-[#9ecceb] mt-1" />
           </div>
@@ -476,7 +807,7 @@ export default function LovePage() {
         {/* 6 Pictures (3 Pictures in a Row) */}
         <div className="my-8 sm:my-12">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-7 md:gap-8">
-            {CONFIG.defaultPolaroids.map((item, index) => (
+            {config.polaroids.map((item, index) => (
               <PolaroidCard
                 key={item.id}
                 id={item.id}
@@ -496,24 +827,36 @@ export default function LovePage() {
           <div className="flex items-center gap-2 mb-3">
             <Heart className="h-5 w-5 fill-[#cf493e] text-[#cf493e]" />
             <h2 className="font-handwriting text-2xl sm:text-3xl text-[#36322d]">
-              {CONFIG.heading}, {CONFIG.name}
+              {config.topic}, {config.recipientName}
             </h2>
           </div>
           <p className="font-handwriting text-lg sm:text-xl leading-relaxed text-[#4a423a] whitespace-pre-line">
-            {CONFIG.message}
+            {config.message}
           </p>
           <div className="mt-4 text-right">
             <span className="font-handwriting text-xl sm:text-2xl text-[#cf493e]">
-              — with all my love, {CONFIG.from}
+              — with all my love, {config.senderName}
             </span>
           </div>
         </div>
 
         {/* Music Player */}
         <div className="mt-8">
-          <ScrapbookMusicPlayer />
+          <ScrapbookMusicPlayer song={config.song} />
         </div>
       </div>
+
+      {/* Footer / Copyright at bottom of the page (Code-only, not editable in sidebar) */}
+      <footer className="relative z-10 mt-10 mb-4 flex flex-col items-center justify-center gap-1.5 text-center">
+        <div className="flex items-center gap-2 text-xs sm:text-sm font-typewriter text-[#7c564c]">
+          <span>{DEFAULT_CONFIG.creationName}</span>
+          <span>•</span>
+          <span>Created by {DEFAULT_CONFIG.creator}</span>
+        </div>
+        <p className="text-[11px] sm:text-xs font-typewriter text-[#9b7267]">
+          {DEFAULT_CONFIG.copyright}
+        </p>
+      </footer>
     </main>
   );
 }
