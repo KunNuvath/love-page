@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   Heart,
   Play,
@@ -21,6 +23,9 @@ import {
   MessageSquare,
   Tag,
   SlidersHorizontal,
+  ArrowLeft,
+  Share2,
+  Copy,
 } from "lucide-react";
 
 /**
@@ -657,33 +662,90 @@ function EditSidebar({
   );
 }
 
-export default function LovePage() {
+function LovePageContent() {
+  const searchParams = useSearchParams();
   const [revealed, setRevealed] = useState(false);
   const [config, setConfig] = useState(DEFAULT_CONFIG);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
   const [lightboxData, setLightboxData] = useState<{
     src: string;
     caption: string;
   } | null>(null);
 
-  // Load user customized config from localStorage
+  // Load user customized config from URL params or localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("custom_love_page_config");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setConfig((prev) => ({ ...prev, ...parsed }));
-      } catch (e) {
-        console.error("Failed to parse saved config:", e);
+    // 1. Check URL search parameters first
+    const paramTo = searchParams.get("to");
+    const paramFrom = searchParams.get("from");
+    const paramTopic = searchParams.get("topic");
+    const paramMessage = searchParams.get("message") || searchParams.get("msg");
+    const paramSongTitle = searchParams.get("songTitle");
+    const paramSongSrc = searchParams.get("songSrc");
+    const paramCuratedBy = searchParams.get("curatedBy");
+    const paramStamp = searchParams.get("stamp");
+
+    const hasUrlParams = Boolean(
+      paramTo || paramFrom || paramTopic || paramMessage || paramSongTitle || paramSongSrc || paramCuratedBy || paramStamp
+    );
+
+    if (hasUrlParams) {
+      setConfig((prev) => ({
+        ...prev,
+        ...(paramTo && { recipientName: paramTo }),
+        ...(paramFrom && { senderName: paramFrom }),
+        ...(paramTopic && { topic: paramTopic }),
+        ...(paramMessage && { message: paramMessage }),
+        ...(paramCuratedBy && { curatedBy: paramCuratedBy }),
+        ...(paramStamp && { stampText: paramStamp }),
+        ...(paramSongTitle || paramSongSrc
+          ? {
+              song: {
+                title: paramSongTitle || prev.song.title,
+                src: paramSongSrc || prev.song.src,
+              },
+            }
+          : {}),
+      }));
+    } else {
+      // 2. Fall back to localStorage if no URL params
+      const saved = localStorage.getItem("custom_love_page_config");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setConfig((prev) => ({ ...prev, ...parsed }));
+        } catch (e) {
+          console.error("Failed to parse saved config:", e);
+        }
       }
     }
+
     const t = setTimeout(() => setRevealed(true), 150);
     return () => clearTimeout(t);
-  }, []);
+  }, [searchParams]);
 
   const handleResetConfig = () => {
     localStorage.removeItem("custom_love_page_config");
     setConfig(DEFAULT_CONFIG);
+  };
+
+  const handleCopyShareLink = () => {
+    try {
+      const url = new URL(window.location.origin + window.location.pathname);
+      url.searchParams.set("to", config.recipientName);
+      url.searchParams.set("from", config.senderName);
+      url.searchParams.set("topic", config.topic);
+      url.searchParams.set("msg", config.message);
+      if (config.curatedBy) url.searchParams.set("curatedBy", config.curatedBy);
+      if (config.song.title) url.searchParams.set("songTitle", config.song.title);
+      if (config.song.src) url.searchParams.set("songSrc", config.song.src);
+
+      navigator.clipboard.writeText(url.toString());
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    } catch (e) {
+      console.error("Failed to copy share link:", e);
+    }
   };
 
   // Rotations for 6 polaroid cards (3 in a row)
@@ -700,16 +762,49 @@ export default function LovePage() {
     <main className="relative min-h-screen py-8 sm:py-14 px-3 sm:px-6 flex flex-col items-center justify-start overflow-x-hidden">
       <FloatingHearts />
 
-      {/* Floating Customize / Edit Sidebar Button */}
-      <div className="fixed top-4 right-4 sm:top-6 sm:right-6 z-30">
-        <button
-          onClick={() => setIsSidebarOpen(true)}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/95 text-[#cf493e] shadow-lg border border-[#e4d6c4] hover:bg-[#fff9f2] hover:scale-105 active:scale-95 transition-all text-xs sm:text-sm font-semibold tracking-wide"
-          title="Customize page text and options"
+      {/* Floating Top Bar (Back to Home, Share, Edit) */}
+      <div className="fixed top-3 sm:top-5 inset-x-3 sm:inset-x-6 z-30 flex items-center justify-between pointer-events-none">
+        {/* Left: Back to Home Link */}
+        <Link
+          href="/"
+          className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/90 text-[#5e4b3e] shadow-md border border-[#e4d6c4] hover:bg-white hover:text-[#cf493e] hover:shadow-lg transition-all text-xs sm:text-sm font-medium backdrop-blur-sm group active:scale-95"
+          title="Back to Landing Page"
         >
-          <Edit3 className="h-4 w-4 text-[#cf493e]" />
-          <span>Edit Page</span>
-        </button>
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 text-[#cf493e]" />
+          <span>Back to Landing Page</span>
+        </Link>
+
+        {/* Right: Share Link & Edit Buttons */}
+        <div className="flex items-center gap-2 pointer-events-auto">
+          {/* Share / Copy Link Button */}
+          <button
+            onClick={handleCopyShareLink}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/90 text-[#3d332a] shadow-md border border-[#e4d6c4] hover:bg-white hover:border-[#cf493e]/40 hover:shadow-lg transition-all text-xs sm:text-sm font-medium backdrop-blur-sm active:scale-95"
+            title="Copy shareable link with current personalization"
+          >
+            {copiedLink ? (
+              <>
+                <Check className="h-4 w-4 text-emerald-600" />
+                <span className="text-emerald-700 font-semibold">Link Copied! 💖</span>
+              </>
+            ) : (
+              <>
+                <Share2 className="h-4 w-4 text-[#cf493e]" />
+                <span className="hidden sm:inline">Share Link</span>
+              </>
+            )}
+          </button>
+
+          {/* Edit Page Button */}
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#cf493e] text-white shadow-md hover:bg-[#b83b31] hover:shadow-lg transition-all text-xs sm:text-sm font-semibold tracking-wide active:scale-95"
+            title="Customize page text and options"
+          >
+            <Edit3 className="h-4 w-4 text-white" />
+            <span>Edit Page</span>
+          </button>
+        </div>
       </div>
 
       {/* Customization Sidebar Component */}
@@ -858,5 +953,19 @@ export default function LovePage() {
         </p>
       </footer>
     </main>
+  );
+}
+
+export default function LovePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#f3d5cf] text-[#6e4e42] font-handwriting text-2xl">
+          Loading sweet memories... 💖
+        </div>
+      }
+    >
+      <LovePageContent />
+    </Suspense>
   );
 }

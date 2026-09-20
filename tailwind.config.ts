@@ -18,6 +18,8 @@ const config: Config = {
         handwriting: ["var(--font-handwriting)", "cursive"],
         typewriter: ["var(--font-typewriter)", "monospace"],
         sans: ["var(--font-sans)", "sans-serif"],
+        bagel: ["var(--font-bagel)", "cursive"],
+        gaegu: ["var(--font-gaegu)", "cursive"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -25,6 +27,26 @@ const config: Config = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        washi: {
+          mustard: "#e8a628",
+          teal: "#1f7a76",
+          cherry: "#c72f57",
+          navy: "#26386b",
+          sage: "#a3b68d",
+          sky: "#8ec5e6",
+        },
+        desk: {
+          base: "#2f6b58",
+          dark: "#183a30",
+          text: "#f3f7ef",
+        },
+        book: {
+          paper: "#fbfaf4",
+          paperDark: "#ece9dc",
+          ink: "#2a2a35",
+          softInk: "#5a5866",
+          lines: "rgba(38,56,107,0.38)",
+        },
         scrapbook: {
           paper: "#FAF7EF",
           tapeGreen: "#5b6d5c",
