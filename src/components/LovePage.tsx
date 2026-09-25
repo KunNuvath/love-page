@@ -239,6 +239,7 @@ interface PolaroidProps {
   rotationClass: string;
   onOpenLightbox: (src: string, caption: string) => void;
   onFileSelected?: (id: number, file: File) => void;
+  onChange?: (id: number, updates: { src?: string; caption?: string }) => void;
 }
 
 function PolaroidCard({
@@ -248,6 +249,7 @@ function PolaroidCard({
   rotationClass,
   onOpenLightbox,
   onFileSelected,
+  onChange,
 }: PolaroidProps) {
   const [src, setSrc] = useState(initialSrc);
   const [caption, setCaption] = useState(initialCaption);
@@ -259,6 +261,7 @@ function PolaroidCard({
     const saved = localStorage.getItem(`polaroid_photo_${id}`);
     if (saved) {
       setSrc(saved);
+      onChange?.(id, { src: saved });
     } else if (initialSrc) {
       setSrc(initialSrc);
     }
@@ -275,6 +278,7 @@ function PolaroidCard({
       reader.onload = (event) => {
         const result = event.target?.result as string;
         setSrc(result);
+        onChange?.(id, { src: result });
         try {
           localStorage.setItem(`polaroid_photo_${id}`, result);
         } catch {
@@ -290,6 +294,7 @@ function PolaroidCard({
   const handleRemovePhoto = (e: React.MouseEvent) => {
     e.stopPropagation();
     setSrc("");
+    onChange?.(id, { src: "" });
     localStorage.removeItem(`polaroid_photo_${id}`);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
@@ -383,7 +388,10 @@ function PolaroidCard({
             type="text"
             value={caption}
             autoFocus
-            onChange={(e) => setCaption(e.target.value)}
+            onChange={(e) => {
+              setCaption(e.target.value);
+              onChange?.(id, { caption: e.target.value });
+            }}
             onBlur={() => setIsEditingCaption(false)}
             onKeyDown={(e) => {
               if (e.key === "Enter") setIsEditingCaption(false);
@@ -742,10 +750,21 @@ function LovePageContent() {
     setIsSaving(true);
     setSaveError(null);
     try {
-      // 1. Upload any polaroid images that are File objects
+      // 1. Upload any polaroid images that are File objects or base64 strings
       const updatedPolaroids = await Promise.all(
         config.polaroids.map(async (p) => {
-          const file = polaroidFiles.current.get(p.id);
+          let file = polaroidFiles.current.get(p.id);
+          
+          if (!file && p.src && p.src.startsWith("data:image")) {
+            try {
+              const res = await fetch(p.src);
+              const blob = await res.blob();
+              file = new File([blob], `polaroid-${p.id}.png`, { type: blob.type });
+            } catch (e) {
+              console.error("Failed to convert base64 to file", e);
+            }
+          }
+
           if (file) {
             const url = await uploadImage(file);
             return { ...p, src: url };
@@ -959,6 +978,14 @@ function LovePageContent() {
                 }
                 onFileSelected={(id, file) => {
                   polaroidFiles.current.set(id, file);
+                }}
+                onChange={(id, updates) => {
+                  setConfig((prev) => ({
+                    ...prev,
+                    polaroids: prev.polaroids.map((p) =>
+                      p.id === id ? { ...p, ...updates } : p
+                    ),
+                  }));
                 }}
               />
             ))}
