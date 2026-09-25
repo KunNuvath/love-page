@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { createLovePage, uploadImage } from "@/src/lib/supabase";
 import {
   Heart,
   Play,
@@ -25,7 +26,7 @@ import {
   SlidersHorizontal,
   ArrowLeft,
   Share2,
-  Copy,
+  Loader2,
 } from "lucide-react";
 
 /**
@@ -237,6 +238,7 @@ interface PolaroidProps {
   initialSrc: string;
   rotationClass: string;
   onOpenLightbox: (src: string, caption: string) => void;
+  onFileSelected?: (id: number, file: File) => void;
 }
 
 function PolaroidCard({
@@ -245,6 +247,7 @@ function PolaroidCard({
   initialSrc,
   rotationClass,
   onOpenLightbox,
+  onFileSelected,
 }: PolaroidProps) {
   const [src, setSrc] = useState(initialSrc);
   const [caption, setCaption] = useState(initialCaption);
@@ -279,6 +282,8 @@ function PolaroidCard({
         }
       };
       reader.readAsDataURL(file);
+      // Notify parent so it can upload to Supabase on save
+      onFileSelected?.(id, file);
     }
   };
 
@@ -668,6 +673,10 @@ function LovePageContent() {
   const [config, setConfig] = useState(DEFAULT_CONFIG);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  // Keep track of polaroid images (File objects) set by PolaroidCard callbacks
+  const polaroidFiles = useRef<Map<number, File>>(new Map());
   const [lightboxData, setLightboxData] = useState<{
     src: string;
     caption: string;
@@ -729,22 +738,47 @@ function LovePageContent() {
     setConfig(DEFAULT_CONFIG);
   };
 
-  const handleCopyShareLink = () => {
+  const handleSaveAndShare = async () => {
+    setIsSaving(true);
+    setSaveError(null);
     try {
-      const url = new URL(window.location.origin + window.location.pathname);
-      url.searchParams.set("to", config.recipientName);
-      url.searchParams.set("from", config.senderName);
-      url.searchParams.set("topic", config.topic);
-      url.searchParams.set("msg", config.message);
-      if (config.curatedBy) url.searchParams.set("curatedBy", config.curatedBy);
-      if (config.song.title) url.searchParams.set("songTitle", config.song.title);
-      if (config.song.src) url.searchParams.set("songSrc", config.song.src);
+      // 1. Upload any polaroid images that are File objects
+      const updatedPolaroids = await Promise.all(
+        config.polaroids.map(async (p) => {
+          const file = polaroidFiles.current.get(p.id);
+          if (file) {
+            const url = await uploadImage(file);
+            return { ...p, src: url };
+          }
+          // Keep existing src (already a URL or empty)
+          return p;
+        })
+      );
 
-      navigator.clipboard.writeText(url.toString());
+      // 2. Build the serialised page config to store
+      const pageData = {
+        title: config.topic || `For ${config.recipientName}`,
+        message: JSON.stringify({
+          ...config,
+          polaroids: updatedPolaroids,
+        }),
+        image_url: updatedPolaroids.find((p) => p.src)?.src ?? null,
+      };
+
+      // 3. Save to Supabase
+      const page = await createLovePage(pageData);
+
+      // 4. Copy the clean share link
+      const shareUrl = `${window.location.origin}/share/${page.slug}`;
+      await navigator.clipboard.writeText(shareUrl);
       setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2500);
-    } catch (e) {
-      console.error("Failed to copy share link:", e);
+      setTimeout(() => setCopiedLink(false), 3000);
+    } catch (err) {
+      console.error("Save & Share failed:", err);
+      setSaveError("Failed to save. Please try again.");
+      setTimeout(() => setSaveError(null), 4000);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -776,21 +810,32 @@ function LovePageContent() {
 
         {/* Right: Share Link & Edit Buttons */}
         <div className="flex items-center gap-2 pointer-events-auto">
-          {/* Share / Copy Link Button */}
+          {/* Save to Cloud & Copy Share Link Button */}
           <button
-            onClick={handleCopyShareLink}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/90 text-[#3d332a] shadow-md border border-[#e4d6c4] hover:bg-white hover:border-[#cf493e]/40 hover:shadow-lg transition-all text-xs sm:text-sm font-medium backdrop-blur-sm active:scale-95"
-            title="Copy shareable link with current personalization"
+            onClick={handleSaveAndShare}
+            disabled={isSaving}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/90 text-[#3d332a] shadow-md border border-[#e4d6c4] hover:bg-white hover:border-[#cf493e]/40 hover:shadow-lg transition-all text-xs sm:text-sm font-medium backdrop-blur-sm active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+            title="Save to cloud and copy shareable link"
           >
-            {copiedLink ? (
+            {isSaving ? (
+              <>
+                <Loader2 className="h-4 w-4 text-[#cf493e] animate-spin" />
+                <span className="hidden sm:inline text-[#cf493e]">Saving…</span>
+              </>
+            ) : copiedLink ? (
               <>
                 <Check className="h-4 w-4 text-emerald-600" />
                 <span className="text-emerald-700 font-semibold">Link Copied! 💖</span>
               </>
+            ) : saveError ? (
+              <>
+                <X className="h-4 w-4 text-red-500" />
+                <span className="text-red-600 font-semibold hidden sm:inline">{saveError}</span>
+              </>
             ) : (
               <>
                 <Share2 className="h-4 w-4 text-[#cf493e]" />
-                <span className="hidden sm:inline">Share Link</span>
+                <span className="hidden sm:inline">Save &amp; Share</span>
               </>
             )}
           </button>
@@ -912,6 +957,9 @@ function LovePageContent() {
                 onOpenLightbox={(src, caption) =>
                   setLightboxData({ src, caption })
                 }
+                onFileSelected={(id, file) => {
+                  polaroidFiles.current.set(id, file);
+                }}
               />
             ))}
           </div>
