@@ -343,6 +343,54 @@ export function RuledJournalingArea({
 }
 
 // ─────────────────────────────────────────────────────────────
+// EDITABLE TEXT COMPONENT
+// ─────────────────────────────────────────────────────────────
+export function EditableText({
+  id,
+  initialText,
+  className = "",
+}: {
+  id: string;
+  initialText: string;
+  className?: string;
+}) {
+  const spanRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`little_book_title_${id}`);
+    if (saved !== null) {
+      if (spanRef.current && spanRef.current.innerText !== saved) {
+        spanRef.current.innerText = saved;
+      }
+    } else {
+      if (spanRef.current) spanRef.current.innerText = initialText;
+    }
+  }, [id, initialText]);
+
+  const handleBlur = (e: React.FocusEvent<HTMLSpanElement>) => {
+    const val = e.target.innerText.trim();
+    localStorage.setItem(`little_book_title_${id}`, val);
+  };
+
+  return (
+    <span
+      ref={spanRef}
+      contentEditable
+      suppressContentEditableWarning
+      onBlur={handleBlur}
+      onClick={(e) => e.stopPropagation()}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          e.currentTarget.blur();
+        }
+      }}
+      className={`inline-block focus:outline-none focus:ring-2 focus:ring-washi-cherry/40 cursor-text rounded px-1 -mx-1 ${className}`}
+    />
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
 // CENTRAL SPIRAL BINDING COMPONENT (17 Metal Ring Coils)
 // ─────────────────────────────────────────────────────────────
 export function CentralSpiralBinding() {
@@ -458,6 +506,10 @@ export default function LittleBook() {
       localStorage.removeItem(`little_book_note_s${i}_l`);
       localStorage.removeItem(`little_book_note_s${i}_r`);
     }
+    const titleIds = ["s1_l", "s2_l", "s3_l", "s3_r", "s4_l", "s4_r", "tab1", "tab2", "tab3", "tab4"];
+    for (const tId of titleIds) {
+      localStorage.removeItem(`little_book_title_${tId}`);
+    }
     localStorage.removeItem("little_book_title");
     localStorage.removeItem("little_book_subtitle");
 
@@ -495,9 +547,17 @@ export default function LittleBook() {
         if (r) notes[`s${i}_r`] = r;
       }
 
+      // Gather custom titles
+      const titles: Record<string, string> = {};
+      const titleIds = ["s1_l", "s2_l", "s3_l", "s3_r", "s4_l", "s4_r", "tab1", "tab2", "tab3", "tab4"];
+      for (const tId of titleIds) {
+        const val = localStorage.getItem(`little_book_title_${tId}`);
+        if (val) titles[tId] = val;
+      }
+
       const page = await createLovePage({
         title: bookTitle,
-        message: JSON.stringify({ type: "little-book", title: bookTitle, subtitle: bookSubtitle, photos: photoUrls, notes }),
+        message: JSON.stringify({ type: "little-book", title: bookTitle, subtitle: bookSubtitle, photos: photoUrls, notes, titles }),
         image_url: Object.values(photoUrls)[0] ?? null,
       });
 
@@ -731,9 +791,7 @@ export default function LittleBook() {
 
               {/* Title: Hello, You */}
               <div className="text-right mt-3">
-                <span className="inline-block font-bagel text-2xl sm:text-3xl text-washi-navy px-3 py-0.5 bg-washi-mustard/30 rounded-sm">
-                  Hello, You
-                </span>
+                <EditableText id="s1_l" initialText="Hello, You" className="font-bagel text-2xl sm:text-3xl text-washi-navy px-3 py-0.5 bg-washi-mustard/30 rounded-sm" />
               </div>
             </div>
           )}
@@ -742,9 +800,9 @@ export default function LittleBook() {
           {currentSpread === 1 && (
             <div className="flex flex-col h-full justify-between animate-fade-up">
               <div>
-                <span className="inline-block font-bagel text-2xl sm:text-3xl text-washi-navy px-3 py-0.5 bg-washi-sky/40 rounded-sm mb-3">
-                  Little Things
-                </span>
+                <div className="mb-3">
+                  <EditableText id="s2_l" initialText="Little Things" className="font-bagel text-2xl sm:text-3xl text-washi-navy px-3 py-0.5 bg-washi-sky/40 rounded-sm" />
+                </div>
 
                 {/* 6-Photo Grid */}
                 <div className="space-y-3">
@@ -827,9 +885,9 @@ export default function LittleBook() {
           {currentSpread === 2 && (
             <div className="flex flex-col h-full justify-between animate-fade-up">
               <div>
-                <span className="inline-block font-bagel text-2xl sm:text-3xl text-white px-3.5 py-0.5 bg-washi-cherry rounded-sm mb-4">
-                  Memories
-                </span>
+                <div className="mb-4">
+                  <EditableText id="s3_l" initialText="Memories" className="font-bagel text-2xl sm:text-3xl text-white px-3.5 py-0.5 bg-washi-cherry rounded-sm" />
+                </div>
 
                 {/* Three 2x3 photos in a row taped at top */}
                 <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -887,9 +945,7 @@ export default function LittleBook() {
           {currentSpread === 3 && (
             <div className="flex flex-col h-full justify-between animate-fade-up">
               <div>
-                <span className="inline-block font-bagel text-3xl sm:text-4xl text-washi-navy px-4 py-1 bg-washi-sage/40 rounded-sm mb-4">
-                  Love This
-                </span>
+                <EditableText id="s4_l" initialText="Love This" className="font-bagel text-3xl sm:text-4xl text-washi-navy px-4 py-1 bg-washi-sage/40 rounded-sm mb-4" />
 
                 <div className="flex flex-col sm:flex-row gap-4 items-center">
                   <div className="relative w-full max-w-[200px]">
@@ -1058,9 +1114,7 @@ export default function LittleBook() {
             <div className="flex flex-col h-full justify-between animate-fade-up">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="inline-block font-bagel text-2xl text-washi-navy px-3 py-0.5 bg-washi-mustard/40 rounded-sm">
-                    So Fun
-                  </span>
+                  <EditableText id="s3_r" initialText="So Fun" className="font-bagel text-2xl text-washi-navy px-3 py-0.5 bg-washi-mustard/40 rounded-sm" />
                   <Sparkles className="h-4 w-4 text-washi-mustard" />
                 </div>
 
