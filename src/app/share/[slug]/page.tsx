@@ -2,6 +2,7 @@ import { getLovePageBySlug } from "@/src/lib/supabase";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import ShareView from "./ShareView";
+import LittleBookShareView from "./LittleBookShareView";
 
 interface Props {
   params: { slug: string };
@@ -32,6 +33,10 @@ export default async function SharePage({ params }: Props) {
     config = JSON.parse(page.message);
   } catch {
     config = null;
+  }
+
+  if (config?.type === "little-book") {
+    return <LittleBookShareView page={page} config={config} />;
   }
 
   return <ShareView page={page} config={config} />;

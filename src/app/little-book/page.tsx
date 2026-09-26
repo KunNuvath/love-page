@@ -1,3 +1,4 @@
+import { createLovePage, uploadImage } from "@/src/lib/supabase";
 import LittleBook from "@/src/components/LittleBook";
 import type { Metadata } from "next";
 
@@ -10,3 +11,4 @@ export const metadata: Metadata = {
 export default function LittleBookAliasPage() {
   return <LittleBook />;
 }
+

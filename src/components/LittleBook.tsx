@@ -18,6 +18,7 @@ import {
   Info,
   SlidersHorizontal,
 } from "lucide-react";
+import { createLovePage, uploadImage } from "@/src/lib/supabase";
 
 // ─────────────────────────────────────────────────────────────
 // COLOR TOKENS & STYLES
@@ -371,6 +372,7 @@ export default function LittleBook() {
   const [bookSubtitle, setBookSubtitle] = useState("curated by Vath");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [resetConfirm, setResetConfirm] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const multiFileInputRef = useRef<HTMLInputElement>(null);
 
   const SPREAD_NAMES = ["Hello", "Little Things", "Memories", "Love This"];
@@ -466,13 +468,46 @@ export default function LittleBook() {
     showToast("🧹 Book reset to initial state!");
   };
 
-  // Copy Share Link
-  const handleShareLink = () => {
+  // Save & Copy Share Link
+  const handleSaveAndShare = async () => {
+    setIsSaving(true);
     try {
-      navigator.clipboard.writeText(window.location.href);
-      showToast("🔗 Link copied to clipboard!");
-    } catch {
-      showToast("Unable to copy link.");
+      // Upload every local photo to Supabase Storage
+      const photoUrls: Record<number, string> = {};
+      for (const [idStr, src] of Object.entries(photos)) {
+        if (!src) continue;
+        const id = Number(idStr);
+        if (src.startsWith("data:image")) {
+          const blob = await (await fetch(src)).blob();
+          const file = new File([blob], `little-book-${id}.jpg`, { type: blob.type });
+          photoUrls[id] = await uploadImage(file);
+        } else {
+          photoUrls[id] = src;
+        }
+      }
+
+      // Notes are stored per-spread in localStorage — gather them
+      const notes: Record<string, string> = {};
+      for (let i = 1; i <= 8; i++) {
+        const l = localStorage.getItem(`little_book_note_s${i}_l`);
+        const r = localStorage.getItem(`little_book_note_s${i}_r`);
+        if (l) notes[`s${i}_l`] = l;
+        if (r) notes[`s${i}_r`] = r;
+      }
+
+      const page = await createLovePage({
+        title: bookTitle,
+        message: JSON.stringify({ type: "little-book", title: bookTitle, subtitle: bookSubtitle, photos: photoUrls, notes }),
+        image_url: Object.values(photoUrls)[0] ?? null,
+      });
+
+      await navigator.clipboard.writeText(`${window.location.origin}/share/${page.slug}`);
+      showToast("🔗 Saved — link copied!");
+    } catch (err) {
+      console.error(err);
+      showToast("Couldn't save. Please try again.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -522,11 +557,12 @@ export default function LittleBook() {
 
           <button
             type="button"
-            onClick={handleShareLink}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-washi-cherry hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold shadow-md transition-all active:scale-95 cursor-pointer"
+            onClick={handleSaveAndShare}
+            disabled={isSaving}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-washi-cherry hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold shadow-md transition-all active:scale-95 cursor-pointer disabled:opacity-50"
           >
             <Share2 className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Share</span>
+            <span className="hidden sm:inline">{isSaving ? "Saving..." : "Share"}</span>
           </button>
         </div>
       </div>
