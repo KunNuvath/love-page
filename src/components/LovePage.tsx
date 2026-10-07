@@ -27,7 +27,10 @@ import {
   ArrowLeft,
   Share2,
   Loader2,
+  Wand2,
 } from "lucide-react";
+import AiLetterModal from "@/src/components/AiLetterModal";
+import ShareModal from "@/src/components/ShareModal";
 
 /**
  * ===============================================================
@@ -425,6 +428,7 @@ interface EditSidebarProps {
   config: typeof DEFAULT_CONFIG;
   onChange: (updated: typeof DEFAULT_CONFIG) => void;
   onReset: () => void;
+  onOpenAiModal: () => void;
 }
 
 function EditSidebar({
@@ -433,6 +437,7 @@ function EditSidebar({
   config,
   onChange,
   onReset,
+  onOpenAiModal,
 }: EditSidebarProps) {
   const [savedSuccess, setSavedSuccess] = useState(false);
 
@@ -575,9 +580,19 @@ function EditSidebar({
 
           {/* Section: Topic & Love Message */}
           <div className="space-y-3">
-            <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#cf493e] border-b border-[#dfd4c5] pb-1">
-              <MessageSquare className="h-3.5 w-3.5" />
-              <span>Letter Topic & Message</span>
+            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#cf493e] border-b border-[#dfd4c5] pb-1">
+              <div className="flex items-center gap-1.5">
+                <MessageSquare className="h-3.5 w-3.5" />
+                <span>Letter Topic & Message</span>
+              </div>
+              <button
+                type="button"
+                onClick={onOpenAiModal}
+                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 hover:bg-amber-500/25 text-[#a85a08] border border-amber-300/60 font-semibold text-[11px] normal-case transition-all"
+              >
+                <Wand2 className="h-3 w-3 text-amber-600" />
+                <span>AI Writer</span>
+              </button>
             </div>
 
             <div>
@@ -683,6 +698,9 @@ function LovePageContent() {
   const [copiedLink, setCopiedLink] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [savedSlug, setSavedSlug] = useState<string>("");
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   // Keep track of polaroid images (File objects) set by PolaroidCard callbacks
   const polaroidFiles = useRef<Map<number, File>>(new Map());
   const [lightboxData, setLightboxData] = useState<{
@@ -787,9 +805,11 @@ function LovePageContent() {
       // 3. Save to Supabase
       const page = await createLovePage(pageData);
 
-      // 4. Copy the clean share link
+      // 4. Open Share Modal & copy link
+      setSavedSlug(page.slug);
+      setIsShareModalOpen(true);
       const shareUrl = `${window.location.origin}/share/${page.slug}`;
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(shareUrl).catch(() => {});
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 3000);
     } catch (err) {
@@ -878,6 +898,7 @@ function LovePageContent() {
         config={config}
         onChange={setConfig}
         onReset={handleResetConfig}
+        onOpenAiModal={() => setIsAiModalOpen(true)}
       />
 
       {/* Lightbox Modal */}
@@ -1027,6 +1048,30 @@ function LovePageContent() {
           {DEFAULT_CONFIG.copyright}
         </p>
       </footer>
+
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        slug={savedSlug}
+        title={config.topic || `For ${config.recipientName}`}
+        theme="light"
+      />
+
+      {/* AI Romantic Writer Modal */}
+      <AiLetterModal
+        isOpen={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
+        defaultRecipient={config.recipientName}
+        defaultSender={config.senderName}
+        onInsert={(text, title) => {
+          setConfig((prev) => ({
+            ...prev,
+            ...(title && { topic: title }),
+            message: text,
+          }));
+        }}
+      />
     </main>
   );
 }

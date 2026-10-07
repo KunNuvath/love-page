@@ -12,8 +12,15 @@ import {
   ArrowLeft,
   ZoomIn,
   X,
+  Share2,
+  Sparkles,
 } from "lucide-react";
 import type { LovePage } from "@/src/lib/supabase";
+import { useRealtimeLovePage } from "@/src/lib/realtime";
+import RealtimeReactionBurst from "@/src/components/RealtimeReactionBurst";
+import RealtimeLiveBar from "@/src/components/RealtimeLiveBar";
+import GuestbookDrawer from "@/src/components/GuestbookDrawer";
+import ShareModal from "@/src/components/ShareModal";
 
 interface Polaroid {
   id: number;
@@ -35,7 +42,6 @@ interface PageConfig {
 
 interface Props {
   page: LovePage;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   config: Record<string, any> | null;
 }
 
@@ -77,8 +83,10 @@ function MiniPlayer({ song }: { song: { src: string; title: string } }) {
       audio.pause();
       setPlaying(false);
     } else {
-      await audio.play();
-      setPlaying(true);
+      try {
+        await audio.play();
+        setPlaying(true);
+      } catch {}
     }
   };
 
@@ -109,7 +117,7 @@ function MiniPlayer({ song }: { song: { src: string; title: string } }) {
             </span>
           </div>
           <span className="font-handwriting text-sm text-[#7e6d5e]">
-            {playing ? "Now Playing ~ sweet melody" : "Click play to listen"}
+            {playing ? "Now Playing ~ melody of love" : "Click play to listen"}
           </span>
         </div>
       </div>
@@ -120,7 +128,10 @@ function MiniPlayer({ song }: { song: { src: string; title: string } }) {
             style={{ width: `${progress}%` }}
           />
         </div>
-        <button onClick={toggleMute} className="text-[#7e6d5e] hover:text-[#3d332a] p-1 transition-colors">
+        <button
+          onClick={toggleMute}
+          className="text-[#7e6d5e] hover:text-[#3d332a] p-1 transition-colors"
+        >
           {muted ? (
             <VolumeX className="h-4 w-4 text-red-500" />
           ) : (
@@ -184,6 +195,18 @@ export default function ShareView({ page, config: rawConfig }: Props) {
   const cfg = (rawConfig ?? {}) as PageConfig;
   const [lightbox, setLightbox] = useState<{ src: string; caption: string } | null>(null);
   const [revealed, setRevealed] = useState(false);
+  const [isGuestbookOpen, setIsGuestbookOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+
+  // Realtime hook
+  const {
+    viewerCount,
+    reactions,
+    particles,
+    guestbook,
+    triggerReaction,
+    postGuestbookNote,
+  } = useRealtimeLovePage(page.slug);
 
   useEffect(() => {
     const t = setTimeout(() => setRevealed(true), 150);
@@ -191,11 +214,14 @@ export default function ShareView({ page, config: rawConfig }: Props) {
   }, []);
 
   const polaroids: Polaroid[] = cfg.polaroids ?? [];
-  const song = cfg.song ?? { src: "", title: "" };
+  const song = cfg.song ?? { src: "/music/miguel-sure-thing.mp3", title: "Miguel - Sure Thing" };
   const hasSong = Boolean(song.src);
 
   return (
-    <main className="relative min-h-screen py-8 sm:py-14 px-3 sm:px-6 flex flex-col items-center justify-start overflow-x-hidden">
+    <main className="relative min-h-screen py-8 sm:py-14 px-3 sm:px-6 flex flex-col items-center justify-start overflow-x-hidden pb-28">
+      {/* Realtime Reaction Bursts */}
+      <RealtimeReactionBurst particles={particles} />
+
       {/* Floating hearts bg */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
         {Array.from({ length: 10 }).map((_, i) => (
@@ -222,20 +248,24 @@ export default function ShareView({ page, config: rawConfig }: Props) {
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 text-[#cf493e]" />
           <span>Back to Home</span>
         </Link>
-        <div className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 border border-[#e4d6c4] shadow-sm text-[10px] sm:text-xs font-typewriter text-[#9b7267] backdrop-blur-sm">
-          <Heart className="h-3 w-3 fill-[#cf493e] text-[#cf493e]" />
-          <span>View only</span>
-        </div>
+        <button
+          type="button"
+          onClick={() => setIsShareOpen(true)}
+          className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/90 border border-[#e4d6c4] shadow-sm text-xs font-semibold text-[#9b7267] hover:text-[#cf493e] backdrop-blur-sm transition-all active:scale-95"
+        >
+          <Share2 className="h-3.5 w-3.5 text-[#cf493e]" />
+          <span>Share</span>
+        </button>
       </div>
 
       {/* Lightbox */}
       {lightbox && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs animate-fade-in"
           onClick={() => setLightbox(null)}
         >
           <div
-            className="relative max-w-2xl max-h-[85vh] bg-white p-4 pb-6 rounded-lg shadow-2xl flex flex-col items-center"
+            className="relative max-w-2xl max-h-[85vh] bg-white p-4 pb-6 rounded-2xl shadow-2xl flex flex-col items-center"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -354,6 +384,35 @@ export default function ShareView({ page, config: rawConfig }: Props) {
           Made with 💖 · LovePage Studio
         </p>
       </footer>
+
+      {/* Realtime Live Bar */}
+      <RealtimeLiveBar
+        viewerCount={viewerCount}
+        reactions={reactions}
+        onReact={triggerReaction}
+        onOpenGuestbook={() => setIsGuestbookOpen(true)}
+        onOpenShare={() => setIsShareOpen(true)}
+        guestbookCount={guestbook.length}
+        theme="light"
+      />
+
+      {/* Guestbook Drawer */}
+      <GuestbookDrawer
+        isOpen={isGuestbookOpen}
+        onClose={() => setIsGuestbookOpen(false)}
+        entries={guestbook}
+        onAddNote={postGuestbookNote}
+        theme="light"
+      />
+
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
+        slug={page.slug}
+        title={page.title}
+        theme="light"
+      />
     </main>
   );
 }

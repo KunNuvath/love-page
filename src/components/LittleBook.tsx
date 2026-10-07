@@ -17,8 +17,11 @@ import {
   ArrowLeft,
   Info,
   SlidersHorizontal,
+  Wand2,
 } from "lucide-react";
 import { createLovePage, uploadImage } from "@/src/lib/supabase";
+import AiLetterModal from "@/src/components/AiLetterModal";
+import ShareModal from "@/src/components/ShareModal";
 
 // ─────────────────────────────────────────────────────────────
 // COLOR TOKENS & STYLES
@@ -421,6 +424,9 @@ export default function LittleBook() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [resetConfirm, setResetConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [savedSlug, setSavedSlug] = useState<string>("");
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const multiFileInputRef = useRef<HTMLInputElement>(null);
 
   const SPREAD_NAMES = ["Hello", "Little Things", "Memories", "Love This"];
@@ -561,8 +567,9 @@ export default function LittleBook() {
         image_url: Object.values(photoUrls)[0] ?? null,
       });
 
-      await navigator.clipboard.writeText(`${window.location.origin}/share/${page.slug}`);
-      showToast("🔗 Saved — link copied!");
+      setSavedSlug(page.slug);
+      setIsShareModalOpen(true);
+      showToast("💖 Saved! Link ready to share.");
     } catch (err) {
       console.error(err);
       showToast("Couldn't save. Please try again.");
@@ -593,7 +600,7 @@ export default function LittleBook() {
           <span>{toastMessage}</span>
         </div>
       )}
-
+      
       {/* ─────────────────────────────────────────────────────────────
           TOP BAR (Back to Landing, Templates Switcher, Share)
       ───────────────────────────────────────────────────────────── */}
@@ -607,6 +614,16 @@ export default function LittleBook() {
         </Link>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setIsAiModalOpen(true)}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/30 backdrop-blur-md text-xs sm:text-sm font-semibold transition-all active:scale-95"
+            title="Open AI Love Letter & Caption Generator"
+          >
+            <Wand2 className="h-3.5 w-3.5 text-amber-300" />
+            <span className="hidden sm:inline">AI Romantic Assistant</span>
+          </button>
+
           <Link
             href="/templates"
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-medium transition-all"
@@ -1287,6 +1304,33 @@ export default function LittleBook() {
       <footer className="relative z-20 mt-12 text-center text-xs text-desk-text/60 font-mono">
         <p>© {new Date().getFullYear()} Our Little Book • Designed with love</p>
       </footer>
+
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        slug={savedSlug}
+        title={bookTitle}
+        theme="cutting-mat"
+      />
+
+      {/* AI Romantic Writer Modal */}
+      <AiLetterModal
+        isOpen={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
+        onInsert={(text, title) => {
+          // Store into current spread's note
+          const spreadIndex = currentSpread + 1;
+          const slot = `little_book_note_s${spreadIndex}_l`;
+          localStorage.setItem(slot, text);
+          if (title) {
+            localStorage.setItem(`little_book_title_s${spreadIndex}_l`, title);
+          }
+          showToast(`✨ Inserted into Spread ${spreadIndex}!`);
+          // Force state re-trigger
+          setCurrentSpread((prev) => prev);
+        }}
+      />
     </div>
   );
 }
