@@ -4,6 +4,14 @@ import type { Metadata } from "next";
 import ShareView from "./ShareView";
 import LittleBookShareView from "./LittleBookShareView";
 
+// ─── CRITICAL: WHY THIS LINE EXISTS ─────────────────────────────────────────
+// Every slug is created at runtime (by a real user clicking "Share").
+// Without this, Next.js/Vercel tries to pre-render this page at BUILD time,
+// finds no slugs yet, and permanently 404s every link created after the deploy.
+// "force-dynamic" tells Vercel: always render this page on-demand, per request.
+export const dynamic = "force-dynamic";
+// ─────────────────────────────────────────────────────────────────────────────
+
 interface Props {
   params: { slug: string };
 }
@@ -24,6 +32,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SharePage({ params }: Props) {
   const page = await getLovePageBySlug(params.slug);
+
+  // If Supabase returns nothing, show a friendly 404
   if (!page) notFound();
 
   // The full config is stored as JSON in the message field
