@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       success: true,
       page,
       slug: page.slug,
-      shareUrl: `/share/${page.slug}`,
+      shareUrl: `/p/${page.slug}`,
     });
   } catch (error: any) {
     console.error("API /api/love-page error:", error);
