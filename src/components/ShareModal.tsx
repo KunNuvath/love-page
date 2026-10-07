@@ -22,7 +22,11 @@ export default function ShareModal({
 
   if (!isOpen) return null;
 
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  // NEXT_PUBLIC_SITE_URL is set in Vercel → Settings → Environment Variables.
+  // Falls back to the current browser origin so it always works locally too.
+  const origin =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "");
   const shareUrl = `${origin}/share/${slug}`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(
     shareUrl

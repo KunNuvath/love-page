@@ -808,7 +808,9 @@ function LovePageContent() {
       // 4. Open Share Modal & copy link
       setSavedSlug(page.slug);
       setIsShareModalOpen(true);
-      const shareUrl = `${window.location.origin}/share/${page.slug}`;
+      const origin =
+        process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+      const shareUrl = `${origin}/share/${page.slug}`;
       await navigator.clipboard.writeText(shareUrl).catch(() => {});
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 3000);

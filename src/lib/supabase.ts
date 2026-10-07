@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://aspdaochkhzwciguyayg.supabase.co'
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_jZdiPOyBH_9dJ6fkgOD8Zw_83NnzlkN'
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
@@ -11,64 +11,33 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 export interface LovePage {
   id: string
-  slug: string          // unique shareable ID used in the URL, e.g. /share/abc123
+  slug: string          // unique shareable ID, e.g. /share/abc123
   title: string
-  message: string       // rich text / JSON configuration
+  message: string       // JSON-stringified config blob
   image_url: string | null
   created_at: string
   updated_at: string
 }
 
-// Server & local memory fallback store so the app is resilient and zero-failure
+// ──────────────────────────────────────────────────────────────────────────────
+// In-memory cache (process lifetime only — good for SSR dedup within one request)
+// This is NOT persistent across deploys. Supabase is the real storage.
+// ──────────────────────────────────────────────────────────────────────────────
 const memoryPages: Map<string, LovePage> = new Map()
 
-function getStoredPages(): Record<string, LovePage> {
-  if (typeof window === 'undefined') {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const fs = require('fs')
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const path = require('path')
-      const dir = path.join(process.cwd(), '.data')
-      const file = path.join(dir, 'love_pages.json')
-      if (fs.existsSync(file)) {
-        return JSON.parse(fs.readFileSync(file, 'utf8'))
-      }
-    } catch {}
-  }
-  return {}
-}
-
-function persistStoredPage(slug: string, page: LovePage) {
-  if (typeof window === 'undefined') {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const fs = require('fs')
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const path = require('path')
-      const dir = path.join(process.cwd(), '.data')
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-      const file = path.join(dir, 'love_pages.json')
-      const existing = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {}
-      existing[slug] = page
-      fs.writeFileSync(file, JSON.stringify(existing, null, 2), 'utf8')
-    } catch {}
-  }
-}
-
-async function withTimeout<T>(promiseLike: Promise<T> | PromiseLike<T>, ms = 1200): Promise<T> {
-  let timer: any;
-  const timeoutPromise = new Promise<T>((_, reject) => {
-    timer = setTimeout(() => reject(new Error('Supabase request timed out')), ms);
-  });
-  return Promise.race([promiseLike, timeoutPromise]).finally(() => clearTimeout(timer));
+async function withTimeout<T>(p: PromiseLike<T>, ms = 5000): Promise<T> {
+  let timer: ReturnType<typeof setTimeout>
+  const timeout = new Promise<T>((_, reject) => {
+    timer = setTimeout(() => reject(new Error('Supabase request timed out')), ms)
+  })
+  return Promise.race([Promise.resolve(p), timeout]).finally(() => clearTimeout(timer))
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Database helpers
 // ──────────────────────────────────────────────────────────────────────────────
 
-/** Create a new love page and return it */
+/** Create a new love page and persist it to Supabase */
 export async function createLovePage(data: {
   title: string
   message: string
@@ -76,7 +45,9 @@ export async function createLovePage(data: {
 }): Promise<LovePage> {
   const slug = generateSlug()
   const now = new Date().toISOString()
-  const fallbackPage: LovePage = {
+
+  // Optimistic in-memory record while the DB call is in flight
+  const optimistic: LovePage = {
     id: `lp_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
     slug,
     title: data.title,
@@ -85,73 +56,59 @@ export async function createLovePage(data: {
     created_at: now,
     updated_at: now,
   }
+  memoryPages.set(slug, optimistic)
 
-  // Cache in memory and disk
-  memoryPages.set(slug, fallbackPage)
-  persistStoredPage(slug, fallbackPage)
-
+  // Persist to browser localStorage if available (creator's own device)
   if (typeof window !== 'undefined') {
     try {
-      localStorage.setItem(`love_page_${slug}`, JSON.stringify(fallbackPage))
+      localStorage.setItem(`love_page_${slug}`, JSON.stringify(optimistic))
     } catch {}
   }
 
-  try {
-    const { data: page, error } = await withTimeout(
-      supabase
-        .from('love_pages')
-        .insert({ ...data, slug, image_url: data.image_url ?? null })
-        .select()
-        .single()
-    )
+  // Save to Supabase (primary, persistent, publicly readable)
+  const result = await withTimeout<{ data: LovePage | null; error: unknown }>(
+    supabase
+      .from('love_pages')
+      .insert({ ...data, slug, image_url: data.image_url ?? null })
+      .select()
+      .single() as PromiseLike<{ data: LovePage | null; error: unknown }>
+  )
+  const { data: page, error } = result
 
-    if (!error && page) {
-      const lovePage = page as LovePage
-      memoryPages.set(slug, lovePage)
-      persistStoredPage(slug, lovePage)
-      return lovePage
-    }
-  } catch (err) {
-    // Falls back to memory cache
+  if (!error && page) {
+    memoryPages.set(slug, page)
+    return page
   }
 
-  return fallbackPage
+  // If Supabase fails (e.g. table not yet created) return the optimistic record
+  // so the creator can at least copy the link; the recipient won't see it though.
+  console.error('Supabase insert error:', error)
+  return optimistic
 }
 
 /** Fetch a single love page by its shareable slug */
 export async function getLovePageBySlug(slug: string): Promise<LovePage | null> {
-  try {
-    const { data, error } = await withTimeout(
-      supabase
-        .from('love_pages')
-        .select('*')
-        .eq('slug', slug)
-        .single()
-    )
+  // 1. Try Supabase first — this is the source of truth
+  const { data, error } = await withTimeout<{ data: LovePage | null; error: unknown }>(
+    supabase
+      .from('love_pages')
+      .select('*')
+      .eq('slug', slug)
+      .single() as PromiseLike<{ data: LovePage | null; error: unknown }>
+  ).catch(() => ({ data: null, error: new Error('timeout') }))
 
-    if (!error && data) {
-      const lovePage = data as LovePage
-      memoryPages.set(slug, lovePage)
-      persistStoredPage(slug, lovePage)
-      return lovePage
-    }
-  } catch (err) {
-    // Falls back to memory cache
+  if (!error && data) {
+    const lovePage = data as LovePage
+    memoryPages.set(slug, lovePage)
+    return lovePage
   }
 
-  // Check disk store
-  const diskPages = getStoredPages()
-  if (diskPages[slug]) {
-    memoryPages.set(slug, diskPages[slug])
-    return diskPages[slug]
-  }
-
-  // Check memory store
+  // 2. In-memory cache (same process, same request dedup)
   if (memoryPages.has(slug)) {
     return memoryPages.get(slug)!
   }
 
-  // Check localStorage if in browser
+  // 3. Creator's localStorage (only works in the browser on the creator's device)
   if (typeof window !== 'undefined') {
     try {
       const stored = localStorage.getItem(`love_page_${slug}`)
@@ -173,49 +130,34 @@ export async function updateLovePage(
 ): Promise<LovePage> {
   const now = new Date().toISOString()
 
-  try {
-    const { data: page, error } = await withTimeout(
-      supabase
-        .from('love_pages')
-        .update({ ...data, updated_at: now })
-        .eq('id', id)
-        .select()
-        .single()
-    )
+  const { data: page, error } = await withTimeout<{ data: LovePage | null; error: unknown }>(
+    supabase
+      .from('love_pages')
+      .update({ ...data, updated_at: now })
+      .eq('id', id)
+      .select()
+      .single() as PromiseLike<{ data: LovePage | null; error: unknown }>
+  ).catch(() => ({ data: null, error: new Error('timeout') }))
 
-    if (!error && page) {
-      const lovePage = page as LovePage
-      memoryPages.set(lovePage.slug, lovePage)
-      return lovePage
-    }
-  } catch (err) {
-    // Falls back to memory cache
+  if (!error && page) {
+    const lovePage = page as LovePage
+    memoryPages.set(lovePage.slug, lovePage)
+    return lovePage
   }
 
-  // Update in memory if present
-  let foundUpdated: LovePage | null = null
+  // Fallback: update in-memory copy
+  let found: LovePage | null = null
   memoryPages.forEach((p, slug) => {
     if (p.id === id || p.slug === id) {
-      const updated: LovePage = {
-        ...p,
-        ...data,
-        updated_at: now,
-      }
+      const updated: LovePage = { ...p, ...data, updated_at: now }
       memoryPages.set(slug, updated)
-      if (typeof window !== 'undefined') {
-        try {
-          localStorage.setItem(`love_page_${slug}`, JSON.stringify(updated))
-        } catch {}
-      }
-      foundUpdated = updated
+      found = updated
     }
   })
 
-  if (foundUpdated) {
-    return foundUpdated
-  }
+  if (found) return found
 
-  const newFallback: LovePage = {
+  const fallback: LovePage = {
     id,
     slug: id,
     title: data.title || 'Untitled',
@@ -224,17 +166,17 @@ export async function updateLovePage(
     created_at: now,
     updated_at: now,
   }
-  memoryPages.set(id, newFallback)
-  return newFallback
+  memoryPages.set(id, fallback)
+  return fallback
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Storage helpers
+// Storage helpers — Supabase Storage bucket "love-page-images"
 // ──────────────────────────────────────────────────────────────────────────────
 
 const BUCKET = 'love-page-images'
 
-/** Upload an image and return its public URL */
+/** Upload an image File and return its permanent public URL */
 export async function uploadImage(file: File): Promise<string> {
   const ext = file.name.split('.').pop() || 'jpg'
   const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
@@ -248,11 +190,12 @@ export async function uploadImage(file: File): Promise<string> {
       const { data } = supabase.storage.from(BUCKET).getPublicUrl(path)
       if (data?.publicUrl) return data.publicUrl
     }
+    console.warn('Storage upload error:', error)
   } catch (err) {
-    console.warn('Storage upload error, falling back to data URL:', err)
+    console.warn('Storage upload exception:', err)
   }
 
-  // Resilient fallback to Data URL
+  // Last-resort: base64 data URL (only works for the creator's own view)
   return new Promise((resolve) => {
     const reader = new FileReader()
     reader.onloadend = () => resolve(reader.result as string)
@@ -273,7 +216,6 @@ export async function deleteImage(publicUrl: string): Promise<void> {
 // Utilities
 // ──────────────────────────────────────────────────────────────────────────────
 
-/** Generate a short random slug for the shareable URL */
 function generateSlug(length = 8): string {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
   return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
