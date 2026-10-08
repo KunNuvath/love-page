@@ -208,7 +208,7 @@ export default function LandingPage() {
       {/* ─────────────────────────────────────────────────────────────
           1. HEADER / NAVIGATION BAR
       ───────────────────────────────────────────────────────────── */}
-      <Navbar onLaunchTemplate={() => setIsChooserOpen(true)} />
+      <Navbar />
 
       {/* ─────────────────────────────────────────────────────────────
           2. HERO SECTION
