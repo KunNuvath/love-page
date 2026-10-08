@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import TemplateChooserModal from "@/src/components/TemplateChooserModal";
+import Navbar from "@/src/components/Navbar";
 import {
   Heart,
   Sparkles,
@@ -207,87 +208,7 @@ export default function LandingPage() {
       {/* ─────────────────────────────────────────────────────────────
           1. HEADER / NAVIGATION BAR
       ───────────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-40 w-full glass-nav backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 group transition-transform hover:scale-102"
-          >
-            <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-[#cf493e] flex items-center justify-center text-white shadow-[0_4px_12px_rgba(207,73,62,0.35)] group-hover:rotate-6 transition-transform">
-              <Heart className="h-5 w-5 fill-white" />
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="font-handwriting text-2xl sm:text-3xl font-bold tracking-tight text-[#2d2420]">
-                  LovePage
-                </span>
-                <span className="text-[10px] uppercase font-typewriter tracking-widest px-1.5 py-0.5 rounded bg-[#cf493e]/10 text-[#cf493e] font-bold">
-                  Keepsake
-                </span>
-              </div>
-            </div>
-          </Link>
-
-          {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-[#68584f]">
-            <Link
-              href="/templates"
-              className="hover:text-[#cf493e] transition-colors flex items-center gap-1"
-            >
-              <Layers className="h-3.5 w-3.5" />
-              <span>Templates</span>
-            </Link>
-            <a
-              href="#features"
-              className="hover:text-[#cf493e] transition-colors"
-            >
-              Features
-            </a>
-            <a
-              href="#occasions"
-              className="hover:text-[#cf493e] transition-colors"
-            >
-              Occasions
-            </a>
-            <a
-              href="#studio"
-              className="hover:text-[#cf493e] transition-colors"
-            >
-              Quick Builder
-            </a>
-            <a
-              href="#how-it-works"
-              className="hover:text-[#cf493e] transition-colors"
-            >
-              How It Works
-            </a>
-            <a href="#faq" className="hover:text-[#cf493e] transition-colors">
-              FAQ
-            </a>
-          </nav>
-
-          {/* Action CTAs */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            <a
-              href="#studio"
-              className="hidden sm:inline-flex items-center gap-1 px-3.5 py-2 rounded-full text-xs font-semibold text-[#6e584d] hover:text-[#3d332a] hover:bg-white/80 transition-all border border-transparent hover:border-[#e2d0be]"
-            >
-              <Wand2 className="h-3.5 w-3.5 text-[#cf493e]" />
-              <span>Personalize</span>
-            </a>
-
-            <button
-              type="button"
-              onClick={() => setIsChooserOpen(true)}
-              className="flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#cf493e] text-white text-xs sm:text-sm font-semibold tracking-wide shadow-[0_4px_16px_rgba(207,73,62,0.35)] hover:bg-[#b83b31] hover:shadow-[0_6px_20px_rgba(207,73,62,0.45)] hover:scale-103 active:scale-97 transition-all cursor-pointer"
-            >
-              <Sparkles className="h-4 w-4" />
-              <span>Launch Template</span>
-            </button>
-          </div>
-        </div>
-      </header>
+      <Navbar onLaunchTemplate={() => setIsChooserOpen(true)} />
 
       {/* ─────────────────────────────────────────────────────────────
           2. HERO SECTION
