@@ -55,7 +55,9 @@ export default function TemplateChooserModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="template-modal-title"
-        className="relative z-10 w-full max-w-3xl bg-[#fbf8f3] rounded-2xl sm:rounded-3xl border border-[#e2d2c1] shadow-2xl flex flex-col max-h-[85vh] max-h-[85dvh] overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+        className="relative z-10 w-full max-w-3xl bg-[#fbf8f3] rounded-2xl sm:rounded-3xl border border-[#e2d2c1] shadow-2xl flex flex-col modal-viewport-height overflow-hidden"
+        style={{ maxHeight: "min(85dvh, 85vh)" }}
       >
         {/* Header */}
         <div className="shrink-0 px-4 sm:px-6 py-4 sm:py-5 border-b border-[#e8dccf] bg-[#f4ebe1] flex items-center justify-between">

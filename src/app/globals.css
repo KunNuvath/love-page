@@ -45,6 +45,12 @@
   }
 }
 
+/* Modal Viewport Height with dvh & vh fallback */
+.modal-viewport-height {
+  max-height: 85vh;
+  max-height: 85dvh;
+}
+
 /* Scrapbook Paper Texture */
 .scrapbook-paper {
   background-color: #faf6ee;

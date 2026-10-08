@@ -208,7 +208,7 @@ export default function LandingPage() {
       {/* ─────────────────────────────────────────────────────────────
           1. HEADER / NAVIGATION BAR
       ───────────────────────────────────────────────────────────── */}
-      <Navbar />
+      <Navbar onLaunchTemplate={() => setIsChooserOpen(true)} />
 
       {/* ─────────────────────────────────────────────────────────────
           2. HERO SECTION
@@ -253,14 +253,15 @@ export default function LandingPage() {
 
         {/* Dual Primary Call to Actions */}
         <div className="flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto mb-14 sm:mb-20">
-          <Link
-            href="/templates"
+          <button
+            type="button"
+            onClick={() => setIsChooserOpen(true)}
             className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-7 py-4 rounded-full bg-[#cf493e] text-white font-bold text-base shadow-[0_8px_24px_rgba(207,73,62,0.38)] hover:bg-[#b83b31] hover:shadow-[0_10px_28px_rgba(207,73,62,0.48)] hover:scale-102 active:scale-98 transition-all group cursor-pointer"
           >
             <Sparkles className="h-5 w-5 fill-white group-hover:scale-110 transition-transform" />
             <span>Choose & Launch Template</span>
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-          </Link>
+          </button>
 
           <a
             href="#studio"
@@ -1019,14 +1020,15 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5">
-            <Link
-              href="/templates"
+            <button
+              type="button"
+              onClick={() => setIsChooserOpen(true)}
               className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-[#cf493e] text-white font-bold text-base shadow-[0_8px_25px_rgba(207,73,62,0.45)] hover:bg-[#b83b31] hover:scale-103 active:scale-98 transition-all cursor-pointer"
             >
               <Sparkles className="h-5 w-5" />
               <span>Choose & Launch Template Now</span>
               <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </button>
 
             <a
               href="#studio"
