@@ -55,8 +55,8 @@ export default function TemplateChooserModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="template-modal-title"
-        className="relative z-10 w-full max-w-3xl bg-[#fbf8f3] rounded-2xl sm:rounded-3xl border border-[#e2d2c1] shadow-2xl overflow-hidden flex flex-col"
-        style={{ maxHeight: "85dvh" }}
+        className="relative z-10 w-full max-w-3xl bg-[#fbf8f3] rounded-2xl sm:rounded-3xl border border-[#e2d2c1] shadow-2xl flex flex-col"
+        style={{ maxHeight: "min(85dvh, 85vh)" }}
       >
         {/* Header */}
         <div className="shrink-0 px-6 py-5 border-b border-[#e8dccf] bg-[#f4ebe1] flex items-center justify-between">
@@ -94,6 +94,8 @@ export default function TemplateChooserModal({
           style={{
             WebkitOverflowScrolling: "touch",
             touchAction: "pan-y",
+            willChange: "transform",
+            transform: "translateZ(0)",
           }}
         >
           <div className="p-4 sm:p-8">
