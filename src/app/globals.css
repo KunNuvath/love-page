@@ -47,8 +47,15 @@
 
 /* Modal Viewport Height with dvh & vh fallback */
 .modal-viewport-height {
-  max-height: 85vh;
-  max-height: 85dvh;
+  height: 92dvh;
+  max-height: 92dvh;
+}
+@media (min-width: 640px) {
+  .modal-viewport-height {
+    height: auto;
+    max-height: 85vh;
+    max-height: 85dvh;
+  }
 }
 
 /* Scrapbook Paper Texture */
