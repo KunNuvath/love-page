@@ -55,19 +55,18 @@ export default function TemplateChooserModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="template-modal-title"
-        className="relative z-10 w-full max-w-3xl bg-[#fbf8f3] rounded-2xl sm:rounded-3xl border border-[#e2d2c1] shadow-2xl flex flex-col"
-        style={{ maxHeight: "min(85dvh, 85vh)" }}
+        className="relative z-10 w-full max-w-3xl bg-[#fbf8f3] rounded-2xl sm:rounded-3xl border border-[#e2d2c1] shadow-2xl flex flex-col max-h-[85vh] max-h-[85dvh] overflow-hidden"
       >
         {/* Header */}
-        <div className="shrink-0 px-6 py-5 border-b border-[#e8dccf] bg-[#f4ebe1] flex items-center justify-between">
+        <div className="shrink-0 px-4 sm:px-6 py-4 sm:py-5 border-b border-[#e8dccf] bg-[#f4ebe1] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-full bg-[#cf493e] text-white flex items-center justify-center shadow-xs">
+            <div className="h-8 w-8 rounded-full bg-[#cf493e] text-white flex items-center justify-center shadow-xs shrink-0">
               <Layers className="h-4 w-4" />
             </div>
             <div>
               <h3
                 id="template-modal-title"
-                className="font-extrabold text-lg text-[#2d221e]"
+                className="font-extrabold text-base sm:text-lg text-[#2d221e]"
               >
                 Choose Your Love Template
               </h3>
@@ -81,7 +80,7 @@ export default function TemplateChooserModal({
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="p-1.5 rounded-full hover:bg-black/10 text-[#6e5e50] transition-colors cursor-pointer"
+            className="p-1.5 rounded-full hover:bg-black/10 text-[#6e5e50] transition-colors cursor-pointer shrink-0"
           >
             <X className="h-5 w-5" />
           </button>
@@ -90,27 +89,24 @@ export default function TemplateChooserModal({
         {/* Scrollable Body */}
         <div
           ref={scrollRef}
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-8"
           style={{
             WebkitOverflowScrolling: "touch",
             touchAction: "pan-y",
-            willChange: "transform",
-            transform: "translateZ(0)",
           }}
         >
-          <div className="p-4 sm:p-8">
-            {/* Link to full templates page */}
-            <Link
-              href="/templates"
-              onClick={onClose}
-              className="flex items-center justify-between p-3.5 mb-5 rounded-xl bg-[#cf493e]/10 border border-[#cf493e]/30 text-[#cf493e] hover:bg-[#cf493e]/15 transition-all group cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4" />
-                <span className="text-xs font-bold">Open Full Screen Templates Showcase</span>
-              </div>
-              <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+          {/* Link to full templates page */}
+          <Link
+            href="/templates"
+            onClick={onClose}
+            className="flex items-center justify-between p-3.5 mb-5 rounded-xl bg-[#cf493e]/10 border border-[#cf493e]/30 text-[#cf493e] hover:bg-[#cf493e]/15 transition-all group cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 shrink-0" />
+              <span className="text-xs font-bold">Open Full Screen Templates Showcase</span>
+            </div>
+            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform shrink-0" />
+          </Link>
 
             {/* Template Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
@@ -242,20 +238,19 @@ export default function TemplateChooserModal({
               </div>
             </div>
           </div>
-        </div>
 
         {/* Footer */}
         <div
-          className="shrink-0 px-6 py-4 bg-[#f4ebe1] border-t border-[#e8dccf] flex items-center justify-between text-xs text-[#7e6d60]"
+          className="shrink-0 px-4 sm:px-6 py-3.5 sm:py-4 bg-[#f4ebe1] border-t border-[#e8dccf] flex flex-col xs:flex-row items-center justify-between gap-2 text-xs text-[#7e6d60]"
           style={{
-            paddingBottom: "max(1rem, calc(1rem + env(safe-area-inset-bottom, 0px)))",
+            paddingBottom: "max(0.875rem, calc(0.875rem + env(safe-area-inset-bottom, 0px)))",
           }}
         >
-          <span>Everything saves automatically to your device</span>
+          <span className="text-center xs:text-left">Everything saves automatically to your device</span>
           <Link
             href="/templates"
             onClick={onClose}
-            className="font-bold text-[#cf493e] hover:underline"
+            className="font-bold text-[#cf493e] hover:underline shrink-0"
           >
             View full templates page →
           </Link>

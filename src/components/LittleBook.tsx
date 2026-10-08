@@ -604,41 +604,42 @@ export default function LittleBook() {
       {/* ─────────────────────────────────────────────────────────────
           TOP BAR (Back to Landing, Templates Switcher, Share)
       ───────────────────────────────────────────────────────────── */}
-      <div className="relative z-30 w-full max-w-5xl flex items-center justify-between gap-3 mb-6">
+      <div className="relative z-30 w-full max-w-5xl flex items-center justify-between gap-2 mb-6">
         <Link
           href="/"
-          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-medium transition-all group active:scale-95"
+          className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-medium transition-all group active:scale-95"
         >
-          <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
-          <span>Back to Home</span>
+          <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform shrink-0" />
+          <span className="hidden xs:inline">Back</span>
+          <span className="hidden sm:inline"> to Home</span>
         </Link>
 
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setIsAiModalOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/30 backdrop-blur-md text-xs sm:text-sm font-semibold transition-all active:scale-95"
+            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/30 backdrop-blur-md text-xs sm:text-sm font-semibold transition-all active:scale-95"
             title="Open AI Love Letter & Caption Generator"
           >
-            <Wand2 className="h-3.5 w-3.5 text-amber-300" />
+            <Wand2 className="h-3.5 w-3.5 text-amber-300 shrink-0" />
             <span className="hidden sm:inline">AI Romantic Assistant</span>
           </button>
 
           <Link
             href="/templates"
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-medium transition-all"
+            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-medium transition-all"
           >
-            <Layers className="h-3.5 w-3.5 text-washi-sky" />
-            <span>Switch Template</span>
+            <Layers className="h-3.5 w-3.5 text-washi-sky shrink-0" />
+            <span className="hidden sm:inline">Switch Template</span>
           </Link>
 
           <button
             type="button"
             onClick={handleSaveAndShare}
             disabled={isSaving}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-washi-cherry hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold shadow-md transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-washi-cherry hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold shadow-md transition-all active:scale-95 cursor-pointer disabled:opacity-50"
           >
-            <Share2 className="h-3.5 w-3.5" />
+            <Share2 className="h-3.5 w-3.5 shrink-0" />
             <span className="hidden sm:inline">{isSaving ? "Saving..." : "Share"}</span>
           </button>
         </div>
@@ -753,11 +754,11 @@ export default function LittleBook() {
       {/* ─────────────────────────────────────────────────────────────
           3. THE BOOK SPREADS (Two 4:5 pages + Metal Spiral Coil)
       ───────────────────────────────────────────────────────────── */}
-      <div className="relative z-20 w-full max-w-5xl flex flex-col md:flex-row items-stretch justify-center gap-6 md:gap-0 my-4">
+      <div className="relative z-20 w-full max-w-5xl flex flex-col md:flex-row items-stretch justify-center gap-4 md:gap-0 my-4">
         {/* ═══════════════════════════════════════════════════════════
             LEFT PAGE (4:5 Ratio)
         ═══════════════════════════════════════════════════════════ */}
-        <div className="flex-1 book-page-paper rounded-l-md rounded-r-sm p-6 sm:p-8 md:p-10 border border-[#ded9c5] relative flex flex-col justify-between min-h-[580px] sm:min-h-[640px] overflow-hidden">
+        <div className="flex-1 book-page-paper rounded-t-md md:rounded-l-md md:rounded-r-none md:rounded-t-md rounded-b-sm p-5 sm:p-8 md:p-10 border border-[#ded9c5] relative flex flex-col justify-between min-h-[50dvh] sm:min-h-[580px] overflow-hidden">
           {/* Top Washi Decor */}
           <WashiTape
             pattern="teal-stripes"
@@ -1013,7 +1014,7 @@ export default function LittleBook() {
         {/* ═══════════════════════════════════════════════════════════
             RIGHT PAGE (4:5 Ratio)
         ═══════════════════════════════════════════════════════════ */}
-        <div className="flex-1 book-page-paper rounded-r-md rounded-l-sm p-6 sm:p-8 md:p-10 border border-[#ded9c5] relative flex flex-col justify-between min-h-[580px] sm:min-h-[640px] overflow-hidden">
+        <div className="flex-1 book-page-paper rounded-b-md md:rounded-r-md md:rounded-l-none md:rounded-b-none rounded-t-sm p-5 sm:p-8 md:p-10 border border-[#ded9c5] relative flex flex-col justify-between min-h-[50dvh] sm:min-h-[580px] overflow-hidden">
           {/* Top Washi Decor */}
           <WashiTape
             pattern="mustard-dotted"
@@ -1246,18 +1247,18 @@ export default function LittleBook() {
       ───────────────────────────────────────────────────────────── */}
       <div className="relative z-20 w-full max-w-4xl flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-6 border-t border-white/10">
         {/* Navigation Controls: Back / Next Pill Buttons + Live Indicator */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
           <button
             type="button"
             disabled={currentSpread === 0}
             onClick={() => setCurrentSpread((prev) => Math.max(0, prev - 1))}
-            className="flex items-center gap-1 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-35 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-semibold transition-all cursor-pointer"
+            className="flex items-center gap-1 px-3.5 sm:px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-35 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-semibold transition-all cursor-pointer"
           >
             <ChevronLeft className="h-4 w-4" />
             <span>Back</span>
           </button>
 
-          <span className="font-gaegu text-lg sm:text-xl text-desk-text px-3 py-1 bg-white/10 rounded-full border border-white/10">
+          <span className="font-gaegu text-base sm:text-xl text-desk-text px-3 py-1 bg-white/10 rounded-full border border-white/10">
             {SPREAD_NAMES[currentSpread]} ({currentSpread + 1} of 4)
           </span>
 
@@ -1265,7 +1266,7 @@ export default function LittleBook() {
             type="button"
             disabled={currentSpread === 3}
             onClick={() => setCurrentSpread((prev) => Math.min(3, prev + 1))}
-            className="flex items-center gap-1 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-35 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-semibold transition-all cursor-pointer"
+            className="flex items-center gap-1 px-3.5 sm:px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-35 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-semibold transition-all cursor-pointer"
           >
             <span>Next</span>
             <ChevronRight className="h-4 w-4" />
@@ -1273,11 +1274,11 @@ export default function LittleBook() {
         </div>
 
         {/* Action Buttons: Fill Empty Frames & Start Fresh */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
           <button
             type="button"
             onClick={() => multiFileInputRef.current?.click()}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-washi-teal hover:bg-[#186360] text-white text-xs sm:text-sm font-semibold shadow-md transition-all active:scale-95 cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full bg-washi-teal hover:bg-[#186360] text-white text-xs sm:text-sm font-semibold shadow-md transition-all active:scale-95 cursor-pointer"
             title="Upload multiple photos to fill all empty frames in order"
           >
             <Upload className="h-4 w-4" />
@@ -1287,7 +1288,7 @@ export default function LittleBook() {
           <button
             type="button"
             onClick={handleReset}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold shadow-md transition-all active:scale-95 cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold shadow-md transition-all active:scale-95 cursor-pointer ${
               resetConfirm
                 ? "bg-red-600 hover:bg-red-700 text-white animate-pulse"
                 : "bg-white/10 hover:bg-white/20 text-desk-text border border-white/20"

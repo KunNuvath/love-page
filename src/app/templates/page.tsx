@@ -24,35 +24,36 @@ export default function TemplatesPage() {
   return (
     <div className="min-h-screen bg-[#f7ebe6] text-[#362e2b] selection:bg-[#cf493e]/20 font-sans py-10 px-4 sm:px-6 flex flex-col items-center">
       {/* Top Bar */}
-      <div className="w-full max-w-6xl flex items-center justify-between mb-10">
+      <div className="w-full max-w-6xl flex items-center justify-between gap-3 mb-8 sm:mb-10">
         <Link
           href="/"
-          className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/80 hover:bg-white text-[#5a483e] hover:text-[#cf493e] border border-[#e4d6c4] shadow-xs text-xs sm:text-sm font-semibold transition-all group"
+          className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full bg-white/80 hover:bg-white text-[#5a483e] hover:text-[#cf493e] border border-[#e4d6c4] shadow-xs text-xs sm:text-sm font-semibold transition-all group shrink-0 active:scale-95"
         >
-          <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform text-[#cf493e]" />
-          <span>Back to Home</span>
+          <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform text-[#cf493e] shrink-0" />
+          <span className="hidden xs:inline">Back</span>
+          <span className="hidden sm:inline"> to Home</span>
         </Link>
 
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-[#cf493e] text-white flex items-center justify-center shadow-xs">
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="h-8 w-8 rounded-full bg-[#cf493e] text-white flex items-center justify-center shadow-xs shrink-0">
             <Heart className="h-4 w-4 fill-white" />
           </div>
-          <span className="font-handwriting text-2xl font-bold text-[#2d221e]">
+          <span className="font-handwriting text-xl sm:text-2xl font-bold text-[#2d221e]">
             LovePage Studio
           </span>
         </div>
       </div>
 
       {/* Header */}
-      <div className="text-center max-w-2xl mx-auto mb-14">
+      <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14 px-2">
         <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#cf493e]/10 text-[#cf493e] text-xs font-bold tracking-wider uppercase mb-3">
           <Layers className="h-3.5 w-3.5" />
           <span>Template Collection</span>
         </div>
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-[#2d221e] tracking-tight mb-4">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#2d221e] tracking-tight mb-4">
           Choose Your Perfect Love Template
         </h1>
-        <p className="text-[#68584f] text-sm sm:text-base leading-relaxed">
+        <p className="text-[#68584f] text-xs sm:text-sm md:text-base leading-relaxed">
           Every love story is unique. Pick the keepsake format that matches your memories and surprise your favorite person.
         </p>
       </div>
