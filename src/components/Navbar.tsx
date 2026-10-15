@@ -15,6 +15,7 @@ import {
   HelpCircle,
   Calendar,
 } from "lucide-react";
+import BrandLogo from "@/src/components/BrandLogo";
 
 interface NavbarProps {
   onLaunchTemplate?: () => void;
@@ -72,9 +73,7 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
           href="/"
           className="flex items-center gap-2.5 group transition-transform hover:scale-102"
         >
-          <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-[#cf493e] flex items-center justify-center text-white shadow-[0_4px_12px_rgba(207,73,62,0.35)] group-hover:rotate-6 transition-transform shrink-0">
-            <Heart className="h-4 w-4 sm:h-5 sm:w-5 fill-white" />
-          </div>
+          <BrandLogo size="lg" className="group-hover:rotate-6 transition-transform" />
           <div className="flex items-center gap-1.5">
             <span className="font-handwriting text-2xl sm:text-3xl font-bold tracking-tight text-[#2d2420]">
               LovePage

@@ -38,6 +38,13 @@ const gaegu = Gaegu({
 export const metadata: Metadata = {
   title: "Memories — LovePage",
   description: "A digital scrapbook and romantic memory journal",
+  icons: {
+    icon: [
+      { url: "/logo.png", type: "image/png" },
+    ],
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

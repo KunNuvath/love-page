@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import TemplateChooserModal from "@/src/components/TemplateChooserModal";
 import Navbar from "@/src/components/Navbar";
+import BrandLogo from "@/src/components/BrandLogo";
 import {
   Heart,
   Sparkles,
@@ -1046,9 +1047,7 @@ export default function LandingPage() {
       <footer className="border-t border-[#e2d0bf] bg-[#faf3ed] py-10 px-4 sm:px-6 text-center text-xs text-[#7e6d60]">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-full bg-[#cf493e] flex items-center justify-center text-white">
-              <Heart className="h-3 w-3 fill-white" />
-            </div>
+            <BrandLogo size="sm" />
             <span className="font-handwriting text-xl text-[#362e2b] font-bold">
               LovePage Scrapbook & Little Book
             </span>

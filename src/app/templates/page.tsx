@@ -13,6 +13,7 @@ import {
   Layers,
   Wand2,
 } from "lucide-react";
+import BrandLogo from "@/src/components/BrandLogo";
 
 export const metadata: Metadata = {
   title: "LovePage Templates — Choose Your Memory Keepsake",
@@ -35,9 +36,7 @@ export default function TemplatesPage() {
         </Link>
 
         <div className="flex items-center gap-2 shrink-0">
-          <div className="h-8 w-8 rounded-full bg-[#cf493e] text-white flex items-center justify-center shadow-xs shrink-0">
-            <Heart className="h-4 w-4 fill-white" />
-          </div>
+          <BrandLogo size="md" />
           <span className="font-handwriting text-xl sm:text-2xl font-bold text-[#2d221e]">
             LovePage Studio
           </span>
