@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/src/lib/supabase";
 
+export const dynamic = "force-dynamic";
+
 // Global in-memory reaction state store for fast real-time response
 const reactionStore: Record<string, Record<string, number>> = {};
 

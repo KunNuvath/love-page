@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/src/lib/supabase";
 
+export const dynamic = "force-dynamic";
+
 const BUCKET = "love-page-images";
 
 export async function POST(request: Request) {

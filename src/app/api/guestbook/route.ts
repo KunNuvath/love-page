@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/src/lib/supabase";
 
+export const dynamic = "force-dynamic";
+
 export interface GuestbookEntry {
   id: string;
   page_slug: string;

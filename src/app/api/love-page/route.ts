@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createLovePage, supabase } from "@/src/lib/supabase";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
