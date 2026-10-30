@@ -428,6 +428,13 @@ export default function LittleBook() {
   const [savedSlug, setSavedSlug] = useState<string>("");
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const multiFileInputRef = useRef<HTMLInputElement>(null);
+  const [tabLabels, setTabLabels] = useState<string[]>([
+    "Hello",
+    "Little Things",
+    "Memories",
+    "Love This",
+  ]);
+  const [editingTab, setEditingTab] = useState<number | null>(null);
 
   const SPREAD_NAMES = ["Hello", "Little Things", "Memories", "Love This"];
 
@@ -450,6 +457,13 @@ export default function LittleBook() {
     if (savedTitle) setBookTitle(savedTitle);
     const savedSubtitle = localStorage.getItem("little_book_subtitle");
     if (savedSubtitle) setBookSubtitle(savedSubtitle);
+    const savedTabLabels = localStorage.getItem("little_book_tab_labels");
+    if (savedTabLabels) {
+      try {
+        const parsed = JSON.parse(savedTabLabels);
+        if (Array.isArray(parsed) && parsed.length === 4) setTabLabels(parsed);
+      } catch {}
+    }
   }, []);
 
   const handlePhotoChange = (id: number, src: string | null) => {
@@ -464,6 +478,15 @@ export default function LittleBook() {
   const handleSubtitleChange = (val: string) => {
     setBookSubtitle(val);
     localStorage.setItem("little_book_subtitle", val);
+  };
+
+  const handleTabLabelChange = (index: number, val: string) => {
+    setTabLabels((prev) => {
+      const updated = [...prev];
+      updated[index] = val;
+      localStorage.setItem("little_book_tab_labels", JSON.stringify(updated));
+      return updated;
+    });
   };
 
   // Bulk Fill Empty Frames
@@ -518,10 +541,12 @@ export default function LittleBook() {
     }
     localStorage.removeItem("little_book_title");
     localStorage.removeItem("little_book_subtitle");
+    localStorage.removeItem("little_book_tab_labels");
 
     setPhotos({});
     setBookTitle("Our Little Book");
     setBookSubtitle("curated by Vath");
+    setTabLabels(["Hello", "Little Things", "Memories", "Love This"]);
     setResetConfirm(false);
     showToast("🧹 Book reset to initial state!");
   };
@@ -698,57 +723,58 @@ export default function LittleBook() {
           2. NAVIGATION TABS (Spread Switcher with Washi Ends)
       ───────────────────────────────────────────────────────────── */}
       <div className="relative z-20 w-full max-w-4xl flex items-center justify-center gap-2 sm:gap-4 mb-6 flex-wrap">
-        {/* Tab 1: Hello (Mustard) */}
-        <button
-          type="button"
-          onClick={() => setCurrentSpread(0)}
-          className={`px-4 sm:px-6 py-2 rounded-sm font-bagel text-xs sm:text-sm transition-all transform -rotate-2 cursor-pointer shadow-md ${
-            currentSpread === 0
-              ? "bg-washi-mustard text-washi-navy scale-105 ring-2 ring-white underline decoration-2 decoration-washi-navy"
-              : "bg-[#e8a628]/80 text-washi-navy/90 hover:bg-washi-mustard hover:scale-102"
-          }`}
-        >
-          Tab 1: Hello
-        </button>
-
-        {/* Tab 2: Little Things (Sky) */}
-        <button
-          type="button"
-          onClick={() => setCurrentSpread(1)}
-          className={`px-4 sm:px-6 py-2 rounded-sm font-bagel text-xs sm:text-sm transition-all transform rotate-[1.5deg] cursor-pointer shadow-md ${
-            currentSpread === 1
-              ? "bg-washi-sky text-washi-navy scale-105 ring-2 ring-white underline decoration-2 decoration-washi-navy"
-              : "bg-[#8ec5e6]/80 text-washi-navy/90 hover:bg-washi-sky hover:scale-102"
-          }`}
-        >
-          Tab 2: Little Things
-        </button>
-
-        {/* Tab 3: Memories (Cherry, White Text) */}
-        <button
-          type="button"
-          onClick={() => setCurrentSpread(2)}
-          className={`px-4 sm:px-6 py-2 rounded-sm font-bagel text-xs sm:text-sm transition-all transform -rotate-[1.5deg] cursor-pointer shadow-md ${
-            currentSpread === 2
-              ? "bg-washi-cherry text-white scale-105 ring-2 ring-white underline decoration-2 decoration-white"
-              : "bg-[#c72f57]/80 text-white hover:bg-washi-cherry hover:scale-102"
-          }`}
-        >
-          Tab 3: Memories
-        </button>
-
-        {/* Tab 4: Love This (Sage) */}
-        <button
-          type="button"
-          onClick={() => setCurrentSpread(3)}
-          className={`px-4 sm:px-6 py-2 rounded-sm font-bagel text-xs sm:text-sm transition-all transform rotate-2 cursor-pointer shadow-md ${
-            currentSpread === 3
-              ? "bg-washi-sage text-washi-navy scale-105 ring-2 ring-white underline decoration-2 decoration-washi-navy"
-              : "bg-[#a3b68d]/80 text-washi-navy/90 hover:bg-washi-sage hover:scale-102"
-          }`}
-        >
-          Tab 4: Love This
-        </button>
+        {([
+          { index: 0, rotate: "-rotate-2", activeColor: "bg-washi-mustard text-washi-navy ring-2 ring-white underline decoration-2 decoration-washi-navy", inactiveColor: "bg-[#e8a628]/80 text-washi-navy/90 hover:bg-washi-mustard" },
+          { index: 1, rotate: "rotate-[1.5deg]", activeColor: "bg-washi-sky text-washi-navy ring-2 ring-white underline decoration-2 decoration-washi-navy", inactiveColor: "bg-[#8ec5e6]/80 text-washi-navy/90 hover:bg-washi-sky" },
+          { index: 2, rotate: "-rotate-[1.5deg]", activeColor: "bg-washi-cherry text-white ring-2 ring-white underline decoration-2 decoration-white", inactiveColor: "bg-[#c72f57]/80 text-white hover:bg-washi-cherry" },
+          { index: 3, rotate: "rotate-2", activeColor: "bg-washi-sage text-washi-navy ring-2 ring-white underline decoration-2 decoration-washi-navy", inactiveColor: "bg-[#a3b68d]/80 text-washi-navy/90 hover:bg-washi-sage" },
+        ] as const).map(({ index, rotate, activeColor, inactiveColor }) => (
+          <div
+            key={index}
+            className={`relative px-4 sm:px-6 py-2 rounded-sm font-bagel text-xs sm:text-sm transition-all transform ${rotate} shadow-md ${
+              currentSpread === index
+                ? `${activeColor} scale-105`
+                : `${inactiveColor} hover:scale-102`
+            }`}
+          >
+            {editingTab === index ? (
+              <input
+                type="text"
+                autoFocus
+                value={tabLabels[index]}
+                onChange={(e) => handleTabLabelChange(index, e.target.value)}
+                onBlur={() => setEditingTab(null)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === "Escape") {
+                    setEditingTab(null);
+                    if (e.key === "Enter") setCurrentSpread(index);
+                  }
+                }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-transparent border-b border-current focus:outline-none w-full min-w-[60px] max-w-[140px] text-center"
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  if (currentSpread === index) {
+                    setEditingTab(index);
+                  } else {
+                    setCurrentSpread(index);
+                  }
+                }}
+                onDoubleClick={(e) => {
+                  e.preventDefault();
+                  setEditingTab(index);
+                }}
+                className="cursor-pointer bg-transparent border-none p-0 font-bagel text-xs sm:text-sm"
+                title="Click to switch • Click again or double-click to rename"
+              >
+                {tabLabels[index]}
+              </button>
+            )}
+          </div>
+        ))}
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
