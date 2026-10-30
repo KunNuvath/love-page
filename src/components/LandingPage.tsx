@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import TemplateChooserModal from "@/src/components/TemplateChooserModal";
 import Navbar from "@/src/components/Navbar";
 import BrandLogo from "@/src/components/BrandLogo";
+import ContactFeedbackSection from "@/src/components/ContactFeedbackSection";
 import {
   Heart,
   Sparkles,
@@ -1004,7 +1005,12 @@ export default function LandingPage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          8. ROMANTIC FINAL CALL TO ACTION (CTA BANNER)
+          8. CONTACT & FEEDBACK FORM (Directly below FAQ)
+      ───────────────────────────────────────────────────────────── */}
+      <ContactFeedbackSection />
+
+      {/* ─────────────────────────────────────────────────────────────
+          9. ROMANTIC FINAL CALL TO ACTION (CTA BANNER)
       ───────────────────────────────────────────────────────────── */}
       <section className="py-20 sm:py-28 px-4 sm:px-6 relative overflow-hidden bg-linear-to-b from-[#f7ebe6] to-[#eddcca] text-center">
         <div className="max-w-4xl mx-auto relative z-10">
@@ -1078,14 +1084,6 @@ export default function LandingPage() {
             </a>
             <a href="#faq" className="hover:text-[#cf493e] transition-colors">
               FAQ
-            </a>
-            <a
-              href="mailto:support@lovepage.site?subject=LovePage%20Feedback%20%26%20Report&body=Hi%20LovePage%20Team%2C%0A%0AI%20would%20like%20to%20share%20some%20feedback%20or%20report%20an%20issue%3A%0A%0A"
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ebdcd0] hover:bg-[#cf493e] text-[#4a3b32] hover:text-white transition-all shadow-xs text-xs font-semibold"
-              title="Give feedback or report an issue"
-            >
-              <Mail className="h-3.5 w-3.5" />
-              <span>Contact & Feedback</span>
             </a>
           </div>
 

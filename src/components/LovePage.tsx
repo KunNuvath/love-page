@@ -1234,7 +1234,7 @@ function LovePageContent() {
       </div>
 
       {/* Footer / Copyright at bottom of the page (Code-only, not editable in sidebar) */}
-      <footer className="relative z-10 mt-10 mb-4 flex flex-col items-center justify-center gap-2 text-center">
+      <footer className="relative z-10 mt-10 mb-4 flex flex-col items-center justify-center gap-1.5 text-center">
         <div className="flex items-center gap-2 text-xs sm:text-sm font-typewriter text-[#7c564c]">
           <span>{DEFAULT_CONFIG.creationName}</span>
           <span>•</span>
@@ -1243,14 +1243,6 @@ function LovePageContent() {
         <p className="text-[11px] sm:text-xs font-typewriter text-[#9b7267]">
           {DEFAULT_CONFIG.copyright}
         </p>
-        <a
-          href="mailto:support@lovepage.site?subject=LovePage%20Feedback%20%26%20Report&body=Hi%20LovePage%20Team%2C%0A%0AI%20would%20like%20to%20share%20some%20feedback%20or%20report%20an%20issue%3A%0A%0A"
-          className="mt-1 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/60 hover:bg-[#cf493e] text-[#694840] hover:text-white border border-[#debfa8] shadow-xs text-[11px] font-mono transition-all"
-          title="Give feedback or report an issue"
-        >
-          <Mail className="h-3 w-3" />
-          <span>Feedback & Support: support@lovepage.site</span>
-        </a>
       </footer>
 
       {/* Share Modal */}

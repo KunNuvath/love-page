@@ -1329,16 +1329,8 @@ export default function LittleBook() {
       </div>
 
       {/* Footer credits */}
-      <footer className="relative z-20 mt-12 text-center text-xs text-desk-text/60 font-mono flex flex-col items-center gap-2">
+      <footer className="relative z-20 mt-12 text-center text-xs text-desk-text/60 font-mono">
         <p>© {new Date().getFullYear()} Our Little Book • Designed with love</p>
-        <a
-          href="mailto:support@lovepage.site?subject=LovePage%20Feedback%20%26%20Report&body=Hi%20LovePage%20Team%2C%0A%0AI%20would%20like%20to%20share%20some%20feedback%20or%20report%20an%20issue%3A%0A%0A"
-          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/25 text-desk-text border border-white/20 transition-all text-[11px]"
-          title="Give feedback or report an issue"
-        >
-          <Mail className="h-3 w-3" />
-          <span>Feedback & Support: support@lovepage.site</span>
-        </a>
       </footer>
 
       {/* Share Modal */}
