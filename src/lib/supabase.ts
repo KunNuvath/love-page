@@ -207,6 +207,34 @@ export async function uploadImage(file: File): Promise<string> {
   })
 }
 
+/** Upload an audio File (MP3, M4A, WAV) and return its public URL */
+export async function uploadAudio(file: File): Promise<string> {
+  const ext = file.name.split('.').pop() || 'mp3'
+  const path = `audio-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+
+  try {
+    const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
+      cacheControl: '3600',
+      upsert: true,
+      contentType: file.type || 'audio/mpeg',
+    })
+    if (!error) {
+      const { data } = supabase.storage.from(BUCKET).getPublicUrl(path)
+      if (data?.publicUrl) return data.publicUrl
+    }
+    console.warn('Storage upload error for audio:', error)
+  } catch (err) {
+    console.warn('Storage upload exception for audio:', err)
+  }
+
+  // Last-resort: base64 data URL
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onloadend = () => resolve(reader.result as string)
+    reader.readAsDataURL(file)
+  })
+}
+
 /** Delete an image from storage by its public URL */
 export async function deleteImage(publicUrl: string): Promise<void> {
   try {

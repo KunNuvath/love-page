@@ -28,9 +28,15 @@ import {
   Share2,
   Loader2,
   Wand2,
+  Search,
+  Palette,
+  Scissors,
 } from "lucide-react";
 import AiLetterModal from "@/src/components/AiLetterModal";
 import ShareModal from "@/src/components/ShareModal";
+import SongSearchPicker from "@/src/components/SongSearchPicker";
+import AudioTrimmerModal from "@/src/components/AudioTrimmerModal";
+import { BACKGROUND_VIBES, BackgroundVibeId, getBackgroundVibe } from "@/src/lib/vibes";
 
 /**
  * ===============================================================
@@ -48,6 +54,9 @@ const DEFAULT_CONFIG = {
   stampText: "MEMORIES",
   badgeText: "VOL. 01 / ORIGINAL",
 
+  // Background Vibe Atmosphere (Vol 1 exclusive)
+  themeVibe: "vintage-rose" as BackgroundVibeId,
+
   // Main Love Letter / Note Topic & Message
   topic: "To the love of my life",
   message: `Every day with you feels like a gift I didn't know I needed.
@@ -55,10 +64,12 @@ Thank you for your laugh, your patience, and the way you make
 ordinary moments feel extraordinary. I love you more than words
 can say.`,
 
-  // Song Details (place your audio file inside /public/music/)
+  // Song Details (place your audio file inside /public/music/ or upload full MP3)
   song: {
     src: "/music/miguel-sure-thing.mp3",
     title: "Miguel - Sure Thing",
+    startTime: undefined as number | undefined,
+    endTime: undefined as number | undefined,
   },
 
   // 6 Polaroid Photos (3 in a row)
@@ -78,7 +89,7 @@ can say.`,
 };
 
 // Subtle floating background hearts
-function FloatingHearts() {
+function FloatingHearts({ heartColor }: { heartColor?: string }) {
   const [hearts, setHearts] = useState<
     Array<{ id: number; left: number; duration: number; delay: number; size: number }>
   >([]);
@@ -99,7 +110,9 @@ function FloatingHearts() {
       {hearts.map((h) => (
         <Heart
           key={h.id}
-          className="floating-heart animate-float fill-[#e29578]/25 text-[#e29578]/40"
+          className={`floating-heart animate-float transition-colors duration-700 ${
+            heartColor || "fill-[#e29578]/25 text-[#e29578]/40"
+          }`}
           style={{
             left: `${h.left}%`,
             width: h.size,
@@ -113,11 +126,11 @@ function FloatingHearts() {
   );
 }
 
-// Retro Scrapbook Music Player
+// Retro Scrapbook Music Player with Trimmer (Best Part) Support
 function ScrapbookMusicPlayer({
   song,
 }: {
-  song: { src: string; title: string };
+  song: { src: string; title: string; startTime?: number; endTime?: number };
 }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -125,14 +138,15 @@ function ScrapbookMusicPlayer({
   const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // Reload audio when source changes
+  // Reload audio when source or trim points change
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.load();
       setPlaying(false);
       setHasError(false);
+      setProgress(0);
     }
-  }, [song.src]);
+  }, [song.src, song.startTime, song.endTime]);
 
   const toggle = async () => {
     if (!audioRef.current) return;
@@ -141,6 +155,11 @@ function ScrapbookMusicPlayer({
     } else {
       try {
         setHasError(false);
+        const start = song.startTime || 0;
+        const current = audioRef.current.currentTime;
+        if (current < start || (song.endTime && current >= song.endTime)) {
+          audioRef.current.currentTime = start;
+        }
         await audioRef.current.play();
       } catch (err) {
         console.error("Audio playback error:", err);
@@ -158,9 +177,21 @@ function ScrapbookMusicPlayer({
 
   const handleTimeUpdate = () => {
     if (!audioRef.current || !audioRef.current.duration) return;
-    setProgress(
-      (audioRef.current.currentTime / audioRef.current.duration) * 100
-    );
+    const current = audioRef.current.currentTime;
+    const start = song.startTime || 0;
+    const end = song.endTime && song.endTime > start ? song.endTime : audioRef.current.duration;
+
+    // Loop within trimmed snippet
+    if (song.endTime && current >= song.endTime) {
+      audioRef.current.currentTime = start;
+      return;
+    }
+
+    const segDur = end - start;
+    if (segDur > 0) {
+      const p = Math.max(0, Math.min(100, ((current - start) / segDur) * 100));
+      setProgress(p);
+    }
   };
 
   return (
@@ -179,11 +210,16 @@ function ScrapbookMusicPlayer({
         </button>
 
         <div className="flex flex-col">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <Music className="h-3.5 w-3.5 text-[#cf493e]" />
             <span className="font-typewriter text-xs font-bold uppercase tracking-wider text-[#3d332a]">
               {song.title}
             </span>
+            {(song.startTime !== undefined || song.endTime !== undefined) && (
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#cf493e]/10 text-[#cf493e] border border-[#cf493e]/20">
+                ✂️ Best Part
+              </span>
+            )}
           </div>
           <span className="font-handwriting text-sm text-[#7e6d5e]">
             {hasError
@@ -440,6 +476,8 @@ function EditSidebar({
   onOpenAiModal,
 }: EditSidebarProps) {
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [isSongPickerOpen, setIsSongPickerOpen] = useState(false);
+  const [isTrimmerOpen, setIsTrimmerOpen] = useState(false);
 
   const handleFieldChange = (key: keyof typeof DEFAULT_CONFIG, value: unknown) => {
     onChange({
@@ -502,6 +540,61 @@ function EditSidebar({
 
         {/* Form Content */}
         <div className="flex-1 overflow-y-auto p-5 space-y-6 text-sm text-[#3d332a]">
+          {/* Section: Background Vibe */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between border-b border-[#dfd4c5] pb-1">
+              <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#cf493e]">
+                <Palette className="h-3.5 w-3.5" />
+                <span>Background Vibe</span>
+              </div>
+              <span className="font-typewriter text-[10px] text-[#a99a8a] tracking-wider uppercase">
+                Vol. 1 Mood
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5">
+              {BACKGROUND_VIBES.map((vibe) => {
+                const isSelected = (config.themeVibe || "vintage-rose") === vibe.id;
+                return (
+                  <button
+                    key={vibe.id}
+                    type="button"
+                    onClick={() => handleFieldChange("themeVibe", vibe.id)}
+                    className={`group relative p-2.5 rounded-xl border text-left transition-all flex flex-col gap-1.5 ${
+                      isSelected
+                        ? "border-[#cf493e] bg-white ring-2 ring-[#cf493e]/30 shadow-md"
+                        : "border-[#d8ccb9] bg-white/60 hover:bg-white hover:border-[#bfae99] hover:shadow-xs"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      {/* Swatch circle with gradient preview */}
+                      <div
+                        className="h-6 w-6 rounded-full border border-black/10 shadow-xs flex items-center justify-center text-xs transition-transform group-hover:scale-105"
+                        style={{ background: vibe.previewBg }}
+                      >
+                        <span className="text-[11px]">{vibe.emoji}</span>
+                      </div>
+                      {isSelected && (
+                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#cf493e] text-white">
+                          <Check className="h-2.5 w-2.5 stroke-[3]" />
+                        </span>
+                      )}
+                    </div>
+
+                    <div>
+                      <p className="font-typewriter text-[11px] font-bold text-[#3d332a] uppercase tracking-wide leading-tight">
+                        {vibe.name}
+                      </p>
+                      <p className="font-handwriting text-xs text-[#7e6d5e] leading-none mt-1">
+                        {vibe.tagline}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Section: Scrapbook Header */}
           <div className="space-y-3">
             <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#cf493e] border-b border-[#dfd4c5] pb-1">
@@ -624,37 +717,103 @@ function EditSidebar({
 
           {/* Section: Music */}
           <div className="space-y-3">
-            <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#cf493e] border-b border-[#dfd4c5] pb-1">
-              <Music className="h-3.5 w-3.5" />
-              <span>Background Song</span>
+            <div className="flex items-center justify-between border-b border-[#dfd4c5] pb-1">
+              <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#cf493e]">
+                <Music className="h-3.5 w-3.5" />
+                <span>Background Song</span>
+              </div>
+              <span className="font-typewriter text-[10px] text-[#a99a8a] tracking-wider uppercase">
+                Full Song &amp; Trim
+              </span>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold mb-1 text-[#6e5e50]">
-                Song Title
-              </label>
-              <input
-                type="text"
-                value={config.song.title}
-                onChange={(e) => handleSongChange("title", e.target.value)}
-                placeholder="e.g. Miguel - Sure Thing"
-                className="w-full px-3 py-1.5 rounded border border-[#d8ccb9] bg-white focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 font-typewriter text-xs uppercase"
-              />
+            {/* Current song display */}
+            <div className="p-3 rounded-xl border border-[#d8ccb9] bg-white/90 space-y-2">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#cf493e]/10 border border-[#cf493e]/20 text-[#cf493e]">
+                  <Music className="h-5 w-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-typewriter text-xs font-bold text-[#3d332a] truncate uppercase tracking-wide">
+                    {config.song.title || "No song selected"}
+                  </p>
+                  <p className="text-[11px] text-[#7e6d5e] truncate font-mono">
+                    {config.song.startTime !== undefined || config.song.endTime !== undefined ? (
+                      <span className="text-[#cf493e] font-semibold">
+                        ✂️ Trimmed: {Math.floor((config.song.startTime || 0) / 60)}:{Math.floor((config.song.startTime || 0) % 60).toString().padStart(2, "0")} → {config.song.endTime ? `${Math.floor(config.song.endTime / 60)}:${Math.floor(config.song.endTime % 60).toString().padStart(2, "0")}` : "End"}
+                      </span>
+                    ) : (
+                      "Full Song Active"
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              {/* Action buttons: Choose Song & Cut Best Part */}
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setIsSongPickerOpen(true)}
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-[#cf493e] to-[#e05a4f] text-white text-[11px] font-bold tracking-wider uppercase shadow-xs hover:shadow-md hover:from-[#b83b31] hover:to-[#cf493e] transition-all transform active:scale-95"
+                >
+                  <Search className="h-3.5 w-3.5" />
+                  <span>Choose Song</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsTrimmerOpen(true)}
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-[#d8ccb9] hover:border-[#cf493e] text-[#3d332a] hover:text-[#cf493e] text-[11px] font-bold tracking-wider uppercase shadow-2xs hover:shadow-xs transition-all transform active:scale-95"
+                  title="Cut and trim out the best chorus of this song"
+                >
+                  <Scissors className="h-3.5 w-3.5 text-[#cf493e]" />
+                  <span>Cut Best Part</span>
+                </button>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold mb-1 text-[#6e5e50]">
-                Audio Source URL / Path
-              </label>
-              <input
-                type="text"
-                value={config.song.src}
-                onChange={(e) => handleSongChange("src", e.target.value)}
-                placeholder="e.g. /music/miguel-sure-thing.mp3"
-                className="w-full px-3 py-1.5 rounded border border-[#d8ccb9] bg-white focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 font-mono text-xs"
-              />
-            </div>
+            <p className="text-[10px] text-center text-[#a99a8a] font-handwriting">
+              Upload full MP3s, search artists, or trim to the iconic chorus!
+            </p>
           </div>
+
+          {/* Song Search & Audio Studio Picker Modal */}
+          <SongSearchPicker
+            isOpen={isSongPickerOpen}
+            onClose={() => setIsSongPickerOpen(false)}
+            onSelect={(track) => {
+              onChange({
+                ...config,
+                song: {
+                  ...config.song,
+                  src: track.src,
+                  title: track.title,
+                  // Reset trim points on new song
+                  startTime: undefined,
+                  endTime: undefined,
+                },
+              });
+            }}
+            currentSongSrc={config.song.src}
+            onOpenTrimmer={() => setIsTrimmerOpen(true)}
+          />
+
+          {/* Audio Trimmer Modal */}
+          <AudioTrimmerModal
+            isOpen={isTrimmerOpen}
+            onClose={() => setIsTrimmerOpen(false)}
+            song={config.song}
+            onSaveTrim={(startTime, endTime) => {
+              onChange({
+                ...config,
+                song: {
+                  ...config.song,
+                  startTime,
+                  endTime,
+                },
+              });
+            }}
+          />
         </div>
 
         {/* Drawer Footer Actions */}
@@ -719,9 +878,12 @@ function LovePageContent() {
     const paramSongSrc = searchParams.get("songSrc");
     const paramCuratedBy = searchParams.get("curatedBy");
     const paramStamp = searchParams.get("stamp");
+    const paramVibe = searchParams.get("vibe") || searchParams.get("theme");
+    const paramStartTime = searchParams.get("startTime") ? parseFloat(searchParams.get("startTime")!) : undefined;
+    const paramEndTime = searchParams.get("endTime") ? parseFloat(searchParams.get("endTime")!) : undefined;
 
     const hasUrlParams = Boolean(
-      paramTo || paramFrom || paramTopic || paramMessage || paramSongTitle || paramSongSrc || paramCuratedBy || paramStamp
+      paramTo || paramFrom || paramTopic || paramMessage || paramSongTitle || paramSongSrc || paramCuratedBy || paramStamp || paramVibe || paramStartTime !== undefined || paramEndTime !== undefined
     );
 
     if (hasUrlParams) {
@@ -733,11 +895,14 @@ function LovePageContent() {
         ...(paramMessage && { message: paramMessage }),
         ...(paramCuratedBy && { curatedBy: paramCuratedBy }),
         ...(paramStamp && { stampText: paramStamp }),
-        ...(paramSongTitle || paramSongSrc
+        ...(paramVibe && { themeVibe: paramVibe as BackgroundVibeId }),
+        ...(paramSongTitle || paramSongSrc || paramStartTime !== undefined || paramEndTime !== undefined
           ? {
               song: {
                 title: paramSongTitle || prev.song.title,
                 src: paramSongSrc || prev.song.src,
+                startTime: paramStartTime !== undefined ? paramStartTime : prev.song.startTime,
+                endTime: paramEndTime !== undefined ? paramEndTime : prev.song.endTime,
               },
             }
           : {}),
@@ -762,6 +927,14 @@ function LovePageContent() {
   const handleResetConfig = () => {
     localStorage.removeItem("custom_love_page_config");
     setConfig(DEFAULT_CONFIG);
+  };
+
+  const activeVibe = getBackgroundVibe(config.themeVibe);
+
+  const cycleVibe = () => {
+    const currentIndex = BACKGROUND_VIBES.findIndex((v) => v.id === activeVibe.id);
+    const nextVibe = BACKGROUND_VIBES[(currentIndex + 1) % BACKGROUND_VIBES.length];
+    setConfig((prev) => ({ ...prev, themeVibe: nextVibe.id }));
   };
 
   const handleSaveAndShare = async () => {
@@ -834,10 +1007,18 @@ function LovePageContent() {
   ];
 
   return (
-    <main className="relative min-h-screen py-8 sm:py-14 px-3 sm:px-6 flex flex-col items-center justify-start overflow-x-hidden">
-      <FloatingHearts />
+    <main
+      className={`relative min-h-screen py-8 sm:py-14 px-3 sm:px-6 flex flex-col items-center justify-start overflow-x-hidden transition-colors duration-700 ease-in-out ${activeVibe.mainClass}`}
+    >
+      {/* Ambient Vibe Glow */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-700"
+        style={{ background: activeVibe.ambientGlow }}
+      />
 
-      {/* Floating Top Bar (Back to Home, Share, Edit) */}
+      <FloatingHearts heartColor={activeVibe.heartColor} />
+
+      {/* Floating Top Bar (Back to Home, Vibe Switcher, Share, Edit) */}
       <div className="fixed top-3 sm:top-5 inset-x-3 sm:inset-x-6 z-30 flex items-center justify-between pointer-events-none">
         {/* Left: Back to Home Link */}
         <Link
@@ -850,8 +1031,19 @@ function LovePageContent() {
           <span className="hidden sm:inline"> to Landing Page</span>
         </Link>
 
-        {/* Right: Share Link & Edit Buttons */}
+        {/* Right: Quick Vibe Switcher, Share Link & Edit Buttons */}
         <div className="flex items-center gap-2 pointer-events-auto">
+          {/* Quick Vibe Switcher Button */}
+          <button
+            onClick={cycleVibe}
+            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-white/90 text-[#3d332a] shadow-md border border-[#e4d6c4] hover:bg-white hover:text-[#cf493e] hover:shadow-lg transition-all text-xs sm:text-sm font-medium backdrop-blur-sm active:scale-95 group"
+            title={`Current Vibe: ${activeVibe.name} (${activeVibe.tagline}) — Click to switch vibe`}
+          >
+            <span className="text-sm transition-transform group-hover:scale-125">{activeVibe.emoji}</span>
+            <span className="hidden md:inline text-[11px] font-handwriting text-[#7e6d5e]">Vibe:</span>
+            <span className="hidden xs:inline font-typewriter text-xs font-semibold">{activeVibe.name}</span>
+          </button>
+
           {/* Save to Cloud & Copy Share Link Button */}
           <button
             onClick={handleSaveAndShare}

@@ -21,6 +21,7 @@ import RealtimeReactionBurst from "@/src/components/RealtimeReactionBurst";
 import RealtimeLiveBar from "@/src/components/RealtimeLiveBar";
 import GuestbookDrawer from "@/src/components/GuestbookDrawer";
 import ShareModal from "@/src/components/ShareModal";
+import { getBackgroundVibe } from "@/src/lib/vibes";
 
 interface Polaroid {
   id: number;
@@ -36,7 +37,8 @@ interface PageConfig {
   badgeText?: string;
   topic?: string;
   message?: string;
-  song?: { src: string; title: string };
+  song?: { src: string; title: string; startTime?: number; endTime?: number };
+  themeVibe?: string;
   polaroids?: Polaroid[];
 }
 
@@ -55,7 +57,11 @@ const ROTATIONS = [
 ];
 
 // ── Mini music player ────────────────────────────────────────────────────────
-function MiniPlayer({ song }: { song: { src: string; title: string } }) {
+function MiniPlayer({
+  song,
+}: {
+  song: { src: string; title: string; startTime?: number; endTime?: number };
+}) {
   const [audio] = useState(() =>
     typeof window !== "undefined" ? new Audio(song.src) : null
   );
@@ -66,16 +72,26 @@ function MiniPlayer({ song }: { song: { src: string; title: string } }) {
   useEffect(() => {
     if (!audio) return;
     audio.loop = true;
+    const start = song.startTime || 0;
     const onTime = () => {
-      if (audio.duration)
-        setProgress((audio.currentTime / audio.duration) * 100);
+      const current = audio.currentTime;
+      if (song.endTime && current >= song.endTime) {
+        audio.currentTime = start;
+        return;
+      }
+      const end = song.endTime && song.endTime > start ? song.endTime : audio.duration;
+      if (end && end > start) {
+        setProgress(Math.max(0, Math.min(100, ((current - start) / (end - start)) * 100)));
+      } else if (audio.duration) {
+        setProgress((current / audio.duration) * 100);
+      }
     };
     audio.addEventListener("timeupdate", onTime);
     return () => {
       audio.removeEventListener("timeupdate", onTime);
       audio.pause();
     };
-  }, [audio]);
+  }, [audio, song.startTime, song.endTime]);
 
   const toggle = async () => {
     if (!audio) return;
@@ -84,6 +100,11 @@ function MiniPlayer({ song }: { song: { src: string; title: string } }) {
       setPlaying(false);
     } else {
       try {
+        const start = song.startTime || 0;
+        const current = audio.currentTime;
+        if (current < start || (song.endTime && current >= song.endTime)) {
+          audio.currentTime = start;
+        }
         await audio.play();
         setPlaying(true);
       } catch {}
@@ -110,11 +131,16 @@ function MiniPlayer({ song }: { song: { src: string; title: string } }) {
           )}
         </button>
         <div className="flex flex-col">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <Music className="h-3.5 w-3.5 text-[#cf493e]" />
             <span className="font-typewriter text-xs font-bold uppercase tracking-wider text-[#3d332a]">
               {song.title}
             </span>
+            {(song.startTime !== undefined || song.endTime !== undefined) && (
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#cf493e]/10 text-[#cf493e] border border-[#cf493e]/20">
+                ✂️ Best Part
+              </span>
+            )}
           </div>
           <span className="font-handwriting text-sm text-[#7e6d5e]">
             {playing ? "Now Playing ~ melody of love" : "Click play to listen"}
@@ -216,9 +242,18 @@ export default function ShareView({ page, config: rawConfig }: Props) {
   const polaroids: Polaroid[] = cfg.polaroids ?? [];
   const song = cfg.song ?? { src: "/music/miguel-sure-thing.mp3", title: "Miguel - Sure Thing" };
   const hasSong = Boolean(song.src);
+  const vibe = getBackgroundVibe(cfg.themeVibe);
 
   return (
-    <main className="relative min-h-screen py-8 sm:py-14 px-3 sm:px-6 flex flex-col items-center justify-start overflow-x-hidden pb-28">
+    <main
+      className={`relative min-h-screen py-8 sm:py-14 px-3 sm:px-6 flex flex-col items-center justify-start overflow-x-hidden pb-28 transition-colors duration-700 ${vibe.mainClass}`}
+    >
+      {/* Ambient Vibe Glow */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-700"
+        style={{ background: vibe.ambientGlow }}
+      />
+
       {/* Realtime Reaction Bursts */}
       <RealtimeReactionBurst particles={particles} />
 
@@ -227,7 +262,7 @@ export default function ShareView({ page, config: rawConfig }: Props) {
         {Array.from({ length: 10 }).map((_, i) => (
           <Heart
             key={i}
-            className="floating-heart animate-float fill-[#e29578]/25 text-[#e29578]/40 absolute"
+            className={`floating-heart animate-float absolute transition-colors duration-700 ${vibe.heartColor}`}
             style={{
               left: `${(i * 11) % 100}%`,
               width: 14 + (i % 5) * 4,
