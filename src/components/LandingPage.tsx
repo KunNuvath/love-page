@@ -32,6 +32,7 @@ import {
   Coffee,
   Check,
   Flame,
+  Mail,
 } from "lucide-react";
 
 // Occasion Presets with pre-filled messages & song suggestions
@@ -1053,7 +1054,7 @@ export default function LandingPage() {
             </span>
           </div>
 
-          <div className="flex items-center gap-6 font-medium">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 font-medium">
             <Link
               href="/templates"
               className="hover:text-[#cf493e] transition-colors font-semibold text-[#cf493e]"
@@ -1077,6 +1078,14 @@ export default function LandingPage() {
             </a>
             <a href="#faq" className="hover:text-[#cf493e] transition-colors">
               FAQ
+            </a>
+            <a
+              href="mailto:support@lovepage.site?subject=LovePage%20Feedback%20%26%20Report&body=Hi%20LovePage%20Team%2C%0A%0AI%20would%20like%20to%20share%20some%20feedback%20or%20report%20an%20issue%3A%0A%0A"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ebdcd0] hover:bg-[#cf493e] text-[#4a3b32] hover:text-white transition-all shadow-xs text-xs font-semibold"
+              title="Give feedback or report an issue"
+            >
+              <Mail className="h-3.5 w-3.5" />
+              <span>Contact & Feedback</span>
             </a>
           </div>
 
