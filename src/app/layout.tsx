@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Caveat, Courier_Prime, Plus_Jakarta_Sans, Bagel_Fat_One, Gaegu } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const caveat = Caveat({
@@ -59,6 +61,8 @@ export default function RootLayout({
     >
       <body className="min-h-screen bg-[#f3d5cf] font-sans antialiased selection:bg-[#e29578]/30">
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
