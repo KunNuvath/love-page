@@ -14,16 +14,22 @@ import {
   Wand2,
   HelpCircle,
   Calendar,
+  User as UserIcon,
+  LogOut,
+  ChevronDown,
 } from "lucide-react";
 import BrandLogo from "@/src/components/BrandLogo";
+import { useAuth } from "@/src/context/AuthContext";
 
 interface NavbarProps {
   onLaunchTemplate?: () => void;
 }
 
 export default function Navbar({ onLaunchTemplate }: NavbarProps) {
+  const { user, openAuthModal, signOut } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   // Monitor scroll for subtle shadow increase
   useEffect(() => {
@@ -129,6 +135,56 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
             <Wand2 className="h-3.5 w-3.5 text-[#cf493e]" />
             <span>Quick Studio</span>
           </a>
+
+          {/* User Profile Pill or Sign In Button */}
+          {user ? (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsUserMenuOpen((prev) => !prev)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 hover:bg-white text-[#4a3a32] border border-[#debfa8] text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+              >
+                <div className="h-5 w-5 rounded-full bg-[#cf493e] text-white flex items-center justify-center text-[10px] font-bold">
+                  {user.user_metadata?.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
+                </div>
+                <span className="max-w-[100px] truncate text-xs hidden sm:inline">
+                  {user.user_metadata?.name || user.email?.split("@")[0]}
+                </span>
+                <ChevronDown className="h-3 w-3 text-[#8c786a]" />
+              </button>
+
+              {isUserMenuOpen && (
+                <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-[#ebd8c7] shadow-xl p-2 z-50 text-left animate-fade-down">
+                  <div className="px-3 py-2 border-b border-[#f3e7dc] mb-1">
+                    <p className="text-[11px] font-bold text-[#2d221e] truncate">
+                      {user.user_metadata?.name || "Member"}
+                    </p>
+                    <p className="text-[10px] text-[#8c786a] font-mono truncate">{user.email}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setIsUserMenuOpen(false);
+                      await signOut();
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                  >
+                    <LogOut className="h-3.5 w-3.5" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => openAuthModal()}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/80 hover:bg-white text-[#5c4a3e] hover:text-[#cf493e] border border-[#debfa8] text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+            >
+              <UserIcon className="h-3.5 w-3.5 text-[#cf493e]" />
+              <span>Sign In</span>
+            </button>
+          )}
 
           {/* Primary Action Button */}
           {onLaunchTemplate ? (
@@ -257,6 +313,48 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
               <HelpCircle className="h-4 w-4 text-[#6b7280]" />
               <span>FAQ & Answers</span>
             </a>
+          </div>
+
+          {/* User Account State in Mobile Drawer */}
+          <div className="mb-4 pt-3 border-t border-[#ebdcd0]">
+            {user ? (
+              <div className="flex items-center justify-between p-3 rounded-xl bg-white border border-[#e8dccf]">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="h-8 w-8 rounded-full bg-[#cf493e] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                    {user.user_metadata?.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-[#2d221e] truncate">
+                      {user.user_metadata?.name || "Member"}
+                    </p>
+                    <p className="text-[10px] text-[#8c786a] font-mono truncate">{user.email}</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setIsMobileMenuOpen(false);
+                    await signOut();
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                >
+                  <LogOut className="h-3 w-3" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  openAuthModal();
+                }}
+                className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-[#faf4ed] text-[#4a3a32] border border-[#debfa8] text-xs font-semibold flex items-center justify-center gap-2 shadow-2xs transition-all cursor-pointer"
+              >
+                <UserIcon className="h-4 w-4 text-[#cf493e]" />
+                <span>Sign In / Create Account</span>
+              </button>
+            )}
           </div>
 
           {/* Mobile Launch Template Full-Width Button */}

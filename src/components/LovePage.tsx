@@ -38,6 +38,7 @@ import ShareModal from "@/src/components/ShareModal";
 import SongSearchPicker from "@/src/components/SongSearchPicker";
 import AudioTrimmerModal from "@/src/components/AudioTrimmerModal";
 import { BACKGROUND_VIBES, BackgroundVibeId, getBackgroundVibe } from "@/src/lib/vibes";
+import { useAuth } from "@/src/context/AuthContext";
 
 /**
  * ===============================================================
@@ -851,6 +852,7 @@ function EditSidebar({
 }
 
 function LovePageContent() {
+  const { user, openAuthModal } = useAuth();
   const searchParams = useSearchParams();
   const [revealed, setRevealed] = useState(false);
   const [config, setConfig] = useState(DEFAULT_CONFIG);
@@ -938,7 +940,7 @@ function LovePageContent() {
     setConfig((prev) => ({ ...prev, themeVibe: nextVibe.id }));
   };
 
-  const handleSaveAndShare = async () => {
+  const executeSaveAndShare = async () => {
     setIsSaving(true);
     setSaveError(null);
     try {
@@ -995,6 +997,20 @@ function LovePageContent() {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleSaveAndShare = () => {
+    if (!user) {
+      openAuthModal({
+        title: "Sign In to Share",
+        subtitle: "Log in or create a quick free account to save your memories and get your shareable link.",
+        onSuccess: () => {
+          executeSaveAndShare();
+        },
+      });
+      return;
+    }
+    executeSaveAndShare();
   };
 
   // Rotations for 6 polaroid cards (3 in a row)

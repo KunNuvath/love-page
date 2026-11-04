@@ -23,6 +23,7 @@ import {
 import { createLovePage, uploadImage } from "@/src/lib/supabase";
 import AiLetterModal from "@/src/components/AiLetterModal";
 import ShareModal from "@/src/components/ShareModal";
+import { useAuth } from "@/src/context/AuthContext";
 
 // ─────────────────────────────────────────────────────────────
 // COLOR TOKENS & STYLES
@@ -418,6 +419,7 @@ export function CentralSpiralBinding() {
 // MAIN "OUR LITTLE BOOK" COMPONENT
 // ─────────────────────────────────────────────────────────────
 export default function LittleBook() {
+  const { user, openAuthModal } = useAuth();
   const [currentSpread, setCurrentSpread] = useState(0); // 0: Hello, 1: Little Things, 2: Memories, 3: Love This
   const [photos, setPhotos] = useState<Record<number, string | null>>({});
   const [bookTitle, setBookTitle] = useState("Our Little Book");
@@ -552,8 +554,8 @@ export default function LittleBook() {
     showToast("🧹 Book reset to initial state!");
   };
 
-  // Save & Copy Share Link
-  const handleSaveAndShare = async () => {
+  // Save & Copy Share Link (Gated by Auth)
+  const executeSaveAndShare = async () => {
     setIsSaving(true);
     try {
       // Upload every local photo to Supabase Storage
@@ -602,6 +604,20 @@ export default function LittleBook() {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleSaveAndShare = () => {
+    if (!user) {
+      openAuthModal({
+        title: "Sign In to Share",
+        subtitle: "Log in or create a quick free account to save your book and get your shareable link.",
+        onSuccess: () => {
+          executeSaveAndShare();
+        },
+      });
+      return;
+    }
+    executeSaveAndShare();
   };
 
   return (

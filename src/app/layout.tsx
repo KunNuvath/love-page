@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Caveat, Courier_Prime, Plus_Jakarta_Sans, Bagel_Fat_One, Gaegu } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { AuthProvider } from "@/src/context/AuthContext";
+import AuthModal from "@/src/components/AuthModal";
 import "./globals.css";
 
 const caveat = Caveat({
@@ -60,7 +62,10 @@ export default function RootLayout({
       className={`${caveat.variable} ${courierPrime.variable} ${jakarta.variable} ${bagel.variable} ${gaegu.variable}`}
     >
       <body className="min-h-screen bg-[#f3d5cf] font-sans antialiased selection:bg-[#e29578]/30">
-        {children}
+        <AuthProvider>
+          {children}
+          <AuthModal />
+        </AuthProvider>
         <Analytics />
         <SpeedInsights />
       </body>
