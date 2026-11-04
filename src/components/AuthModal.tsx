@@ -94,6 +94,13 @@ export default function AuthModal() {
             setErrorMsg("Incorrect email or password. Please try again.");
           } else if (error.message.includes("Email not confirmed")) {
             setErrorMsg("Please confirm your email address before signing in.");
+          } else if (
+            error.message.includes("provider is not enabled") ||
+            error.message.includes("Unsupported provider")
+          ) {
+            setErrorMsg(
+              "Email provider is not enabled in your Supabase project. Go to Supabase Dashboard → Authentication → Providers → Email and toggle it ON."
+            );
           } else {
             setErrorMsg(error.message || "Failed to sign in. Please try again.");
           }
@@ -115,6 +122,13 @@ export default function AuthModal() {
         if (error) {
           if (error.message.includes("User already registered")) {
             setErrorMsg("An account with this email already exists. Try signing in.");
+          } else if (
+            error.message.includes("provider is not enabled") ||
+            error.message.includes("Unsupported provider")
+          ) {
+            setErrorMsg(
+              "Email provider is not enabled in your Supabase project. Go to Supabase Dashboard → Authentication → Providers → Email and toggle it ON."
+            );
           } else {
             setErrorMsg(error.message || "Failed to create account. Please try again.");
           }
@@ -151,7 +165,16 @@ export default function AuthModal() {
     try {
       const { error } = await signInWithGoogle();
       if (error) {
-        setErrorMsg(error.message || "Could not sign in with Google.");
+        if (
+          error.message.includes("provider is not enabled") ||
+          error.message.includes("Unsupported provider")
+        ) {
+          setErrorMsg(
+            "Google sign in is not yet enabled in your Supabase dashboard (Authentication → Providers → Google). Please use Email & Password, or enable Google provider."
+          );
+        } else {
+          setErrorMsg(error.message || "Could not sign in with Google.");
+        }
         setIsLoading(false);
       }
     } catch (err: any) {
