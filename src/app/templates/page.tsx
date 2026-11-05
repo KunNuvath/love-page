@@ -62,7 +62,7 @@ export default function TemplatesPage() {
         {/* ═══════════════════════════════════════════════════════════
             TEMPLATE 1: Retro Polaroid Scrapbook (Vol. 01)
         ═══════════════════════════════════════════════════════════ */}
-        <div className="glass-panel rounded-3xl p-7 sm:p-9 border border-[#e2d2c1] shadow-md flex flex-col justify-between group hover:shadow-xl transition-all">
+        <div className="glass-panel rounded-3xl p-4.5 xs:p-6 sm:p-9 border border-[#e2d2c1] shadow-md flex flex-col justify-between group hover:shadow-xl transition-all">
           <div>
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#cf493e]/15 text-[#cf493e]">
@@ -134,7 +134,7 @@ export default function TemplatesPage() {
         {/* ═══════════════════════════════════════════════════════════
             TEMPLATE 2: "Our Little Book" Spiral Journal (Vol. 02)
         ═══════════════════════════════════════════════════════════ */}
-        <div className="glass-panel rounded-3xl p-7 sm:p-9 border-2 border-emerald-600/40 shadow-md flex flex-col justify-between group hover:shadow-xl transition-all relative overflow-hidden">
+        <div className="glass-panel rounded-3xl p-4.5 xs:p-6 sm:p-9 border-2 border-emerald-600/40 shadow-md flex flex-col justify-between group hover:shadow-xl transition-all relative overflow-hidden">
           {/* Ribbon */}
           <div className="absolute top-0 right-0 bg-washi-cherry text-white text-[10px] font-bold uppercase tracking-widest px-6 py-1 rounded-bl-xl shadow-xs">
             NEW ✨ 18 Photos

@@ -272,17 +272,16 @@ export default function SongSearchPicker({
       />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-[61] flex items-center justify-center p-4 pointer-events-none">
+      <div className="fixed inset-0 z-[61] flex items-center justify-center p-2.5 xs:p-4 pointer-events-none">
         <div
-          className="pointer-events-auto w-full max-w-lg bg-[#faf7ef] rounded-2xl shadow-2xl border border-[#dfd4c5] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300"
-          style={{ maxHeight: "88vh" }}
+          className="pointer-events-auto w-full max-w-lg bg-[#faf7ef] rounded-2xl shadow-2xl border border-[#dfd4c5] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300 max-h-[90dvh]"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="px-5 pt-5 pb-3 border-b border-[#dfd4c5] bg-[#f4eee1]">
+          <div className="px-4 xs:px-5 pt-4 xs:pt-5 pb-3 border-b border-[#dfd4c5] bg-[#f4eee1]">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#cf493e] shadow-md">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#cf493e] shadow-md shrink-0">
                   <Music className="h-4 w-4 text-white" />
                 </div>
                 <div>
@@ -303,44 +302,44 @@ export default function SongSearchPicker({
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#e8decb]/70">
+            <div className="flex items-center gap-1 p-1 rounded-xl bg-[#e8decb]/70">
               <button
                 type="button"
                 onClick={() => setActiveTab("search")}
-                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold tracking-wide transition-all flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-1.5 px-2 xs:px-3 rounded-lg text-[11px] xs:text-xs font-bold tracking-wide transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
                   activeTab === "search"
                     ? "bg-white text-[#cf493e] shadow-xs"
                     : "text-[#6e5e50] hover:text-[#3d332a]"
                 }`}
               >
-                <Search className="h-3.5 w-3.5" />
+                <Search className="h-3.5 w-3.5 shrink-0" />
                 <span>Search</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab("upload")}
-                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold tracking-wide transition-all flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-1.5 px-2 xs:px-3 rounded-lg text-[11px] xs:text-xs font-bold tracking-wide transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
                   activeTab === "upload"
                     ? "bg-white text-[#cf493e] shadow-xs"
                     : "text-[#6e5e50] hover:text-[#3d332a]"
                 }`}
               >
-                <Upload className="h-3.5 w-3.5" />
-                <span>Upload MP3</span>
+                <Upload className="h-3.5 w-3.5 shrink-0" />
+                <span>Upload</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab("curated")}
-                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold tracking-wide transition-all flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-1.5 px-2 xs:px-3 rounded-lg text-[11px] xs:text-xs font-bold tracking-wide transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
                   activeTab === "curated"
                     ? "bg-white text-[#cf493e] shadow-xs"
                     : "text-[#6e5e50] hover:text-[#3d332a]"
                 }`}
               >
-                <Headphones className="h-3.5 w-3.5" />
-                <span>Full Library</span>
+                <Headphones className="h-3.5 w-3.5 shrink-0" />
+                <span>Library</span>
               </button>
             </div>
           </div>
@@ -349,7 +348,7 @@ export default function SongSearchPicker({
           <div className="flex-1 overflow-y-auto overscroll-contain">
             {/* ── TAB 1: SEARCH (DEEZER) ────────────────────────── */}
             {activeTab === "search" && (
-              <div className="p-4 space-y-4">
+              <div className="p-3.5 sm:p-4 space-y-4">
                 {/* Search Bar */}
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#a99a8a]" />
@@ -359,7 +358,7 @@ export default function SongSearchPicker({
                     value={query}
                     onChange={(e) => handleInputChange(e.target.value)}
                     placeholder="Search any song, artist, or album..."
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-[#d8ccb9] bg-white text-sm text-[#3d332a] placeholder:text-[#b8ab9a] focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 font-handwriting"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-[#d8ccb9] bg-white text-base sm:text-sm text-[#3d332a] placeholder:text-[#b8ab9a] focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 font-handwriting"
                   />
                   {isLoading && (
                     <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#cf493e] animate-spin" />

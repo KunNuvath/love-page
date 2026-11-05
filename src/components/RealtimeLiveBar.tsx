@@ -53,14 +53,14 @@ export default function RealtimeLiveBar({
 
   return (
     <div
-      className={`fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 max-w-[95vw] sm:max-w-2xl w-full px-3 py-2.5 rounded-2xl shadow-2xl backdrop-blur-xl border transition-all flex items-center justify-between gap-2 sm:gap-4 ${
+      className={`fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] sm:bottom-6 left-1/2 -translate-x-1/2 z-40 w-[calc(100vw-1.25rem)] max-w-2xl px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl shadow-2xl backdrop-blur-xl border transition-all flex items-center justify-between gap-1.5 sm:gap-4 ${
         isDarkDesk
-          ? "bg-[#16382e]/90 border-white/20 text-white"
-          : "bg-white/92 border-[#e6d8c7] text-[#3d332a]"
+          ? "bg-[#16382e]/92 border-white/20 text-white"
+          : "bg-white/94 border-[#e6d8c7] text-[#3d332a]"
       }`}
     >
       {/* Live Presence indicator */}
-      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/10 text-[11px] sm:text-xs font-semibold shrink-0">
+      <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-black/10 text-[10px] sm:text-xs font-semibold shrink-0">
         <span className="relative flex h-2 w-2">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
           <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -70,7 +70,7 @@ export default function RealtimeLiveBar({
       </div>
 
       {/* Reaction Buttons */}
-      <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto py-0.5 no-scrollbar">
+      <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto py-0.5 no-scrollbar touch-pan-x">
         {REACTION_CONFIG.map((r) => {
           const count = reactions[r.key] || 0;
           const isBouncing = activeBounce === r.key;
@@ -80,35 +80,37 @@ export default function RealtimeLiveBar({
               type="button"
               onClick={() => handleReactionClick(r.key, r.symbol)}
               title={`Send ${r.label}`}
-              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full text-xs font-semibold transition-all active:scale-90 select-none ${
+              className={`flex items-center gap-0.5 sm:gap-1 px-1.5 xs:px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full text-xs font-semibold transition-all active:scale-90 select-none shrink-0 ${
                 isDarkDesk
                   ? "bg-white/10 hover:bg-white/20 text-white"
-                  : "bg-neutral-100/80 hover:bg-neutral-200/80 text-neutral-800"
+                  : "bg-neutral-100/90 hover:bg-neutral-200/90 text-neutral-800"
               } ${isBouncing ? "scale-125 !bg-rose-500/20" : ""}`}
             >
               <span className="text-sm sm:text-base leading-none">{r.symbol}</span>
-              <span className="text-[10px] sm:text-xs opacity-80 font-mono">
-                {count > 0 ? count : ""}
-              </span>
+              {count > 0 && (
+                <span className="text-[10px] sm:text-xs opacity-80 font-mono">
+                  {count}
+                </span>
+              )}
             </button>
           );
         })}
       </div>
 
       {/* Right Controls: Guestbook & Share */}
-      <div className="flex items-center gap-1.5 shrink-0">
+      <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
         <button
           type="button"
           onClick={onOpenGuestbook}
           title="Open Love Notes & Guestbook"
-          className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 ${
+          className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 shrink-0 ${
             isDarkDesk
               ? "bg-washi-mustard/30 text-amber-200 hover:bg-washi-mustard/40 border border-amber-300/30"
               : "bg-[#fdf0eb] text-[#cf493e] hover:bg-[#fae4dc] border border-[#f3cfc4]"
           }`}
         >
           <MessageSquare className="h-3.5 w-3.5" />
-          <span className="hidden md:inline">Notes</span>
+          <span className="hidden xs:inline">Notes</span>
           {guestbookCount > 0 && (
             <span className="px-1.5 py-0.2 rounded-full bg-[#cf493e] text-white text-[10px] font-bold">
               {guestbookCount}
@@ -120,7 +122,7 @@ export default function RealtimeLiveBar({
           type="button"
           onClick={onOpenShare}
           title="Share & QR Code"
-          className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 flex items-center gap-1 ${
+          className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 flex items-center gap-1 shrink-0 ${
             isDarkDesk
               ? "bg-white/15 hover:bg-white/25 text-white"
               : "bg-neutral-800 hover:bg-neutral-900 text-white"

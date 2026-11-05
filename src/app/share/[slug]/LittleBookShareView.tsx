@@ -169,13 +169,13 @@ export default function LittleBookShareView({ page, config }: Props) {
       {/* Main Open Notebook Container */}
       <div className="relative z-10 w-full max-w-5xl my-4">
         {/* Spiral Notebook Tabs */}
-        <div className="flex items-center justify-end gap-1.5 pr-6 -mb-1 relative z-20">
+        <div className="flex items-center justify-end gap-1 sm:gap-1.5 pr-2 sm:pr-6 -mb-1 relative z-20 overflow-x-auto no-scrollbar">
           {tabNames.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setCurrentSpread(tab.id)}
-              className={`px-4 py-1.5 rounded-t-xl text-xs font-bagel transition-all shadow-xs border-t border-x border-black/20 ${
+              className={`px-3 sm:px-4 py-1.5 rounded-t-xl text-[11px] sm:text-xs font-bagel transition-all shadow-xs border-t border-x border-black/20 shrink-0 ${
                 currentSpread === tab.id
                   ? `${tab.color} scale-105 shadow-md -translate-y-1`
                   : "bg-white/30 text-white/80 hover:bg-white/40"
@@ -187,7 +187,7 @@ export default function LittleBookShareView({ page, config }: Props) {
         </div>
 
         {/* Open Book Spreads */}
-        <div className="relative bg-[#fbfaf4] rounded-2xl shadow-2xl border-4 border-[#ded8c4] p-4 sm:p-8 flex flex-col md:flex-row gap-6 md:gap-8 min-h-[560px]">
+        <div className="relative bg-[#fbfaf4] rounded-2xl shadow-2xl border-2 sm:border-4 border-[#ded8c4] p-3.5 xs:p-4 sm:p-8 flex flex-col md:flex-row gap-5 md:gap-8 min-h-auto sm:min-h-[560px]">
           {/* Central 17 Metal Spiral Rings */}
           <div className="hidden md:flex absolute inset-y-0 left-1/2 -translate-x-1/2 flex-col justify-between py-6 z-30 pointer-events-none">
             {Array.from({ length: 17 }).map((_, i) => (
@@ -409,26 +409,28 @@ export default function LittleBookShareView({ page, config }: Props) {
         </div>
 
         {/* Spread Navigation Arrows */}
-        <div className="flex items-center justify-between mt-4 px-2">
+        <div className="flex items-center justify-between mt-4 px-1 sm:px-2 gap-2">
           <button
             type="button"
             disabled={currentSpread === 1}
             onClick={() => setCurrentSpread((p) => Math.max(1, p - 1))}
-            className="flex items-center gap-1 px-4 py-2 rounded-full bg-white/20 hover:bg-white/30 text-white text-xs sm:text-sm font-bold disabled:opacity-30 backdrop-blur-md transition-all active:scale-95"
+            className="flex items-center gap-1 px-3 sm:px-4 py-2 rounded-full bg-white/20 hover:bg-white/30 text-white text-xs sm:text-sm font-bold disabled:opacity-30 backdrop-blur-md transition-all active:scale-95"
           >
             <ChevronLeft className="h-4 w-4" />
-            <span>Previous Spread</span>
+            <span className="hidden xs:inline">Previous Spread</span>
+            <span className="xs:hidden">Prev</span>
           </button>
-          <div className="text-white/80 font-typewriter text-xs">
+          <div className="text-white/80 font-typewriter text-[11px] sm:text-xs">
             Spread {currentSpread} of 4
           </div>
           <button
             type="button"
             disabled={currentSpread === 4}
             onClick={() => setCurrentSpread((p) => Math.min(4, p + 1))}
-            className="flex items-center gap-1 px-4 py-2 rounded-full bg-white/20 hover:bg-white/30 text-white text-xs sm:text-sm font-bold disabled:opacity-30 backdrop-blur-md transition-all active:scale-95"
+            className="flex items-center gap-1 px-3 sm:px-4 py-2 rounded-full bg-white/20 hover:bg-white/30 text-white text-xs sm:text-sm font-bold disabled:opacity-30 backdrop-blur-md transition-all active:scale-95"
           >
-            <span>Next Spread</span>
+            <span className="hidden xs:inline">Next Spread</span>
+            <span className="xs:hidden">Next</span>
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>

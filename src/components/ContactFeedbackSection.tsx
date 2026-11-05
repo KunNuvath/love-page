@@ -138,7 +138,7 @@ export default function ContactFeedbackSection() {
         </div>
 
         {/* The Card Box with Scrapbook/Airmail Aesthetic */}
-        <div className="scrapbook-paper rounded-2xl border border-[#d8c8b4] p-6 sm:p-10 shadow-[0_15px_40px_rgba(140,70,60,0.08)] relative">
+        <div className="scrapbook-paper rounded-2xl border border-[#d8c8b4] p-4 xs:p-6 sm:p-10 shadow-[0_15px_40px_rgba(140,70,60,0.08)] relative">
           {/* Vintage Stamp / Decor in top right */}
           <div className="absolute top-4 right-4 sm:top-6 sm:right-6 hidden sm:flex flex-col items-center justify-center w-16 h-20 border-2 border-dashed border-[#cf493e]/50 rounded-sm bg-[#faf3ed] rotate-3 text-center p-1 pointer-events-none opacity-80">
             <Heart className="h-4 w-4 text-[#cf493e] mb-1 fill-[#cf493e]/30" />

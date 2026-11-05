@@ -275,18 +275,19 @@ export default function ShareView({ page, config: rawConfig }: Props) {
       </div>
 
       {/* Top bar */}
-      <div className="fixed top-3 sm:top-5 inset-x-3 sm:inset-x-6 z-30 flex items-center justify-between pointer-events-none">
+      <div className="fixed top-2.5 sm:top-5 inset-x-2.5 sm:inset-x-6 z-30 flex items-center justify-between pointer-events-none">
         <Link
           href="/"
-          className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/90 text-[#5e4b3e] shadow-md border border-[#e4d6c4] hover:bg-white hover:text-[#cf493e] hover:shadow-lg transition-all text-xs sm:text-sm font-medium backdrop-blur-sm group active:scale-95"
+          className="pointer-events-auto flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-white/95 text-[#5e4b3e] shadow-md border border-[#e4d6c4] hover:bg-white hover:text-[#cf493e] hover:shadow-lg transition-all text-xs sm:text-sm font-medium backdrop-blur-sm group active:scale-95 shrink-0"
         >
-          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 text-[#cf493e]" />
-          <span>Back to Home</span>
+          <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform group-hover:-translate-x-0.5 text-[#cf493e]" />
+          <span className="hidden xs:inline">Back</span>
+          <span className="hidden sm:inline"> to Home</span>
         </Link>
         <button
           type="button"
           onClick={() => setIsShareOpen(true)}
-          className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/90 border border-[#e4d6c4] shadow-sm text-xs font-semibold text-[#9b7267] hover:text-[#cf493e] backdrop-blur-sm transition-all active:scale-95"
+          className="pointer-events-auto flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-white/95 border border-[#e4d6c4] shadow-md text-xs font-semibold text-[#9b7267] hover:text-[#cf493e] backdrop-blur-sm transition-all active:scale-95 shrink-0"
         >
           <Share2 className="h-3.5 w-3.5 text-[#cf493e]" />
           <span>Share</span>
@@ -324,7 +325,7 @@ export default function ShareView({ page, config: rawConfig }: Props) {
 
       {/* Scrapbook Paper */}
       <div
-        className={`relative z-10 w-full max-w-4xl scrapbook-paper rounded-sm p-6 sm:p-10 md:p-14 transition-all duration-1000 ${
+        className={`relative z-10 w-full max-w-4xl scrapbook-paper rounded-sm p-4 xs:p-6 sm:p-10 md:p-14 mt-12 sm:mt-14 overflow-hidden transition-all duration-1000 ${
           revealed ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
         }`}
       >

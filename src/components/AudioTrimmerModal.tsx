@@ -186,15 +186,15 @@ export default function AudioTrimmerModal({
       />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-[71] flex items-center justify-center p-4 pointer-events-none">
+      <div className="fixed inset-0 z-[71] flex items-center justify-center p-2.5 xs:p-4 pointer-events-none">
         <div
-          className="pointer-events-auto w-full max-w-lg bg-[#faf7ef] rounded-2xl shadow-2xl border border-[#dfd4c5] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300"
+          className="pointer-events-auto w-full max-w-lg bg-[#faf7ef] rounded-2xl shadow-2xl border border-[#dfd4c5] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300 max-h-[90dvh]"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="px-5 py-4 border-b border-[#dfd4c5] bg-[#f4eee1] flex items-center justify-between">
+          <div className="px-4 xs:px-5 py-3.5 xs:py-4 border-b border-[#dfd4c5] bg-[#f4eee1] flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#cf493e] text-white shadow-md">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#cf493e] text-white shadow-md shrink-0">
                 <Scissors className="h-4 w-4" />
               </div>
               <div>
@@ -215,7 +215,7 @@ export default function AudioTrimmerModal({
           </div>
 
           {/* Body */}
-          <div className="p-5 space-y-5 overflow-y-auto max-h-[75vh]">
+          <div className="p-3.5 xs:p-5 space-y-4 xs:space-y-5 overflow-y-auto max-h-[75vh]">
             {/* Song Info Bar */}
             <div className="p-3 rounded-xl border border-[#d8ccb9] bg-white flex items-center justify-between">
               <div className="min-w-0 flex-1">

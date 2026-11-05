@@ -187,10 +187,10 @@ export default function AuthModal() {
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 xs:p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
     >
       <div
-        className="relative w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl border text-center transition-all bg-[#faf6ee] text-[#362e2b] border-[#e4d6c4] overflow-hidden"
+        className="relative w-full max-w-md rounded-3xl p-5 sm:p-8 shadow-2xl border text-center transition-all bg-[#faf6ee] text-[#362e2b] border-[#e4d6c4] max-h-[92dvh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Subtle Decorative Airmail Stamp in Corner */}

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Caveat, Courier_Prime, Plus_Jakarta_Sans, Bagel_Fat_One, Gaegu } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -39,6 +39,15 @@ const gaegu = Gaegu({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: "cover",
+  themeColor: "#f3d5cf",
+};
+
 export const metadata: Metadata = {
   title: "Memories — LovePage",
   description: "A digital scrapbook and romantic memory journal",
@@ -61,7 +70,7 @@ export default function RootLayout({
       lang="en"
       className={`${caveat.variable} ${courierPrime.variable} ${jakarta.variable} ${bagel.variable} ${gaegu.variable}`}
     >
-      <body className="min-h-screen bg-[#f3d5cf] font-sans antialiased selection:bg-[#e29578]/30">
+      <body className="min-h-screen min-h-[100dvh] bg-[#f3d5cf] font-sans antialiased selection:bg-[#e29578]/30 overflow-x-hidden">
         <AuthProvider>
           {children}
           <AuthModal />

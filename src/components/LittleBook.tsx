@@ -276,12 +276,12 @@ export function PhotoFrame({
             </div>
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center text-center p-2">
-            <Camera className="h-6 w-6 text-[#7d7a6e] mb-1 group-hover:scale-110 group-hover:text-washi-cherry transition-all" />
-            <span className="font-gaegu text-sm font-bold text-[#4a473b] leading-tight">
+          <div className="flex flex-col items-center justify-center text-center p-1 sm:p-2">
+            <Camera className="h-4 w-4 xs:h-5 xs:w-5 sm:h-6 sm:w-6 text-[#7d7a6e] mb-0.5 group-hover:scale-110 group-hover:text-washi-cherry transition-all shrink-0" />
+            <span className="font-gaegu text-xs xs:text-sm font-bold text-[#4a473b] leading-tight truncate">
               Add photo
             </span>
-            <span className="font-mono text-[10px] text-[#8e8a7c] mt-0.5 font-medium">
+            <span className="font-mono text-[9px] xs:text-[10px] text-[#8e8a7c] mt-0.5 font-medium">
               {dimensions}
             </span>
           </div>
@@ -646,43 +646,45 @@ export default function LittleBook() {
       {/* ─────────────────────────────────────────────────────────────
           TOP BAR (Back to Landing, Templates Switcher, Share)
       ───────────────────────────────────────────────────────────── */}
-      <div className="relative z-30 w-full max-w-5xl flex items-center justify-between gap-2 mb-6">
+      <div className="relative z-30 w-full max-w-5xl flex items-center justify-between gap-1.5 sm:gap-2 mb-4 sm:mb-6">
         <Link
           href="/"
-          className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-medium transition-all group active:scale-95"
+          className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-medium transition-all group active:scale-95 shrink-0"
         >
-          <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform shrink-0" />
+          <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4 group-hover:-translate-x-0.5 transition-transform shrink-0" />
           <span className="hidden xs:inline">Back</span>
           <span className="hidden sm:inline"> to Home</span>
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <button
             type="button"
             onClick={() => setIsAiModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/30 backdrop-blur-md text-xs sm:text-sm font-semibold transition-all active:scale-95"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/30 backdrop-blur-md text-xs sm:text-sm font-semibold transition-all active:scale-95 shrink-0"
             title="Open AI Love Letter & Caption Generator"
           >
             <Wand2 className="h-3.5 w-3.5 text-amber-300 shrink-0" />
             <span className="hidden sm:inline">AI Romantic Assistant</span>
+            <span className="sm:hidden font-bold">AI</span>
           </button>
 
           <Link
             href="/templates"
-            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-medium transition-all"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-medium transition-all shrink-0"
           >
             <Layers className="h-3.5 w-3.5 text-washi-sky shrink-0" />
             <span className="hidden sm:inline">Switch Template</span>
+            <span className="sm:hidden">Templates</span>
           </Link>
 
           <button
             type="button"
             onClick={handleSaveAndShare}
             disabled={isSaving}
-            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-washi-cherry hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold shadow-md transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-washi-cherry hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold shadow-md transition-all active:scale-95 cursor-pointer disabled:opacity-50 shrink-0"
           >
             <Share2 className="h-3.5 w-3.5 shrink-0" />
-            <span className="hidden sm:inline">{isSaving ? "Saving..." : "Share"}</span>
+            <span>{isSaving ? "..." : "Share"}</span>
           </button>
         </div>
       </div>
@@ -690,15 +692,15 @@ export default function LittleBook() {
       {/* ─────────────────────────────────────────────────────────────
           1. MASTHEAD & HEADER (Tilted -1.2° Title Card)
       ───────────────────────────────────────────────────────────── */}
-      <div className="relative z-20 w-full max-w-xl text-center mb-8 sm:mb-10">
+      <div className="relative z-20 w-full max-w-xl text-center mb-6 sm:mb-10 px-1">
         {/* Paper Title Card */}
-        <div className="relative inline-block book-page-paper p-5 sm:p-7 rounded-sm transform -rotate-[1.2deg] shadow-xl border border-[#dcd7c3]">
+        <div className="relative inline-block w-full max-w-md book-page-paper p-3.5 xs:p-5 sm:p-7 rounded-sm transform -rotate-[1.2deg] shadow-xl border border-[#dcd7c3]">
           {/* Inner Dashed Border */}
-          <div className="border border-dashed border-[#26386b]/40 p-4 sm:p-5">
+          <div className="border border-dashed border-[#26386b]/40 p-3 sm:p-5">
             {/* Top-Center Washi Tape (Teal Striped) */}
             <WashiTape
               pattern="teal-stripes"
-              className="absolute -top-3 left-1/2 -translate-x-1/2 w-32 h-6"
+              className="absolute -top-3 left-1/2 -translate-x-1/2 w-28 sm:w-32 h-5 sm:h-6"
             />
 
             {/* Editable Title */}
@@ -706,7 +708,7 @@ export default function LittleBook() {
               type="text"
               value={bookTitle}
               onChange={(e) => handleTitleChange(e.target.value)}
-              className="w-full text-center font-bagel text-3xl sm:text-4xl text-washi-navy bg-transparent focus:outline-none focus:ring-1 focus:ring-washi-navy/30 rounded"
+              className="w-full text-center font-bagel text-2xl xs:text-3xl sm:text-4xl text-washi-navy bg-transparent focus:outline-none focus:ring-1 focus:ring-washi-navy/30 rounded"
               title="Click to edit book title"
             />
 
@@ -715,14 +717,14 @@ export default function LittleBook() {
               type="text"
               value={bookSubtitle}
               onChange={(e) => handleSubtitleChange(e.target.value)}
-              className="w-full text-center font-gaegu text-xl sm:text-2xl text-washi-cherry bg-transparent focus:outline-none focus:ring-1 focus:ring-washi-cherry/30 rounded mt-0.5"
+              className="w-full text-center font-gaegu text-lg xs:text-xl sm:text-2xl text-washi-cherry bg-transparent focus:outline-none focus:ring-1 focus:ring-washi-cherry/30 rounded mt-0.5"
               title="Click to edit subtitle"
             />
 
             {/* Bottom-Right Washi Tape (Mustard Dotted) */}
             <WashiTape
               pattern="mustard-dotted"
-              className="absolute -bottom-2.5 -right-3 w-28 h-6 rotate-6"
+              className="absolute -bottom-2.5 -right-2 sm:-right-3 w-24 sm:w-28 h-5 sm:h-6 rotate-6"
             />
           </div>
         </div>
@@ -801,7 +803,7 @@ export default function LittleBook() {
         {/* ═══════════════════════════════════════════════════════════
             LEFT PAGE (4:5 Ratio)
         ═══════════════════════════════════════════════════════════ */}
-        <div className="flex-1 book-page-paper rounded-t-md md:rounded-l-md md:rounded-r-none md:rounded-t-md rounded-b-sm p-5 sm:p-8 md:p-10 border border-[#ded9c5] relative flex flex-col justify-between min-h-[50dvh] sm:min-h-[580px] overflow-hidden">
+        <div className="flex-1 book-page-paper rounded-t-md md:rounded-l-md md:rounded-r-none md:rounded-t-md rounded-b-sm p-4 xs:p-6 sm:p-8 md:p-10 border border-[#ded9c5] relative flex flex-col justify-between min-h-[48dvh] sm:min-h-[580px] overflow-hidden">
           {/* Top Washi Decor */}
           <WashiTape
             pattern="teal-stripes"
@@ -1057,7 +1059,7 @@ export default function LittleBook() {
         {/* ═══════════════════════════════════════════════════════════
             RIGHT PAGE (4:5 Ratio)
         ═══════════════════════════════════════════════════════════ */}
-        <div className="flex-1 book-page-paper rounded-b-md md:rounded-r-md md:rounded-l-none md:rounded-b-none rounded-t-sm p-5 sm:p-8 md:p-10 border border-[#ded9c5] relative flex flex-col justify-between min-h-[50dvh] sm:min-h-[580px] overflow-hidden">
+        <div className="flex-1 book-page-paper rounded-b-md md:rounded-r-md md:rounded-l-none md:rounded-b-none rounded-t-sm p-4 xs:p-6 sm:p-8 md:p-10 border border-[#ded9c5] relative flex flex-col justify-between min-h-[48dvh] sm:min-h-[580px] overflow-hidden">
           {/* Top Washi Decor */}
           <WashiTape
             pattern="mustard-dotted"

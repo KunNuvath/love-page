@@ -216,23 +216,23 @@ export default function LandingPage() {
       {/* ─────────────────────────────────────────────────────────────
           2. HERO SECTION
       ───────────────────────────────────────────────────────────── */}
-      <section className="relative pt-10 sm:pt-16 pb-16 sm:pb-24 px-4 sm:px-6 max-w-6xl mx-auto flex flex-col items-center text-center">
+      <section className="relative pt-6 sm:pt-16 pb-14 sm:pb-24 px-3.5 sm:px-6 max-w-6xl mx-auto flex flex-col items-center text-center">
         {/* Glowing Ambient Backdrop */}
         <div className="absolute top-10 left-1/2 -translate-x-1/2 w-3/4 max-w-2xl h-80 glow-romantic -z-10 blur-3xl pointer-events-none" />
 
         {/* Top Floating Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 border border-[#e8d7c5] shadow-xs mb-6 sm:mb-8 animate-fade-up">
-          <Heart className="h-3.5 w-3.5 fill-[#cf493e] text-[#cf493e] animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-[#e8d7c5] shadow-xs mb-5 sm:mb-8 animate-fade-up">
+          <Heart className="h-3.5 w-3.5 fill-[#cf493e] text-[#cf493e] animate-pulse shrink-0" />
           <span className="text-xs sm:text-sm font-semibold tracking-wide text-[#5a483e]">
-            The Sweetest Digital Keepsakes • 2 Templates Available
+            The Sweetest Digital Keepsakes • 2 Templates
           </span>
           <span className="text-xs">✨</span>
         </div>
 
         {/* Headline */}
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-[#2d221e] max-w-4xl leading-[1.12] mb-6">
+        <h1 className="text-3xl xs:text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-[#2d221e] max-w-4xl leading-[1.18] sm:leading-[1.12] mb-5 sm:mb-6">
           Turn Your Cherished Moments Into A{" "}
-          <span className="font-handwriting font-bold text-5xl sm:text-7xl md:text-8xl text-[#cf493e] inline-block -rotate-1 relative mx-1">
+          <span className="font-handwriting font-bold text-4xl xs:text-5xl sm:text-7xl md:text-8xl text-[#cf493e] inline-block -rotate-1 relative mx-1">
             Timeless Love Story
             <svg
               className="absolute -bottom-2 left-0 w-full text-[#cf493e]/40 h-3"
@@ -250,28 +250,28 @@ export default function LandingPage() {
         </h1>
 
         {/* Subtitle */}
-        <p className="text-base sm:text-xl text-[#6b584d] max-w-2xl leading-relaxed mb-8 sm:mb-10">
+        <p className="text-sm sm:text-xl text-[#6b584d] max-w-2xl leading-relaxed mb-7 sm:mb-10 px-1">
           Create a personalized romantic keepsake: choose between our <strong>Retro Polaroid Scrapbook</strong> or the brand new <strong>Spiral Bound Little Book</strong> with 18 photo frames on a craft cutting mat.
         </p>
 
         {/* Dual Primary Call to Actions */}
-        <div className="flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto mb-14 sm:mb-20">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full sm:w-auto mb-10 sm:mb-20 max-w-md sm:max-w-none">
           <button
             type="button"
             onClick={() => setIsChooserOpen(true)}
-            className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-7 py-4 rounded-full bg-[#cf493e] text-white font-bold text-base shadow-[0_8px_24px_rgba(207,73,62,0.38)] hover:bg-[#b83b31] hover:shadow-[0_10px_28px_rgba(207,73,62,0.48)] hover:scale-102 active:scale-98 transition-all group cursor-pointer"
+            className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-6 sm:px-7 py-3.5 sm:py-4 rounded-full bg-[#cf493e] text-white font-bold text-sm sm:text-base shadow-[0_8px_24px_rgba(207,73,62,0.38)] hover:bg-[#b83b31] hover:shadow-[0_10px_28px_rgba(207,73,62,0.48)] hover:scale-102 active:scale-95 transition-all group cursor-pointer"
           >
-            <Sparkles className="h-5 w-5 fill-white group-hover:scale-110 transition-transform" />
-            <span>Choose & Launch Template</span>
-            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            <Sparkles className="h-4.5 w-4.5 fill-white group-hover:scale-110 transition-transform shrink-0" />
+            <span>Choose &amp; Launch Template</span>
+            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform shrink-0" />
           </button>
 
           <a
             href="#studio"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-4 rounded-full bg-white/90 text-[#3d332a] font-semibold text-base border border-[#d8c7b4] shadow-sm hover:bg-white hover:border-[#cf493e]/50 hover:shadow-md hover:scale-102 active:scale-98 transition-all"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 sm:py-4 rounded-full bg-white/90 text-[#3d332a] font-semibold text-sm sm:text-base border border-[#d8c7b4] shadow-xs hover:bg-white hover:border-[#cf493e]/50 hover:shadow-md hover:scale-102 active:scale-95 transition-all"
           >
-            <Wand2 className="h-4 w-4 text-[#cf493e]" />
-            <span>Quick Personalize & Preview</span>
+            <Wand2 className="h-4 w-4 text-[#cf493e] shrink-0" />
+            <span>Quick Personalize &amp; Preview</span>
           </a>
         </div>
 
@@ -284,37 +284,37 @@ export default function LandingPage() {
           <div className="absolute -top-3 right-10 w-28 h-7 washi-tape-mauve rotate-6 z-20 pointer-events-none hidden sm:block" />
 
           {/* Main Showcase Scrapbook Paper Container */}
-          <div className="scrapbook-paper rounded-xl p-5 sm:p-8 md:p-10 border border-[#d8c8b4] shadow-[0_20px_50px_rgba(140,70,60,0.18)] text-left relative overflow-hidden transition-all duration-300">
+          <div className="scrapbook-paper rounded-xl p-3.5 xs:p-5 sm:p-8 md:p-10 border border-[#d8c8b4] shadow-[0_20px_50px_rgba(140,70,60,0.18)] text-left relative overflow-hidden transition-all duration-300">
             {/* Header Stamp & Curated By */}
-            <div className="flex items-start justify-between border-b border-dashed border-[#cbbeaa] pb-5 mb-6">
+            <div className="flex items-start justify-between border-b border-dashed border-[#cbbeaa] pb-4 sm:pb-5 mb-5 sm:mb-6">
               <div>
-                <span className="font-handwriting text-2xl sm:text-3xl text-[#36322d]">
+                <span className="font-handwriting text-xl xs:text-2xl sm:text-3xl text-[#36322d]">
                   Curated for {partnerName}
                 </span>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="font-typewriter text-[10px] sm:text-xs font-bold tracking-widest px-2 py-0.5 highlighter-badge text-[#2c475d] rounded">
+                  <span className="font-typewriter text-[9px] xs:text-[10px] sm:text-xs font-bold tracking-widest px-2 py-0.5 highlighter-badge text-[#2c475d] rounded">
                     VOL. 01 / ORIGINAL
                   </span>
-                  <span className="text-xs text-[#7d6c5e]">
+                  <span className="text-[11px] sm:text-xs text-[#7d6c5e]">
                     • by {yourName}
                   </span>
                 </div>
               </div>
 
               {/* MEMORIES Stamp */}
-              <div className="inline-block -rotate-6 px-3 py-1 stamp-memories">
-                <span className="font-typewriter text-xs font-bold tracking-widest block">
+              <div className="inline-block -rotate-6 px-2.5 py-1 stamp-memories">
+                <span className="font-typewriter text-[10px] xs:text-xs font-bold tracking-widest block">
                   MEMORIES
                 </span>
               </div>
             </div>
 
             {/* 3 Interactive Polaroid Teaser Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 my-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5 my-4 sm:my-6">
               {/* Polaroid 1 */}
-              <div className="polaroid-card p-2.5 pb-4 rounded-[3px] -rotate-1 group/card hover:rotate-0 transition-transform">
-                <div className="aspect-[4/3.5] bg-linear-to-br from-rose-100 to-amber-100 rounded-[2px] overflow-hidden flex flex-col items-center justify-center p-4 text-center border border-[#e4dcce] relative">
-                  <Camera className="h-7 w-7 text-[#cf493e]/70 mb-1 group-hover/card:scale-110 transition-transform" />
+              <div className="polaroid-card p-2 sm:p-2.5 pb-3 sm:pb-4 rounded-[3px] -rotate-1 group/card hover:rotate-0 transition-transform">
+                <div className="aspect-[4/3.2] bg-linear-to-br from-rose-100 to-amber-100 rounded-[2px] overflow-hidden flex flex-col items-center justify-center p-3 text-center border border-[#e4dcce] relative">
+                  <Camera className="h-6 w-6 sm:h-7 sm:w-7 text-[#cf493e]/70 mb-1 group-hover/card:scale-110 transition-transform" />
                   <span className="text-xs font-medium text-[#7d675b]">
                     Our First Date
                   </span>
@@ -322,15 +322,15 @@ export default function LandingPage() {
                     Paris, Autumn
                   </span>
                 </div>
-                <p className="mt-2 text-center font-handwriting text-lg text-[#332b27]">
+                <p className="mt-1.5 sm:mt-2 text-center font-handwriting text-base sm:text-lg text-[#332b27]">
                   Us • Forever
                 </p>
               </div>
 
               {/* Polaroid 2 (Center) */}
-              <div className="polaroid-card p-2.5 pb-4 rounded-[3px] rotate-2 group/card hover:rotate-0 transition-transform">
-                <div className="aspect-[4/3.5] bg-linear-to-br from-pink-100 to-rose-200 rounded-[2px] overflow-hidden flex flex-col items-center justify-center p-4 text-center border border-[#e4dcce] relative">
-                  <Heart className="h-7 w-7 fill-[#cf493e]/80 text-[#cf493e] mb-1 group-hover/card:scale-110 transition-transform" />
+              <div className="polaroid-card p-2 sm:p-2.5 pb-3 sm:pb-4 rounded-[3px] rotate-2 group/card hover:rotate-0 transition-transform">
+                <div className="aspect-[4/3.2] bg-linear-to-br from-pink-100 to-rose-200 rounded-[2px] overflow-hidden flex flex-col items-center justify-center p-3 text-center border border-[#e4dcce] relative">
+                  <Heart className="h-6 w-6 sm:h-7 sm:w-7 fill-[#cf493e]/80 text-[#cf493e] mb-1 group-hover/card:scale-110 transition-transform" />
                   <span className="text-xs font-medium text-[#7d675b]">
                     Sweet Moments
                   </span>
@@ -338,51 +338,51 @@ export default function LandingPage() {
                     Sunset Walk
                   </span>
                 </div>
-                <p className="mt-2 text-center font-handwriting text-lg text-[#332b27]">
+                <p className="mt-1.5 sm:mt-2 text-center font-handwriting text-base sm:text-lg text-[#332b27]">
                   My Safe Place
                 </p>
               </div>
 
               {/* Polaroid 3 */}
-              <div className="polaroid-card p-2.5 pb-4 rounded-[3px] -rotate-2 group/card hover:rotate-0 transition-transform">
-                <div className="aspect-[4/3.5] bg-linear-to-br from-amber-100 to-yellow-100 rounded-[2px] overflow-hidden flex flex-col items-center justify-center p-4 text-center border border-[#e4dcce] relative">
-                  <Coffee className="h-7 w-7 text-amber-700/70 mb-1 group-hover/card:scale-110 transition-transform" />
+              <div className="polaroid-card p-2 sm:p-2.5 pb-3 sm:pb-4 rounded-[3px] -rotate-2 group/card hover:rotate-0 transition-transform">
+                <div className="aspect-[4/3.2] bg-linear-to-br from-amber-100 to-yellow-100 rounded-[2px] overflow-hidden flex flex-col items-center justify-center p-3 text-center border border-[#e4dcce] relative">
+                  <Coffee className="h-6 w-6 sm:h-7 sm:w-7 text-amber-700/70 mb-1 group-hover/card:scale-110 transition-transform" />
                   <span className="text-xs font-medium text-[#7d675b]">
                     Laughs & Coffee
                   </span>
                   <span className="text-[10px] text-[#a8988d]">Sunday 10 AM</span>
                 </div>
-                <p className="mt-2 text-center font-handwriting text-lg text-[#332b27]">
+                <p className="mt-1.5 sm:mt-2 text-center font-handwriting text-base sm:text-lg text-[#332b27]">
                   Endless Laughs
                 </p>
               </div>
             </div>
 
             {/* Teaser Love Letter Snippet */}
-            <div className="my-5 p-4 sm:p-5 rounded-lg bg-[#fffdfa]/90 border border-dashed border-[#d8c8b4]">
+            <div className="my-4 sm:my-5 p-3.5 sm:p-5 rounded-lg bg-[#fffdfa]/90 border border-dashed border-[#d8c8b4]">
               <div className="flex items-center gap-2 mb-1.5">
-                <Heart className="h-4 w-4 fill-[#cf493e] text-[#cf493e]" />
-                <span className="font-handwriting text-xl text-[#36322d]">
+                <Heart className="h-4 w-4 fill-[#cf493e] text-[#cf493e] shrink-0" />
+                <span className="font-handwriting text-lg sm:text-xl text-[#36322d] truncate">
                   {customTopic}, {partnerName}
                 </span>
               </div>
-              <p className="font-handwriting text-base sm:text-lg text-[#554a41] line-clamp-2 leading-relaxed">
+              <p className="font-handwriting text-sm sm:text-lg text-[#554a41] line-clamp-3 leading-relaxed">
                 {customMessage}
               </p>
-              <div className="text-right mt-1">
-                <span className="font-handwriting text-base text-[#cf493e]">
+              <div className="text-right mt-1.5">
+                <span className="font-handwriting text-sm sm:text-base text-[#cf493e]">
                   — with all my love, {yourName}
                 </span>
               </div>
             </div>
 
             {/* Interactive Music Player Bar Preview */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 rounded-xl bg-white/95 border border-[#e4d6c4] shadow-xs">
-              <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl bg-white/95 border border-[#e4d6c4] shadow-xs">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                 <button
                   type="button"
                   onClick={() => setIsDemoPlaying(!isDemoPlaying)}
-                  className="h-10 w-10 rounded-full bg-[#cf493e] text-white flex items-center justify-center shadow-md hover:bg-[#b83b31] transition-transform active:scale-95 cursor-pointer"
+                  className="h-10 w-10 shrink-0 rounded-full bg-[#cf493e] text-white flex items-center justify-center shadow-md hover:bg-[#b83b31] transition-transform active:scale-95 cursor-pointer"
                   title={isDemoPlaying ? "Pause preview" : "Play preview"}
                 >
                   {isDemoPlaying ? (
@@ -391,56 +391,38 @@ export default function LandingPage() {
                     <Play className="h-4 w-4 fill-white translate-x-0.5" />
                   )}
                 </button>
-                <div>
+                <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
-                    <Music className="h-3 w-3 text-[#cf493e]" />
-                    <span className="font-typewriter text-xs font-bold uppercase text-[#3d332a]">
+                    <Music className="h-3 w-3 text-[#cf493e] shrink-0" />
+                    <span className="font-typewriter text-[11px] sm:text-xs font-bold uppercase text-[#3d332a] truncate">
                       {selectedSong}
                     </span>
                   </div>
-                  <span className="font-handwriting text-xs text-[#7e6d5e]">
+                  <span className="font-handwriting text-xs text-[#7e6d5e] block truncate">
                     {isDemoPlaying ? "Playing sample melody 🎶" : "Click to preview sound vibes"}
                   </span>
                 </div>
               </div>
 
-              {/* Animated Sound Wave Bars */}
-              <div className="flex items-center gap-1.5 h-6 px-3">
-                <div
-                  className={`w-1 rounded-full bg-[#cf493e] ${
-                    isDemoPlaying ? "animate-wave-1" : "h-2 opacity-50"
-                  }`}
-                />
-                <div
-                  className={`w-1 rounded-full bg-[#cf493e] ${
-                    isDemoPlaying ? "animate-wave-2" : "h-3 opacity-50"
-                  }`}
-                />
-                <div
-                  className={`w-1 rounded-full bg-[#cf493e] ${
-                    isDemoPlaying ? "animate-wave-3" : "h-1.5 opacity-50"
-                  }`}
-                />
-                <div
-                  className={`w-1 rounded-full bg-[#cf493e] ${
-                    isDemoPlaying ? "animate-wave-4" : "h-3.5 opacity-50"
-                  }`}
-                />
-                <div
-                  className={`w-1 rounded-full bg-[#cf493e] ${
-                    isDemoPlaying ? "animate-wave-2" : "h-2 opacity-50"
-                  }`}
-                />
-              </div>
+              <div className="flex items-center justify-between sm:justify-end gap-3 pt-1 sm:pt-0 border-t sm:border-t-0 border-[#f0e4d7]">
+                {/* Animated Sound Wave Bars */}
+                <div className="flex items-center gap-1 h-5 px-2">
+                  <div className={`w-1 rounded-full bg-[#cf493e] ${isDemoPlaying ? "animate-wave-1" : "h-2 opacity-50"}`} />
+                  <div className={`w-1 rounded-full bg-[#cf493e] ${isDemoPlaying ? "animate-wave-2" : "h-3 opacity-50"}`} />
+                  <div className={`w-1 rounded-full bg-[#cf493e] ${isDemoPlaying ? "animate-wave-3" : "h-1.5 opacity-50"}`} />
+                  <div className={`w-1 rounded-full bg-[#cf493e] ${isDemoPlaying ? "animate-wave-4" : "h-3.5 opacity-50"}`} />
+                  <div className={`w-1 rounded-full bg-[#cf493e] ${isDemoPlaying ? "animate-wave-2" : "h-2 opacity-50"}`} />
+                </div>
 
-              {/* Jump into template button */}
-              <Link
-                href="/scrapbook"
-                className="text-xs font-semibold text-[#cf493e] hover:text-[#a83329] flex items-center gap-1 group/btn"
-              >
-                <span>View Full Screen</span>
-                <ArrowRight className="h-3.5 w-3.5 group-hover/btn:translate-x-1 transition-transform" />
-              </Link>
+                {/* Jump into template button */}
+                <Link
+                  href="/scrapbook"
+                  className="text-xs font-semibold text-[#cf493e] hover:text-[#a83329] flex items-center gap-1 group/btn shrink-0 py-1"
+                >
+                  <span>Full Screen</span>
+                  <ArrowRight className="h-3.5 w-3.5 group-hover/btn:translate-x-1 transition-transform" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -470,15 +452,15 @@ export default function LandingPage() {
           </div>
 
           {/* Builder Studio Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
             {/* Left Column: Form Controls (7 cols) */}
-            <div className="lg:col-span-7 bg-[#faf7f2] p-6 sm:p-8 rounded-2xl border border-[#e5d7c6] shadow-xs space-y-6">
+            <div className="lg:col-span-7 bg-[#faf7f2] p-4 sm:p-8 rounded-2xl border border-[#e5d7c6] shadow-xs space-y-5 sm:space-y-6">
               {/* Partner Names Inputs */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-[#7a685e] mb-2">
                   1. Who is this special page for?
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
                   <div>
                     <span className="block text-xs text-[#8c776b] mb-1">
                       Recipient / Partner&apos;s Name
@@ -488,7 +470,7 @@ export default function LandingPage() {
                       value={partnerName}
                       onChange={(e) => setPartnerName(e.target.value)}
                       placeholder="e.g. Lina"
-                      className="w-full px-4 py-2.5 rounded-lg border border-[#d8c8b4] bg-white text-[#332b27] font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 shadow-xs"
+                      className="w-full px-3.5 py-3 rounded-lg border border-[#d8c8b4] bg-white text-[#332b27] font-semibold text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 shadow-xs"
                     />
                   </div>
 
@@ -501,7 +483,7 @@ export default function LandingPage() {
                       value={yourName}
                       onChange={(e) => setYourName(e.target.value)}
                       placeholder="e.g. Miguel"
-                      className="w-full px-4 py-2.5 rounded-lg border border-[#d8c8b4] bg-white text-[#332b27] font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 shadow-xs"
+                      className="w-full px-3.5 py-3 rounded-lg border border-[#d8c8b4] bg-white text-[#332b27] font-semibold text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 shadow-xs"
                     />
                   </div>
                 </div>
@@ -520,7 +502,7 @@ export default function LandingPage() {
                         key={occ.id}
                         type="button"
                         onClick={() => handleSelectOccasion(occ)}
-                        className={`p-2.5 sm:p-3 rounded-xl text-left border transition-all text-xs font-medium cursor-pointer ${
+                        className={`p-2.5 sm:p-3 rounded-xl text-left border transition-all text-xs font-medium cursor-pointer active:scale-95 ${
                           isSelected
                             ? "bg-[#cf493e] text-white border-[#cf493e] shadow-md scale-102"
                             : "bg-white text-[#4a3f38] border-[#e0d0bf] hover:bg-[#fff9f4] hover:border-[#cf493e]/40"
@@ -545,13 +527,13 @@ export default function LandingPage() {
                 <label className="block text-xs font-bold uppercase tracking-wider text-[#7a685e] mb-2">
                   3. Letter Heading & Love Message
                 </label>
-                <div className="space-y-3">
+                <div className="space-y-2.5 sm:space-y-3">
                   <input
                     type="text"
                     value={customTopic}
                     onChange={(e) => setCustomTopic(e.target.value)}
                     placeholder="e.g. To the love of my life"
-                    className="w-full px-4 py-2 rounded-lg border border-[#d8c8b4] bg-white text-[#332b27] font-handwriting text-xl focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#d8c8b4] bg-white text-[#332b27] font-handwriting text-xl focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40"
                   />
 
                   <textarea
@@ -559,7 +541,7 @@ export default function LandingPage() {
                     value={customMessage}
                     onChange={(e) => setCustomMessage(e.target.value)}
                     placeholder="Write your personal romantic words..."
-                    className="w-full px-4 py-2.5 rounded-lg border border-[#d8c8b4] bg-white text-[#443831] font-handwriting text-lg leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 resize-y"
+                    className="w-full px-3.5 py-3 rounded-lg border border-[#d8c8b4] bg-white text-[#443831] font-handwriting text-base sm:text-lg leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40 resize-y"
                   />
                 </div>
               </div>
@@ -570,13 +552,13 @@ export default function LandingPage() {
                   4. Background Love Song
                 </label>
                 <div className="flex items-center gap-2">
-                  <Music className="h-4 w-4 text-[#cf493e]" />
+                  <Music className="h-4 w-4 text-[#cf493e] shrink-0" />
                   <input
                     type="text"
                     value={selectedSong}
                     onChange={(e) => setSelectedSong(e.target.value)}
                     placeholder="Song Title (e.g. Miguel - Sure Thing)"
-                    className="flex-1 px-4 py-2 rounded-lg border border-[#d8c8b4] bg-white text-[#332b27] text-xs font-typewriter uppercase focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40"
+                    className="flex-1 px-3.5 py-2.5 rounded-lg border border-[#d8c8b4] bg-white text-[#332b27] text-xs font-typewriter uppercase focus:outline-none focus:ring-2 focus:ring-[#cf493e]/40"
                   />
                 </div>
               </div>
@@ -585,16 +567,16 @@ export default function LandingPage() {
               <button
                 type="button"
                 onClick={handleLaunchCustomScrapbook}
-                className="w-full py-4 rounded-xl bg-[#cf493e] text-white font-bold text-base tracking-wide shadow-[0_6px_20px_rgba(207,73,62,0.35)] hover:bg-[#b83b31] hover:shadow-[0_8px_25px_rgba(207,73,62,0.45)] transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                className="w-full py-3.5 sm:py-4 rounded-xl bg-[#cf493e] text-white font-bold text-sm sm:text-base tracking-wide shadow-[0_6px_20px_rgba(207,73,62,0.35)] hover:bg-[#b83b31] hover:shadow-[0_8px_25px_rgba(207,73,62,0.45)] transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
               >
-                <Sparkles className="h-5 w-5" />
+                <Sparkles className="h-5 w-5 shrink-0" />
                 <span>Launch My Custom Scrapbook →</span>
               </button>
             </div>
 
             {/* Right Column: Live Interactive Preview Card (5 cols) */}
-            <div className="lg:col-span-5 flex flex-col items-center">
-              <div className="w-full scrapbook-paper p-6 sm:p-7 rounded-xl border border-[#d8c8b4] shadow-lg sticky top-28">
+            <div className="lg:col-span-5 flex flex-col items-center w-full">
+              <div className="w-full scrapbook-paper p-4 sm:p-7 rounded-xl border border-[#d8c8b4] shadow-lg lg:sticky lg:top-28">
                 {/* Washi tape sticker */}
                 <div className="w-24 h-6 washi-tape-green mx-auto -mt-9 mb-4 -rotate-2" />
 

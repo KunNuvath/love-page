@@ -372,15 +372,15 @@ function PolaroidCard({
               alt={caption}
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
-            {/* Overlay actions on hover */}
-            <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+            {/* Overlay actions on hover & mobile accessible buttons */}
+            <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 sm:opacity-0 transition-opacity flex items-center justify-center gap-2">
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   onOpenLightbox(src, caption);
                 }}
-                className="p-2 rounded-full bg-white/90 text-neutral-800 hover:bg-white shadow-sm transition-transform hover:scale-110"
+                className="p-2 sm:p-2 rounded-full bg-white/95 text-neutral-800 hover:bg-white shadow-md transition-transform hover:scale-110 active:scale-90"
                 title="Zoom view"
               >
                 <ZoomIn className="h-4 w-4" />
@@ -391,7 +391,7 @@ function PolaroidCard({
                   e.stopPropagation();
                   fileInputRef.current?.click();
                 }}
-                className="p-2 rounded-full bg-white/90 text-neutral-800 hover:bg-white shadow-sm transition-transform hover:scale-110"
+                className="p-2 sm:p-2 rounded-full bg-white/95 text-neutral-800 hover:bg-white shadow-md transition-transform hover:scale-110 active:scale-90"
                 title="Change photo"
               >
                 <Upload className="h-4 w-4" />
@@ -399,10 +399,33 @@ function PolaroidCard({
               <button
                 type="button"
                 onClick={handleRemovePhoto}
-                className="p-2 rounded-full bg-white/90 text-red-600 hover:bg-white shadow-sm transition-transform hover:scale-110"
+                className="p-2 sm:p-2 rounded-full bg-white/95 text-red-600 hover:bg-white shadow-md transition-transform hover:scale-110 active:scale-90"
                 title="Remove photo"
               >
                 <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Mobile Corner Quick Actions (Visible on touch devices) */}
+            <div className="sm:hidden absolute bottom-1.5 right-1.5 flex items-center gap-1 z-10 bg-black/50 backdrop-blur-xs p-1 rounded-full text-white shadow-sm">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+                className="p-1 rounded-full hover:bg-white/20 active:scale-90"
+                title="Change photo"
+              >
+                <Upload className="h-3 w-3" />
+              </button>
+              <button
+                type="button"
+                onClick={handleRemovePhoto}
+                className="p-1 rounded-full hover:bg-white/20 active:scale-90 text-rose-300"
+                title="Remove"
+              >
+                <X className="h-3 w-3" />
               </button>
             </div>
           </>
@@ -819,7 +842,7 @@ function EditSidebar({
         </div>
 
         {/* Drawer Footer Actions */}
-        <div className="p-4 border-t border-[#dfd4c5] bg-[#f4eee1] flex items-center justify-between gap-3">
+        <div className="p-4 pb-safe border-t border-[#dfd4c5] bg-[#f4eee1] flex items-center justify-between gap-3">
           <button
             onClick={onReset}
             className="flex items-center gap-1.5 px-3 py-2 rounded text-xs font-semibold text-[#6e5e50] hover:bg-[#e8decb] transition-colors"
@@ -1036,57 +1059,58 @@ function LovePageContent() {
       <FloatingHearts heartColor={activeVibe.heartColor} />
 
       {/* Floating Top Bar (Back to Home, Vibe Switcher, Share, Edit) */}
-      <div className="fixed top-3 sm:top-5 inset-x-3 sm:inset-x-6 z-30 flex items-center justify-between pointer-events-none">
+      <div className="fixed top-2.5 sm:top-5 inset-x-2.5 sm:inset-x-6 z-30 flex items-center justify-between pointer-events-none">
         {/* Left: Back to Home Link */}
         <Link
           href="/"
-          className="pointer-events-auto flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-white/90 text-[#5e4b3e] shadow-md border border-[#e4d6c4] hover:bg-white hover:text-[#cf493e] hover:shadow-lg transition-all text-xs sm:text-sm font-medium backdrop-blur-sm group active:scale-95"
+          className="pointer-events-auto flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-white/95 text-[#5e4b3e] shadow-md border border-[#e4d6c4] hover:bg-white hover:text-[#cf493e] hover:shadow-lg transition-all text-xs sm:text-sm font-medium backdrop-blur-sm group active:scale-95 shrink-0"
           title="Back to Landing Page"
         >
-          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 text-[#cf493e] shrink-0" />
+          <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform group-hover:-translate-x-0.5 text-[#cf493e] shrink-0" />
           <span className="hidden xs:inline">Back</span>
-          <span className="hidden sm:inline"> to Landing Page</span>
+          <span className="hidden sm:inline"> to Home</span>
         </Link>
 
         {/* Right: Quick Vibe Switcher, Share Link & Edit Buttons */}
-        <div className="flex items-center gap-2 pointer-events-auto">
+        <div className="flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
           {/* Quick Vibe Switcher Button */}
           <button
             onClick={cycleVibe}
-            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-white/90 text-[#3d332a] shadow-md border border-[#e4d6c4] hover:bg-white hover:text-[#cf493e] hover:shadow-lg transition-all text-xs sm:text-sm font-medium backdrop-blur-sm active:scale-95 group"
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-white/95 text-[#3d332a] shadow-md border border-[#e4d6c4] hover:bg-white hover:text-[#cf493e] hover:shadow-lg transition-all text-xs sm:text-sm font-medium backdrop-blur-sm active:scale-95 group shrink-0"
             title={`Current Vibe: ${activeVibe.name} (${activeVibe.tagline}) — Click to switch vibe`}
           >
             <span className="text-sm transition-transform group-hover:scale-125">{activeVibe.emoji}</span>
             <span className="hidden md:inline text-[11px] font-handwriting text-[#7e6d5e]">Vibe:</span>
-            <span className="hidden xs:inline font-typewriter text-xs font-semibold">{activeVibe.name}</span>
+            <span className="hidden sm:inline font-typewriter text-xs font-semibold">{activeVibe.name}</span>
           </button>
 
           {/* Save to Cloud & Copy Share Link Button */}
           <button
             onClick={handleSaveAndShare}
             disabled={isSaving}
-            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-white/90 text-[#3d332a] shadow-md border border-[#e4d6c4] hover:bg-white hover:border-[#cf493e]/40 hover:shadow-lg transition-all text-xs sm:text-sm font-medium backdrop-blur-sm active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-white/95 text-[#3d332a] shadow-md border border-[#e4d6c4] hover:bg-white hover:border-[#cf493e]/40 hover:shadow-lg transition-all text-xs sm:text-sm font-medium backdrop-blur-sm active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed shrink-0"
             title="Save to cloud and copy shareable link"
           >
             {isSaving ? (
               <>
-                <Loader2 className="h-4 w-4 text-[#cf493e] animate-spin shrink-0" />
+                <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#cf493e] animate-spin shrink-0" />
                 <span className="hidden sm:inline text-[#cf493e]">Saving…</span>
               </>
             ) : copiedLink ? (
               <>
-                <Check className="h-4 w-4 text-emerald-600 shrink-0" />
-                <span className="text-emerald-700 font-semibold hidden xs:inline">Copied! 💖</span>
+                <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-600 shrink-0" />
+                <span className="text-emerald-700 font-semibold hidden xs:inline">Copied!</span>
               </>
             ) : saveError ? (
               <>
-                <X className="h-4 w-4 text-red-500 shrink-0" />
+                <X className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500 shrink-0" />
                 <span className="text-red-600 font-semibold hidden sm:inline">{saveError}</span>
               </>
             ) : (
               <>
-                <Share2 className="h-4 w-4 text-[#cf493e] shrink-0" />
+                <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#cf493e] shrink-0" />
                 <span className="hidden sm:inline">Save &amp; Share</span>
+                <span className="sm:hidden font-semibold text-[11px]">Share</span>
               </>
             )}
           </button>
@@ -1094,11 +1118,12 @@ function LovePageContent() {
           {/* Edit Page Button */}
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-[#cf493e] text-white shadow-md hover:bg-[#b83b31] hover:shadow-lg transition-all text-xs sm:text-sm font-semibold tracking-wide active:scale-95"
+            className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-[#cf493e] text-white shadow-md hover:bg-[#b83b31] hover:shadow-lg transition-all text-xs sm:text-sm font-semibold tracking-wide active:scale-95 shrink-0"
             title="Customize page text and options"
           >
-            <Edit3 className="h-4 w-4 text-white shrink-0" />
+            <Edit3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white shrink-0" />
             <span className="hidden sm:inline">Edit Page</span>
+            <span className="sm:hidden text-[11px]">Edit</span>
           </button>
         </div>
       </div>
@@ -1144,7 +1169,7 @@ function LovePageContent() {
 
       {/* Main Scrapbook Paper */}
       <div
-        className={`relative z-10 w-full max-w-4xl scrapbook-paper rounded-sm p-6 sm:p-10 md:p-14 transition-all duration-1000 ${
+        className={`relative z-10 w-full max-w-4xl scrapbook-paper rounded-sm p-4 xs:p-6 sm:p-10 md:p-14 mt-12 sm:mt-14 transition-all duration-1000 overflow-hidden ${
           revealed ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
         }`}
       >

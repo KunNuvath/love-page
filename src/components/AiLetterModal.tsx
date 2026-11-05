@@ -62,12 +62,12 @@ export default function AiLetterModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
-      <div className="relative w-full max-w-xl bg-[#faf6ee] rounded-3xl p-6 sm:p-8 shadow-2xl border border-[#e4d6c4] text-[#362e2b] max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 xs:p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
+      <div className="relative w-full max-w-xl bg-[#faf6ee] rounded-3xl p-4.5 xs:p-6 sm:p-8 shadow-2xl border border-[#e4d6c4] text-[#362e2b] max-h-[92dvh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full hover:bg-black/10 transition-colors"
+          className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-full hover:bg-black/10 transition-colors"
         >
           <X className="h-5 w-5" />
         </button>

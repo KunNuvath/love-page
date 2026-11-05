@@ -126,7 +126,7 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
         </nav>
 
         {/* ── Action CTAs (Desktop & Mobile) ────────────────────── */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           {/* Desktop Secondary Studio Link */}
           <a
             href="#studio"
@@ -142,15 +142,16 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
               <button
                 type="button"
                 onClick={() => setIsUserMenuOpen((prev) => !prev)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 hover:bg-white text-[#4a3a32] border border-[#debfa8] text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white/90 hover:bg-white text-[#4a3a32] border border-[#debfa8] text-xs font-semibold shadow-2xs transition-all cursor-pointer active:scale-95"
+                aria-label="User menu"
               >
-                <div className="h-5 w-5 rounded-full bg-[#cf493e] text-white flex items-center justify-center text-[10px] font-bold">
+                <div className="h-5 w-5 rounded-full bg-[#cf493e] text-white flex items-center justify-center text-[10px] font-bold shrink-0">
                   {user.user_metadata?.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
                 </div>
-                <span className="max-w-[100px] truncate text-xs hidden sm:inline">
+                <span className="max-w-[70px] sm:max-w-[100px] truncate text-xs hidden xs:inline">
                   {user.user_metadata?.name || user.email?.split("@")[0]}
                 </span>
-                <ChevronDown className="h-3 w-3 text-[#8c786a]" />
+                <ChevronDown className="h-3 w-3 text-[#8c786a] shrink-0" />
               </button>
 
               {isUserMenuOpen && (
@@ -179,10 +180,10 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
             <button
               type="button"
               onClick={() => openAuthModal()}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/80 hover:bg-white text-[#5c4a3e] hover:text-[#cf493e] border border-[#debfa8] text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+              className="flex items-center gap-1 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white/80 hover:bg-white text-[#5c4a3e] hover:text-[#cf493e] border border-[#debfa8] text-xs font-semibold shadow-2xs transition-all cursor-pointer active:scale-95"
             >
-              <UserIcon className="h-3.5 w-3.5 text-[#cf493e]" />
-              <span>Sign In</span>
+              <UserIcon className="h-3.5 w-3.5 text-[#cf493e] shrink-0" />
+              <span className="hidden xs:inline">Sign In</span>
             </button>
           )}
 
@@ -191,18 +192,18 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
             <button
               type="button"
               onClick={handleLaunchClick}
-              className="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#cf493e] text-white text-xs sm:text-sm font-semibold tracking-wide shadow-[0_4px_16px_rgba(207,73,62,0.35)] hover:bg-[#b83b31] hover:shadow-[0_6px_20px_rgba(207,73,62,0.45)] hover:scale-102 active:scale-97 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#cf493e] text-white text-xs sm:text-sm font-semibold tracking-wide shadow-[0_4px_16px_rgba(207,73,62,0.35)] hover:bg-[#b83b31] hover:shadow-[0_6px_20px_rgba(207,73,62,0.45)] hover:scale-102 active:scale-95 transition-all cursor-pointer shrink-0"
             >
-              <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
               <span className="hidden sm:inline">Launch Template</span>
-              <span className="sm:hidden font-bold">Launch Template</span>
+              <span className="sm:hidden font-bold">Create</span>
             </button>
           ) : (
             <Link
               href="/templates"
-              className="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#cf493e] text-white text-xs sm:text-sm font-semibold tracking-wide shadow-[0_4px_16px_rgba(207,73,62,0.35)] hover:bg-[#b83b31] hover:shadow-[0_6px_20px_rgba(207,73,62,0.45)] hover:scale-102 active:scale-97 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#cf493e] text-white text-xs sm:text-sm font-semibold tracking-wide shadow-[0_4px_16px_rgba(207,73,62,0.35)] hover:bg-[#b83b31] hover:shadow-[0_6px_20px_rgba(207,73,62,0.45)] hover:scale-102 active:scale-95 transition-all cursor-pointer shrink-0"
             >
-              <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
               <span className="hidden sm:inline">Launch Template</span>
               <span className="sm:hidden font-bold">Templates</span>
             </Link>
@@ -214,7 +215,7 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
             aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={isMobileMenuOpen}
-            className="md:hidden p-2 rounded-xl text-[#5c4b41] hover:text-[#2d221e] hover:bg-black/5 active:bg-black/10 transition-colors cursor-pointer"
+            className="md:hidden p-2 rounded-xl text-[#5c4b41] hover:text-[#2d221e] hover:bg-black/5 active:bg-black/10 transition-colors cursor-pointer shrink-0"
           >
             {isMobileMenuOpen ? (
               <X className="h-5 w-5 transition-transform rotate-90 duration-200" />
@@ -227,7 +228,7 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
 
       {/* ── Mobile Navigation Drawer / Dropdown ───────────────── */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-[#ebdcd0] bg-[#fbf5f0]/98 backdrop-blur-xl px-4 py-5 shadow-xl animate-fade-down">
+        <div className="md:hidden border-t border-[#ebdcd0] bg-[#fbf5f0]/98 backdrop-blur-xl px-4 py-5 shadow-xl animate-fade-down max-h-[85dvh] overflow-y-auto pb-safe">
           {/* Templates Quick Cards */}
           <div className="mb-4">
             <div className="text-[11px] font-bold uppercase tracking-wider text-[#9b8577] mb-2 px-1">

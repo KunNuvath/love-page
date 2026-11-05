@@ -60,9 +60,9 @@ export default function ShareModal({
   const isDark = theme === "cutting-mat";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-xs animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 xs:p-4 bg-black/65 backdrop-blur-xs animate-fade-in">
       <div
-        className={`relative w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl border text-center transition-all ${
+        className={`relative w-full max-w-md rounded-3xl p-4.5 xs:p-6 sm:p-8 shadow-2xl border text-center transition-all max-h-[92dvh] overflow-y-auto ${
           isDark
             ? "bg-[#183d31] text-white border-white/20"
             : "bg-[#faf6ee] text-[#362e2b] border-[#e4d6c4]"
@@ -70,31 +70,31 @@ export default function ShareModal({
       >
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full hover:bg-black/10 transition-colors"
+          className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-full hover:bg-black/10 transition-colors"
         >
           <X className="h-5 w-5" />
         </button>
 
-        <div className="mx-auto mb-4 h-12 w-12 rounded-2xl bg-rose-500 text-white flex items-center justify-center shadow-md">
-          <Heart className="h-6 w-6 fill-white" />
+        <div className="mx-auto mb-3 h-11 w-11 rounded-2xl bg-rose-500 text-white flex items-center justify-center shadow-md">
+          <Heart className="h-5 w-5 fill-white" />
         </div>
 
-        <h3 className="font-handwriting text-3xl font-bold mb-1">
+        <h3 className="font-handwriting text-2xl xs:text-3xl font-bold mb-1">
           Share Your Keepsake
         </h3>
-        <p className="text-xs opacity-75 mb-6">
-          Anyone with this link can view the interactive memories & send live love reactions!
+        <p className="text-[11px] xs:text-xs opacity-75 mb-4 sm:mb-6">
+          Anyone with this link can view the interactive memories &amp; send live love reactions!
         </p>
 
         {/* QR Code */}
-        <div className="p-4 bg-white rounded-2xl shadow-inner inline-block mx-auto mb-5 border border-black/10">
+        <div className="p-3 xs:p-4 bg-white rounded-2xl shadow-inner inline-block mx-auto mb-4 border border-black/10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={qrUrl}
             alt="Scan QR to open love page"
-            className="w-44 h-44 rounded-lg object-contain mx-auto"
+            className="w-36 h-36 xs:w-44 xs:h-44 rounded-lg object-contain mx-auto"
           />
-          <span className="text-[10px] font-mono opacity-60 block mt-2">
+          <span className="text-[9px] xs:text-[10px] font-mono opacity-60 block mt-1.5">
             Scan with smartphone camera
           </span>
         </div>
