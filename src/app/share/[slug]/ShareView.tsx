@@ -246,7 +246,7 @@ export default function ShareView({ page, config: rawConfig }: Props) {
 
   return (
     <main
-      className={`relative min-h-screen py-8 sm:py-14 px-3 sm:px-6 flex flex-col items-center justify-start overflow-x-hidden pb-28 transition-colors duration-700 ${vibe.mainClass}`}
+      className={`relative min-h-screen py-6 sm:py-14 px-5 xs:px-6 sm:px-6 flex flex-col items-center justify-start overflow-x-hidden pb-28 transition-colors duration-700 ${vibe.mainClass}`}
     >
       {/* Ambient Vibe Glow */}
       <div
@@ -325,7 +325,7 @@ export default function ShareView({ page, config: rawConfig }: Props) {
 
       {/* Scrapbook Paper */}
       <div
-        className={`relative z-10 w-full max-w-4xl scrapbook-paper rounded-sm p-4 xs:p-6 sm:p-10 md:p-14 mt-12 sm:mt-14 overflow-hidden transition-all duration-1000 ${
+        className={`relative z-10 w-[calc(100%-0.5rem)] xs:w-[calc(100%-0.75rem)] sm:w-full max-w-4xl scrapbook-paper rounded-md sm:rounded-sm p-4 xs:p-6 sm:p-10 md:p-14 mt-12 sm:mt-14 overflow-hidden transition-all duration-1000 ${
           revealed ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
         }`}
       >
