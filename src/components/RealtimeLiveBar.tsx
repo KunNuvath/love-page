@@ -72,7 +72,6 @@ export default function RealtimeLiveBar({
       {/* Reaction Buttons */}
       <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto py-0.5 no-scrollbar touch-pan-x">
         {REACTION_CONFIG.map((r) => {
-          const count = reactions[r.key] || 0;
           const isBouncing = activeBounce === r.key;
           return (
             <button
@@ -80,18 +79,13 @@ export default function RealtimeLiveBar({
               type="button"
               onClick={() => handleReactionClick(r.key, r.symbol)}
               title={`Send ${r.label}`}
-              className={`flex items-center gap-0.5 sm:gap-1 px-1.5 xs:px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full text-xs font-semibold transition-all active:scale-90 select-none shrink-0 ${
+              className={`w-7 h-7 xs:w-8 xs:h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full transition-all active:scale-90 select-none shrink-0 ${
                 isDarkDesk
                   ? "bg-white/10 hover:bg-white/20 text-white"
                   : "bg-neutral-100/90 hover:bg-neutral-200/90 text-neutral-800"
               } ${isBouncing ? "scale-125 !bg-rose-500/20" : ""}`}
             >
               <span className="text-sm sm:text-base leading-none">{r.symbol}</span>
-              {count > 0 && (
-                <span className="text-[10px] sm:text-xs opacity-80 font-mono">
-                  {count}
-                </span>
-              )}
             </button>
           );
         })}
