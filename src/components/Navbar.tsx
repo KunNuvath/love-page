@@ -30,6 +30,7 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [confirmingSignOut, setConfirmingSignOut] = useState(false);
 
   // Monitor scroll for subtle shadow increase
   useEffect(() => {
@@ -43,7 +44,11 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
   // Close mobile menu on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsMobileMenuOpen(false);
+      if (e.key === "Escape") {
+        setIsMobileMenuOpen(false);
+        setIsUserMenuOpen(false);
+        setConfirmingSignOut(false);
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -54,6 +59,7 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
         setIsMobileMenuOpen(false);
+        setConfirmingSignOut(false);
       }
     };
     window.addEventListener("resize", handleResize);
@@ -141,7 +147,10 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
             <div className="relative">
               <button
                 type="button"
-                onClick={() => setIsUserMenuOpen((prev) => !prev)}
+                onClick={() => {
+                  setIsUserMenuOpen((prev) => !prev);
+                  setConfirmingSignOut(false);
+                }}
                 className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white/90 hover:bg-white text-[#4a3a32] border border-[#debfa8] text-xs font-semibold shadow-2xs transition-all cursor-pointer active:scale-95"
                 aria-label="User menu"
               >
@@ -162,17 +171,40 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
                     </p>
                     <p className="text-[10px] text-[#8c786a] font-mono truncate">{user.email}</p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      setIsUserMenuOpen(false);
-                      await signOut();
-                    }}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                  >
-                    <LogOut className="h-3.5 w-3.5" />
-                    <span>Sign Out</span>
-                  </button>
+                  {confirmingSignOut ? (
+                    <div className="px-3 py-2 rounded-xl bg-red-50 border border-red-100">
+                      <p className="text-[11px] text-red-700 font-semibold mb-2">Sign out of your account?</p>
+                      <div className="flex gap-1.5">
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            setConfirmingSignOut(false);
+                            setIsUserMenuOpen(false);
+                            await signOut();
+                          }}
+                          className="flex-1 py-1 rounded-lg bg-red-600 text-white text-[11px] font-bold hover:bg-red-700 transition-colors cursor-pointer"
+                        >
+                          Yes, sign out
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setConfirmingSignOut(false)}
+                          className="flex-1 py-1 rounded-lg bg-white border border-[#e5d5c5] text-[#5c4a3e] text-[11px] font-semibold hover:bg-[#faf4ed] transition-colors cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setConfirmingSignOut(true)}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                    >
+                      <LogOut className="h-3.5 w-3.5" />
+                      <span>Sign Out</span>
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -331,17 +363,40 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
                     <p className="text-[10px] text-[#8c786a] font-mono truncate">{user.email}</p>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    setIsMobileMenuOpen(false);
-                    await signOut();
-                  }}
-                  className="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
-                >
-                  <LogOut className="h-3 w-3" />
-                  <span>Sign Out</span>
-                </button>
+                {confirmingSignOut ? (
+                  <div className="mt-2 px-3 py-2.5 rounded-xl bg-red-50 border border-red-100">
+                    <p className="text-xs text-red-700 font-semibold mb-2">Sign out of your account?</p>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          setConfirmingSignOut(false);
+                          setIsMobileMenuOpen(false);
+                          await signOut();
+                        }}
+                        className="flex-1 py-1.5 rounded-lg bg-red-600 text-white text-xs font-bold hover:bg-red-700 transition-colors cursor-pointer"
+                      >
+                        Yes, sign out
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmingSignOut(false)}
+                        className="flex-1 py-1.5 rounded-lg bg-white border border-[#e5d5c5] text-[#5c4a3e] text-xs font-semibold hover:bg-[#faf4ed] transition-colors cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingSignOut(true)}
+                    className="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <LogOut className="h-3 w-3" />
+                    <span>Sign Out</span>
+                  </button>
+                )}
               </div>
             ) : (
               <button
