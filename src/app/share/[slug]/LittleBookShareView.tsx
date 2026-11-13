@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -62,48 +62,66 @@ export default function LittleBookShareView({ page, config }: Props) {
   const songStartTime = config?.song?.startTime || 0;
   const songEndTime = config?.song?.endTime;
 
-  const [audio] = useState(() => (typeof window !== "undefined" ? new Audio(songSrc) : null));
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
 
-  useEffect(() => {
-    if (!audio) return;
-    audio.loop = !songEndTime;
-
-    const handleTimeUpdate = () => {
-      if (songEndTime && audio.currentTime >= songEndTime) {
-        audio.currentTime = songStartTime;
-      }
-    };
-    audio.addEventListener("timeupdate", handleTimeUpdate);
-
-    return () => {
-      audio.removeEventListener("timeupdate", handleTimeUpdate);
-      audio.pause();
-    };
-  }, [audio, songStartTime, songEndTime]);
-
-  const toggleMusic = async () => {
-    if (!audio) return;
-    if (playing) {
-      audio.pause();
-      setPlaying(false);
-    } else {
-      try {
-        if (songStartTime > 0 && Math.abs(audio.currentTime - songStartTime) > 1 && audio.currentTime < songStartTime) {
-          audio.currentTime = songStartTime;
-        }
-        await audio.play();
-        setPlaying(true);
-      } catch {}
+  const handleTimeUpdate = () => {
+    if (!audioRef.current) return;
+    const a = audioRef.current;
+    if (songEndTime && a.currentTime >= songEndTime) {
+      a.currentTime = songStartTime;
     }
   };
 
+  const toggleMusic = useCallback(async () => {
+    if (!audioRef.current) return;
+    const a = audioRef.current;
+    if (playing) {
+      a.pause();
+      setPlaying(false);
+    } else {
+      try {
+        await a.play();
+        setPlaying(true);
+        if (songStartTime > 0 && Math.abs(a.currentTime - songStartTime) > 1 && a.currentTime < songStartTime) {
+          a.currentTime = songStartTime;
+        }
+      } catch (err) {
+        console.warn("Audio play blocked or failed:", err);
+        setPlaying(false);
+      }
+    }
+  }, [playing, songStartTime]);
+
   const toggleMute = () => {
-    if (!audio) return;
-    audio.muted = !muted;
+    if (!audioRef.current) return;
+    audioRef.current.muted = !muted;
     setMuted(!muted);
   };
+
+  // Start music on first touch anywhere
+  useEffect(() => {
+    const handleFirstTouch = async () => {
+      if (!audioRef.current || playing) return;
+      try {
+        const a = audioRef.current;
+        await a.play();
+        setPlaying(true);
+        if (songStartTime > 0 && a.currentTime < songStartTime) {
+          a.currentTime = songStartTime;
+        }
+      } catch {}
+    };
+
+    window.addEventListener("pointerdown", handleFirstTouch, { once: true });
+    window.addEventListener("touchstart", handleFirstTouch, { once: true });
+
+    return () => {
+      window.removeEventListener("pointerdown", handleFirstTouch);
+      window.removeEventListener("touchstart", handleFirstTouch);
+    };
+  }, [playing, songStartTime]);
 
   // Extract photos, notes, titles
   const photos: Record<number, string> = config?.photos ?? {};
@@ -131,6 +149,17 @@ export default function LittleBookShareView({ page, config }: Props) {
     <div className="min-h-screen cutting-mat-bg text-desk-text py-8 sm:py-12 px-3 sm:px-6 relative flex flex-col items-center selection:bg-washi-cherry/30 overflow-x-hidden">
       {/* Vignette Overlay */}
       <div className="fixed inset-0 cutting-mat-vignette pointer-events-none z-0" />
+
+      {/* Real Audio Element */}
+      <audio
+        ref={audioRef}
+        src={songSrc}
+        loop={!songEndTime}
+        preload="auto"
+        playsInline
+        onTimeUpdate={handleTimeUpdate}
+        onEnded={() => setPlaying(false)}
+      />
 
       {/* Realtime Reaction Bursts */}
       <RealtimeReactionBurst particles={particles} />

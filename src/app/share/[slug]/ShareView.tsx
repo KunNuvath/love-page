@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import {
   Heart,
@@ -57,74 +57,31 @@ const ROTATIONS = [
 ];
 
 // ── Mini music player ────────────────────────────────────────────────────────
+interface MiniPlayerProps {
+  song: { src: string; title: string; startTime?: number; endTime?: number };
+  isPlaying: boolean;
+  isMuted: boolean;
+  progress: number;
+  onToggle: () => void;
+  onToggleMute: () => void;
+}
+
 function MiniPlayer({
   song,
-}: {
-  song: { src: string; title: string; startTime?: number; endTime?: number };
-}) {
-  const [audio] = useState(() =>
-    typeof window !== "undefined" ? new Audio(song.src) : null
-  );
-  const [playing, setPlaying] = useState(false);
-  const [muted, setMuted] = useState(false);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    if (!audio) return;
-    audio.loop = true;
-    const start = song.startTime || 0;
-    const onTime = () => {
-      const current = audio.currentTime;
-      if (song.endTime && current >= song.endTime) {
-        audio.currentTime = start;
-        return;
-      }
-      const end = song.endTime && song.endTime > start ? song.endTime : audio.duration;
-      if (end && end > start) {
-        setProgress(Math.max(0, Math.min(100, ((current - start) / (end - start)) * 100)));
-      } else if (audio.duration) {
-        setProgress((current / audio.duration) * 100);
-      }
-    };
-    audio.addEventListener("timeupdate", onTime);
-    return () => {
-      audio.removeEventListener("timeupdate", onTime);
-      audio.pause();
-    };
-  }, [audio, song.startTime, song.endTime]);
-
-  const toggle = async () => {
-    if (!audio) return;
-    if (playing) {
-      audio.pause();
-      setPlaying(false);
-    } else {
-      try {
-        const start = song.startTime || 0;
-        const current = audio.currentTime;
-        if (current < start || (song.endTime && current >= song.endTime)) {
-          audio.currentTime = start;
-        }
-        await audio.play();
-        setPlaying(true);
-      } catch {}
-    }
-  };
-
-  const toggleMute = () => {
-    if (!audio) return;
-    audio.muted = !muted;
-    setMuted(!muted);
-  };
-
+  isPlaying,
+  isMuted,
+  progress,
+  onToggle,
+  onToggleMute,
+}: MiniPlayerProps) {
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl bg-[#fffdf9]/90 border border-[#e4d6c4] shadow-sm">
       <div className="flex items-center gap-3">
         <button
-          onClick={toggle}
+          onClick={onToggle}
           className="flex h-11 w-11 items-center justify-center rounded-full bg-[#cf493e] text-white shadow-md hover:bg-[#b83b31] transition-all active:scale-95"
         >
-          {playing ? (
+          {isPlaying ? (
             <Pause className="h-5 w-5 fill-white" />
           ) : (
             <Play className="h-5 w-5 fill-white translate-x-0.5" />
@@ -143,7 +100,7 @@ function MiniPlayer({
             )}
           </div>
           <span className="font-handwriting text-sm text-[#7e6d5e]">
-            {playing ? "Now Playing ~ melody of love" : "Click play to listen"}
+            {isPlaying ? "Now Playing ~ melody of love" : "Click play to listen"}
           </span>
         </div>
       </div>
@@ -155,10 +112,10 @@ function MiniPlayer({
           />
         </div>
         <button
-          onClick={toggleMute}
+          onClick={onToggleMute}
           className="text-[#7e6d5e] hover:text-[#3d332a] p-1 transition-colors"
         >
-          {muted ? (
+          {isMuted ? (
             <VolumeX className="h-4 w-4 text-red-500" />
           ) : (
             <Volume2 className="h-4 w-4" />
@@ -241,13 +198,100 @@ export default function ShareView({ page, config: rawConfig }: Props) {
 
   const polaroids: Polaroid[] = cfg.polaroids ?? [];
   const song = cfg.song ?? { src: "/music/miguel-sure-thing.mp3", title: "Miguel - Sure Thing" };
-  const hasSong = Boolean(song.src);
+  const hasSong = Boolean(song?.src);
   const vibe = getBackgroundVibe(cfg.themeVibe);
+
+  // Audio playback state
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const start = song.startTime || 0;
+  const end = song.endTime;
+
+  const togglePlay = useCallback(async () => {
+    if (!audioRef.current) return;
+    const a = audioRef.current;
+    if (isPlaying) {
+      a.pause();
+      setIsPlaying(false);
+    } else {
+      try {
+        await a.play();
+        setIsPlaying(true);
+        if (start > 0 && Math.abs(a.currentTime - start) > 1 && a.currentTime < start) {
+          a.currentTime = start;
+        }
+      } catch (err) {
+        console.warn("Audio play blocked or failed:", err);
+        setIsPlaying(false);
+      }
+    }
+  }, [isPlaying, start]);
+
+  const toggleMute = () => {
+    if (!audioRef.current) return;
+    audioRef.current.muted = !isMuted;
+    setIsMuted(!isMuted);
+  };
+
+  const handleTimeUpdate = () => {
+    if (!audioRef.current) return;
+    const a = audioRef.current;
+    const current = a.currentTime;
+    if (end && current >= end) {
+      a.currentTime = start;
+      return;
+    }
+    const effectiveEnd = end && end > start ? end : a.duration;
+    if (effectiveEnd && effectiveEnd > start) {
+      setProgress(Math.max(0, Math.min(100, ((current - start) / (effectiveEnd - start)) * 100)));
+    } else if (a.duration) {
+      setProgress((current / a.duration) * 100);
+    }
+  };
+
+  // Auto-play music on the viewer's first interaction anywhere on page
+  useEffect(() => {
+    if (!hasSong) return;
+    const handleFirstGesture = async () => {
+      if (!audioRef.current || isPlaying) return;
+      try {
+        const a = audioRef.current;
+        await a.play();
+        setIsPlaying(true);
+        if (start > 0 && a.currentTime < start) {
+          a.currentTime = start;
+        }
+      } catch {}
+    };
+
+    window.addEventListener("pointerdown", handleFirstGesture, { once: true });
+    window.addEventListener("touchstart", handleFirstGesture, { once: true });
+
+    return () => {
+      window.removeEventListener("pointerdown", handleFirstGesture);
+      window.removeEventListener("touchstart", handleFirstGesture);
+    };
+  }, [hasSong, isPlaying, start]);
 
   return (
     <main
       className={`relative min-h-screen py-6 sm:py-14 px-5 xs:px-6 sm:px-6 flex flex-col items-center justify-start overflow-x-hidden pb-28 transition-colors duration-700 ${vibe.mainClass}`}
     >
+      {/* Real Audio Element */}
+      {hasSong && (
+        <audio
+          ref={audioRef}
+          src={song.src}
+          loop={!end}
+          preload="auto"
+          playsInline
+          onTimeUpdate={handleTimeUpdate}
+          onEnded={() => setIsPlaying(false)}
+        />
+      )}
       {/* Ambient Vibe Glow */}
       <div
         className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-700"
@@ -284,14 +328,43 @@ export default function ShareView({ page, config: rawConfig }: Props) {
           <span className="hidden xs:inline">Back</span>
           <span className="hidden sm:inline"> to Home</span>
         </Link>
-        <button
-          type="button"
-          onClick={() => setIsShareOpen(true)}
-          className="pointer-events-auto flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-white/95 border border-[#e4d6c4] shadow-md text-xs font-semibold text-[#9b7267] hover:text-[#cf493e] backdrop-blur-sm transition-all active:scale-95 shrink-0"
-        >
-          <Share2 className="h-3.5 w-3.5 text-[#cf493e]" />
-          <span>Share</span>
-        </button>
+
+        {/* Music Control + Share Pill in Top Bar */}
+        <div className="flex items-center gap-2 pointer-events-auto">
+          {hasSong && (
+            <button
+              type="button"
+              onClick={togglePlay}
+              className={`flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-full border shadow-md transition-all active:scale-95 text-xs font-semibold backdrop-blur-sm ${
+                isPlaying
+                  ? "bg-[#cf493e] text-white border-[#cf493e] shadow-[0_4px_12px_rgba(207,73,62,0.35)]"
+                  : "bg-white/95 text-[#5e4b3e] border-[#e4d6c4] hover:border-[#cf493e]"
+              }`}
+            >
+              {isPlaying ? (
+                <Pause className="h-3.5 w-3.5 fill-white" />
+              ) : (
+                <Play className="h-3.5 w-3.5 fill-[#cf493e] text-[#cf493e]" />
+              )}
+              <Music className="h-3.5 w-3.5 shrink-0" />
+              <span className="hidden xs:inline max-w-[120px] sm:max-w-[160px] truncate font-typewriter text-[11px]">
+                {song.title}
+              </span>
+              <span className="xs:hidden font-typewriter text-[11px]">
+                {isPlaying ? "Playing" : "Play"}
+              </span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setIsShareOpen(true)}
+            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-white/95 border border-[#e4d6c4] shadow-md text-xs font-semibold text-[#9b7267] hover:text-[#cf493e] backdrop-blur-sm transition-all active:scale-95 shrink-0"
+          >
+            <Share2 className="h-3.5 w-3.5 text-[#cf493e]" />
+            <span>Share</span>
+          </button>
+        </div>
       </div>
 
       {/* Lightbox */}
@@ -410,7 +483,14 @@ export default function ShareView({ page, config: rawConfig }: Props) {
         {/* Music player */}
         {hasSong && (
           <div className="mt-8">
-            <MiniPlayer song={song} />
+            <MiniPlayer
+              song={song}
+              isPlaying={isPlaying}
+              isMuted={isMuted}
+              progress={progress}
+              onToggle={togglePlay}
+              onToggleMute={toggleMute}
+            />
           </div>
         )}
       </div>
