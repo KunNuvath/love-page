@@ -283,6 +283,17 @@ interface PolaroidProps {
   onChange?: (id: number, updates: { src?: string; caption?: string }) => void;
 }
 
+function dataUrlToBlob(dataUrl: string): Blob {
+  const parts = dataUrl.split(",");
+  const mime = parts[0].match(/:(.*?);/)?.[1] || "image/jpeg";
+  const binary = atob(parts[1]);
+  const array = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    array[i] = binary.charCodeAt(i);
+  }
+  return new Blob([array], { type: mime });
+}
+
 function PolaroidCard({
   id,
   initialCaption,
@@ -295,6 +306,7 @@ function PolaroidCard({
   const [src, setSrc] = useState(initialSrc);
   const [caption, setCaption] = useState(initialCaption);
   const [isEditingCaption, setIsEditingCaption] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load saved photos from localStorage if available
@@ -309,26 +321,41 @@ function PolaroidCard({
   }, [id, initialSrc]);
 
   useEffect(() => {
+    if (initialSrc && initialSrc !== src) {
+      setSrc(initialSrc);
+    }
+  }, [initialSrc]);
+
+  useEffect(() => {
     setCaption(initialCaption);
   }, [initialCaption]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const result = event.target?.result as string;
-        setSrc(result);
-        onChange?.(id, { src: result });
+    if (!file) return;
+
+    // 1. Immediate local preview for zero-delay visual feedback
+    const localPreview = URL.createObjectURL(file);
+    setSrc(localPreview);
+    onChange?.(id, { src: localPreview });
+    onFileSelected?.(id, file);
+
+    // 2. Upload immediately to Supabase Storage in the background
+    setIsUploading(true);
+    try {
+      const publicUrl = await uploadImage(file);
+      if (publicUrl) {
+        setSrc(publicUrl);
+        onChange?.(id, { src: publicUrl });
         try {
-          localStorage.setItem(`polaroid_photo_${id}`, result);
-        } catch {
-          // localStorage quota fallback
-        }
-      };
-      reader.readAsDataURL(file);
-      // Notify parent so it can upload to Supabase on save
-      onFileSelected?.(id, file);
+          localStorage.setItem(`polaroid_photo_${id}`, publicUrl);
+        } catch {}
+      }
+    } catch (err) {
+      console.warn(`Upload error for polaroid ${id}:`, err);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -364,6 +391,13 @@ function PolaroidCard({
           }
         }}
       >
+        {/* Uploading progress overlay */}
+        {isUploading && (
+          <div className="absolute inset-0 z-20 bg-black/40 backdrop-blur-xs flex flex-col items-center justify-center text-white pointer-events-none animate-fade-in">
+            <Loader2 className="h-6 w-6 animate-spin text-white mb-1" />
+            <span className="text-[11px] font-handwriting">Uploading...</span>
+          </div>
+        )}
         {src ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -967,26 +1001,44 @@ function LovePageContent() {
     setIsSaving(true);
     setSaveError(null);
     try {
-      // 1. Upload any polaroid images that are File objects or base64 strings
+      // 1. Upload any polaroid images that still need permanent storage URLs
       const updatedPolaroids = await Promise.all(
         config.polaroids.map(async (p) => {
+          // If already a permanent Supabase URL, keep it!
+          if (p.src && p.src.startsWith("https://")) {
+            return p;
+          }
+
           let file = polaroidFiles.current.get(p.id);
-          
+
+          // Convert base64 data URL to File safely without fetch
           if (!file && p.src && p.src.startsWith("data:image")) {
             try {
-              const res = await fetch(p.src);
-              const blob = await res.blob();
-              file = new File([blob], `polaroid-${p.id}.png`, { type: blob.type });
+              const blob = dataUrlToBlob(p.src);
+              file = new File([blob], `polaroid-${p.id}.jpg`, { type: blob.type || "image/jpeg" });
             } catch (e) {
-              console.error("Failed to convert base64 to file", e);
+              console.error(`Failed to convert base64 for slot ${p.id}:`, e);
             }
           }
 
           if (file) {
-            const url = await uploadImage(file);
-            return { ...p, src: url };
+            try {
+              const url = await uploadImage(file);
+              return { ...p, src: url };
+            } catch (e) {
+              console.error(`Failed to upload photo for slot ${p.id}:`, e);
+            }
           }
-          // Keep existing src (already a URL or empty)
+
+          // Fallback check in localStorage for saved permanent URL
+          if (typeof window !== "undefined") {
+            const savedUrl = localStorage.getItem(`polaroid_photo_${p.id}`);
+            if (savedUrl && savedUrl.startsWith("https://")) {
+              return { ...p, src: savedUrl };
+            }
+          }
+
+          // Keep existing src
           return p;
         })
       );

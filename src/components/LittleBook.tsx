@@ -116,6 +116,17 @@ export function WashiTape({
   );
 }
 
+function dataUrlToBlob(dataUrl: string): Blob {
+  const parts = dataUrl.split(",");
+  const mime = parts[0].match(/:(.*?);/)?.[1] || "image/jpeg";
+  const binary = atob(parts[1]);
+  const array = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    array[i] = binary.charCodeAt(i);
+  }
+  return new Blob([array], { type: mime });
+}
+
 // ─────────────────────────────────────────────────────────────
 // CLIENT-SIDE CANVAS IMAGE DOWNSCALING
 // ─────────────────────────────────────────────────────────────
@@ -563,10 +574,17 @@ export default function LittleBook() {
       for (const [idStr, src] of Object.entries(photos)) {
         if (!src) continue;
         const id = Number(idStr);
-        if (src.startsWith("data:image")) {
-          const blob = await (await fetch(src)).blob();
-          const file = new File([blob], `little-book-${id}.jpg`, { type: blob.type });
-          photoUrls[id] = await uploadImage(file);
+        if (src.startsWith("https://")) {
+          photoUrls[id] = src;
+        } else if (src.startsWith("data:image")) {
+          try {
+            const blob = dataUrlToBlob(src);
+            const file = new File([blob], `little-book-${id}.jpg`, { type: blob.type || "image/jpeg" });
+            photoUrls[id] = await uploadImage(file);
+          } catch (e) {
+            console.error(`Failed to upload LittleBook photo ${id}:`, e);
+            photoUrls[id] = src;
+          }
         } else {
           photoUrls[id] = src;
         }
