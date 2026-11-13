@@ -119,11 +119,72 @@ export async function updateLovePage(
 // Storage helpers — routed via /api/upload using Admin Client to bypass RLS
 // ──────────────────────────────────────────────────────────────────────────────
 
+/** Downscale large photos in browser before upload to prevent HTTP 413 and mobile lag */
+async function compressImageFile(file: File, maxDim = 1600, quality = 0.85): Promise<File> {
+  if (
+    typeof window === "undefined" ||
+    !file.type.startsWith("image/") ||
+    file.type === "image/svg+xml" ||
+    file.size < 400 * 1024
+  ) {
+    return file;
+  }
+
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        resolve(file);
+        return;
+      }
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob(
+        (blob) => {
+          if (blob && blob.size < file.size) {
+            resolve(
+              new File([blob], file.name.replace(/\.[^/.]+$/, ".jpg"), {
+                type: "image/jpeg",
+              })
+            );
+          } else {
+            resolve(file);
+          }
+        },
+        "image/jpeg",
+        quality
+      );
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(file);
+    };
+    img.src = url;
+  });
+}
+
 /** Upload an image File and return its permanent public URL */
 export async function uploadImage(file: File): Promise<string> {
   try {
+    const optimizedFile = await compressImageFile(file);
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", optimizedFile);
 
     const res = await fetch("/api/upload", {
       method: "POST",

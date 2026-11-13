@@ -45,6 +45,15 @@ export async function POST(request: Request) {
     const categoryLabel = categoryLabels[submission.category] || "💌 General";
     const subject = `[${categoryLabel}] LovePage Contact from ${submission.name}`;
 
+    // If RESEND_API_KEY is not configured yet, log safely and don't fail user
+    if (!process.env.RESEND_API_KEY) {
+      console.warn("💌 [Contact] RESEND_API_KEY not configured. Submission logged:", submission);
+      return NextResponse.json({
+        success: true,
+        message: "Thank you! Your feedback has been received.",
+      });
+    }
+
     // Send email to support via Resend
     const { data, error } = await resend.emails.send({
       from: `LovePage Contact <onboarding@resend.dev>`,

@@ -59,17 +59,29 @@ export default function LittleBookShareView({ page, config }: Props) {
   // Audio state
   const songSrc = config?.song?.src || "/music/miguel-sure-thing.mp3";
   const songTitle = config?.song?.title || "Miguel - Sure Thing";
+  const songStartTime = config?.song?.startTime || 0;
+  const songEndTime = config?.song?.endTime;
+
   const [audio] = useState(() => (typeof window !== "undefined" ? new Audio(songSrc) : null));
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
 
   useEffect(() => {
     if (!audio) return;
-    audio.loop = true;
+    audio.loop = !songEndTime;
+
+    const handleTimeUpdate = () => {
+      if (songEndTime && audio.currentTime >= songEndTime) {
+        audio.currentTime = songStartTime;
+      }
+    };
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+
     return () => {
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.pause();
     };
-  }, [audio]);
+  }, [audio, songStartTime, songEndTime]);
 
   const toggleMusic = async () => {
     if (!audio) return;
@@ -78,6 +90,9 @@ export default function LittleBookShareView({ page, config }: Props) {
       setPlaying(false);
     } else {
       try {
+        if (songStartTime > 0 && Math.abs(audio.currentTime - songStartTime) > 1 && audio.currentTime < songStartTime) {
+          audio.currentTime = songStartTime;
+        }
         await audio.play();
         setPlaying(true);
       } catch {}

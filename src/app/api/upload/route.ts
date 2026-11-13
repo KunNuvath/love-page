@@ -19,14 +19,23 @@ export async function POST(request: Request) {
       }
 
       const buffer = Buffer.from(await file.arrayBuffer());
-      const ext = file.name.split(".").pop() || "jpg";
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
       const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}.${ext}`;
+
+      let contentType = file.type;
+      if (!contentType) {
+        if (["mp3", "wav", "m4a", "ogg", "aac"].includes(ext)) {
+          contentType = ext === "mp3" ? "audio/mpeg" : `audio/${ext}`;
+        } else {
+          contentType = "image/jpeg";
+        }
+      }
 
       try {
         const { error: uploadError } = await adminClient.storage
           .from(BUCKET)
           .upload(filename, buffer, {
-            contentType: file.type || "image/jpeg",
+            contentType,
             upsert: true,
           });
 

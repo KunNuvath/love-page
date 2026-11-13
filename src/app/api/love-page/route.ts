@@ -21,16 +21,20 @@ export async function POST(request: Request) {
       );
     }
 
-    // Pack the configuration into message payload if provided as structured object
-    let messagePayload = message;
-    if (config || type) {
-      const fullConfig = {
-        type,
-        ...(typeof config === "object" ? config : {}),
-        message: message ?? (config?.message || ""),
+    // Prepare message payload without corrupting or double-encoding already-stringified JSON
+    let messagePayload = typeof message === "string" ? message : "";
+    if (config && typeof config === "object") {
+      messagePayload = JSON.stringify({
+        type: body.type || config.type || "polaroid-scrapbook",
+        ...config,
         title,
-      };
-      messagePayload = JSON.stringify(fullConfig);
+      });
+    } else if (!messagePayload) {
+      messagePayload = JSON.stringify({
+        type: body.type || "polaroid-scrapbook",
+        title,
+        message: "",
+      });
     }
 
     const slug = generateSlug();
