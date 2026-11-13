@@ -1,6 +1,7 @@
-import { getLovePageBySlug } from "@/src/lib/supabase";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import type { LovePage } from "@/src/lib/supabase";
+import { getAdminClient } from "@/src/lib/supabase-admin";
 import ShareView from "@/src/app/share/[slug]/ShareView";
 import LittleBookShareView from "@/src/app/share/[slug]/LittleBookShareView";
 
@@ -15,8 +16,21 @@ interface Props {
   params: { id: string };
 }
 
+/** Server-side fetch using the admin client so RLS doesn't block reads. */
+async function getPageBySlug(slug: string): Promise<LovePage | null> {
+  const adminClient = getAdminClient();
+  const { data, error } = await adminClient
+    .from("love_pages")
+    .select("*")
+    .eq("slug", slug)
+    .single();
+
+  if (error || !data) return null;
+  return data as LovePage;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const page = await getLovePageBySlug(params.id);
+  const page = await getPageBySlug(params.id);
   if (!page) return { title: "Love Page Not Found" };
   return {
     title: `${page.title} 💖`,
@@ -30,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PublicPage({ params }: Props) {
-  const page = await getLovePageBySlug(params.id);
+  const page = await getPageBySlug(params.id);
   if (!page) notFound();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
