@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
-import { createLovePage, supabase } from "@/src/lib/supabase";
+import { getAdminClient } from "@/src/lib/supabase-admin";
 
 export const dynamic = "force-dynamic";
 
+function generateSlug(length = 8): string {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+}
+
 export async function POST(request: Request) {
+  const adminClient = getAdminClient();
   try {
     const body = await request.json();
     const { title, message, config, image_url, type = "polaroid-scrapbook" } = body;
@@ -27,11 +33,25 @@ export async function POST(request: Request) {
       messagePayload = JSON.stringify(fullConfig);
     }
 
-    const page = await createLovePage({
-      title,
-      message: messagePayload,
-      image_url: image_url || null,
-    });
+    const slug = generateSlug();
+    const { data: page, error } = await adminClient
+      .from("love_pages")
+      .insert({
+        slug,
+        title,
+        message: messagePayload,
+        image_url: image_url || null,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Supabase insert error:", error);
+      return NextResponse.json(
+        { error: error.message || "Failed to create love page" },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
@@ -49,11 +69,12 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
+  const adminClient = getAdminClient();
   try {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get("limit") || "10", 10);
 
-    const { data, error } = await supabase
+    const { data, error } = await adminClient
       .from("love_pages")
       .select("id, slug, title, image_url, created_at, updated_at")
       .order("created_at", { ascending: false })

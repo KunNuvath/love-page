@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getLovePageBySlug, updateLovePage, supabase } from "@/src/lib/supabase";
+import { getAdminClient } from "@/src/lib/supabase-admin";
 
 export const dynamic = "force-dynamic";
 
@@ -7,14 +7,20 @@ export async function GET(
   request: Request,
   { params }: { params: { slug: string } }
 ) {
+  const adminClient = getAdminClient();
   try {
     const { slug } = params;
     if (!slug) {
       return NextResponse.json({ error: "Slug is required" }, { status: 400 });
     }
 
-    const page = await getLovePageBySlug(slug);
-    if (!page) {
+    const { data: page, error } = await adminClient
+      .from("love_pages")
+      .select("*")
+      .eq("slug", slug)
+      .single();
+
+    if (error || !page) {
       return NextResponse.json({ error: "Love page not found" }, { status: 404 });
     }
 
@@ -43,12 +49,19 @@ export async function PATCH(
   request: Request,
   { params }: { params: { slug: string } }
 ) {
+  const adminClient = getAdminClient();
   try {
     const { slug } = params;
     const body = await request.json();
 
-    const existingPage = await getLovePageBySlug(slug);
-    if (!existingPage) {
+    // Fetch existing page
+    const { data: existingPage, error: fetchError } = await adminClient
+      .from("love_pages")
+      .select("*")
+      .eq("slug", slug)
+      .single();
+
+    if (fetchError || !existingPage) {
       return NextResponse.json({ error: "Love page not found" }, { status: 404 });
     }
 
@@ -65,11 +78,26 @@ export async function PATCH(
       updatedMessage = JSON.stringify(mergedConfig);
     }
 
-    const updated = await updateLovePage(existingPage.id, {
-      title: body.title ?? existingPage.title,
-      message: updatedMessage ?? existingPage.message,
-      image_url: body.image_url !== undefined ? body.image_url : existingPage.image_url,
-    });
+    const now = new Date().toISOString();
+    const { data: updated, error: updateError } = await adminClient
+      .from("love_pages")
+      .update({
+        title: body.title ?? existingPage.title,
+        message: updatedMessage ?? existingPage.message,
+        image_url: body.image_url !== undefined ? body.image_url : existingPage.image_url,
+        updated_at: now,
+      })
+      .eq("id", existingPage.id)
+      .select()
+      .single();
+
+    if (updateError) {
+      console.error("PATCH update error:", updateError);
+      return NextResponse.json(
+        { error: updateError.message || "Failed to update love page" },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
@@ -88,9 +116,10 @@ export async function DELETE(
   request: Request,
   { params }: { params: { slug: string } }
 ) {
+  const adminClient = getAdminClient();
   try {
     const { slug } = params;
-    const { error } = await supabase.from("love_pages").delete().eq("slug", slug);
+    const { error } = await adminClient.from("love_pages").delete().eq("slug", slug);
     if (error) throw error;
     return NextResponse.json({ success: true, message: "Deleted successfully" });
   } catch (error: any) {

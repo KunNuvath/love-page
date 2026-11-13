@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/src/lib/supabase";
+import { getAdminClient } from "@/src/lib/supabase-admin";
 
 export const dynamic = "force-dynamic";
 
 const BUCKET = "love-page-images";
 
 export async function POST(request: Request) {
+  const adminClient = getAdminClient();
   try {
     const contentType = request.headers.get("content-type") || "";
 
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
       const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}.${ext}`;
 
       try {
-        const { error: uploadError } = await supabase.storage
+        const { error: uploadError } = await adminClient.storage
           .from(BUCKET)
           .upload(filename, buffer, {
             contentType: file.type || "image/jpeg",
@@ -30,10 +31,12 @@ export async function POST(request: Request) {
           });
 
         if (!uploadError) {
-          const { data } = supabase.storage.from(BUCKET).getPublicUrl(filename);
+          const { data } = adminClient.storage.from(BUCKET).getPublicUrl(filename);
           if (data?.publicUrl) {
             return NextResponse.json({ success: true, url: data.publicUrl, filename });
           }
+        } else {
+          console.warn("Supabase storage upload error:", uploadError);
         }
       } catch (err) {
         console.warn("Supabase storage upload failed, falling back to base64:", err);
@@ -62,7 +65,7 @@ export async function POST(request: Request) {
         const cloudFilename = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}.${ext}`;
 
         try {
-          const { error: uploadError } = await supabase.storage
+          const { error: uploadError } = await adminClient.storage
             .from(BUCKET)
             .upload(cloudFilename, buffer, {
               contentType: mimeType,
@@ -70,10 +73,12 @@ export async function POST(request: Request) {
             });
 
           if (!uploadError) {
-            const { data } = supabase.storage.from(BUCKET).getPublicUrl(cloudFilename);
+            const { data } = adminClient.storage.from(BUCKET).getPublicUrl(cloudFilename);
             if (data?.publicUrl) {
               return NextResponse.json({ success: true, url: data.publicUrl, filename: cloudFilename });
             }
+          } else {
+            console.warn("Storage upload error (base64 path):", uploadError);
           }
         } catch (err) {
           console.warn("Storage upload failed, keeping base64 payload:", err);

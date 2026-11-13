@@ -47,47 +47,36 @@ export async function createLovePage(data: {
   message: string
   image_url?: string | null
 }): Promise<LovePage> {
-  const slug = generateSlug()
-  const now = new Date().toISOString()
+  // Route through the API route which uses the service-role key to bypass RLS.
+  try {
+    const res = await fetch("/api/love-page", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: data.title,
+        message: data.message,
+        image_url: data.image_url ?? null,
+      }),
+    });
 
-  // Optimistic in-memory record while the DB call is in flight
-  const optimistic: LovePage = {
-    id: `lp_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-    slug,
-    title: data.title,
-    message: data.message,
-    image_url: data.image_url ?? null,
-    created_at: now,
-    updated_at: now,
+    if (res.ok) {
+      const json = await res.json();
+      if (json.page) {
+        // Also persist to localStorage so the creator can still view it offline
+        try {
+          localStorage.setItem(`love_page_${json.page.slug}`, JSON.stringify(json.page));
+        } catch {}
+        memoryPages.set(json.page.slug, json.page);
+        return json.page as LovePage;
+      }
+    }
+
+    const errJson = await res.json().catch(() => ({}));
+    throw new Error(errJson.error || `HTTP ${res.status}`);
+  } catch (err) {
+    console.error("createLovePage via API failed:", err);
+    throw err;
   }
-  memoryPages.set(slug, optimistic)
-
-  // Persist to browser localStorage if available (creator's own device)
-  if (typeof window !== 'undefined') {
-    try {
-      localStorage.setItem(`love_page_${slug}`, JSON.stringify(optimistic))
-    } catch {}
-  }
-
-  // Save to Supabase (primary, persistent, publicly readable)
-  const result = await withTimeout<{ data: LovePage | null; error: unknown }>(
-    supabase
-      .from('love_pages')
-      .insert({ ...data, slug, image_url: data.image_url ?? null })
-      .select()
-      .single() as PromiseLike<{ data: LovePage | null; error: unknown }>
-  )
-  const { data: page, error } = result
-
-  if (!error && page) {
-    memoryPages.set(slug, page)
-    return page
-  }
-
-  // If Supabase fails (e.g. table not yet created) return the optimistic record
-  // so the creator can at least copy the link; the recipient won't see it though.
-  console.error('Supabase insert error:', error)
-  return optimistic
 }
 
 /** Fetch a single love page by its shareable slug */
@@ -182,57 +171,59 @@ const BUCKET = 'love-page-images'
 
 /** Upload an image File and return its permanent public URL */
 export async function uploadImage(file: File): Promise<string> {
-  const ext = file.name.split('.').pop() || 'jpg'
-  const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-
+  // Route through the API endpoint which uses the service-role key
+  // so uploads succeed regardless of storage RLS settings.
   try {
-    const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
-      cacheControl: '3600',
-      upsert: true,
-    })
-    if (!error) {
-      const { data } = supabase.storage.from(BUCKET).getPublicUrl(path)
-      if (data?.publicUrl) return data.publicUrl
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.url) return data.url;
     }
-    console.warn('Storage upload error:', error)
   } catch (err) {
-    console.warn('Storage upload exception:', err)
+    console.warn("uploadImage via API failed, falling back to base64:", err);
   }
 
   // Last-resort: base64 data URL (only works for the creator's own view)
   return new Promise((resolve) => {
-    const reader = new FileReader()
-    reader.onloadend = () => resolve(reader.result as string)
-    reader.readAsDataURL(file)
-  })
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.readAsDataURL(file);
+  });
 }
 
 /** Upload an audio File (MP3, M4A, WAV) and return its public URL */
 export async function uploadAudio(file: File): Promise<string> {
-  const ext = file.name.split('.').pop() || 'mp3'
-  const path = `audio-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-
+  // Route through the API endpoint which uses the service-role key.
   try {
-    const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
-      cacheControl: '3600',
-      upsert: true,
-      contentType: file.type || 'audio/mpeg',
-    })
-    if (!error) {
-      const { data } = supabase.storage.from(BUCKET).getPublicUrl(path)
-      if (data?.publicUrl) return data.publicUrl
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.url) return data.url;
     }
-    console.warn('Storage upload error for audio:', error)
   } catch (err) {
-    console.warn('Storage upload exception for audio:', err)
+    console.warn("uploadAudio via API failed, falling back to base64:", err);
   }
 
   // Last-resort: base64 data URL
   return new Promise((resolve) => {
-    const reader = new FileReader()
-    reader.onloadend = () => resolve(reader.result as string)
-    reader.readAsDataURL(file)
-  })
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.readAsDataURL(file);
+  });
 }
 
 /** Delete an image from storage by its public URL */
