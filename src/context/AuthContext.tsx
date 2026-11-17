@@ -60,10 +60,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 2. Real-time auth listener
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+    } = supabase.auth.onAuthStateChange(async (_event, currentSession) => {
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       setLoading(false);
+
+      // If the user clicked the verification link in their Gmail inbox,
+      // finalize their pending signup password & display name automatically.
+      if (currentSession?.user?.email && typeof window !== "undefined") {
+        try {
+          const rawPending = localStorage.getItem("lovepage_pending_signup");
+          if (rawPending) {
+            const pending = JSON.parse(rawPending);
+            if (
+              pending.email &&
+              pending.password &&
+              pending.email.toLowerCase() === currentSession.user.email.toLowerCase()
+            ) {
+              localStorage.removeItem("lovepage_pending_signup");
+              await fetch("/api/auth/verify-otp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  action: "finalize-supabase",
+                  email: pending.email,
+                  password: pending.password,
+                  name: pending.name || "",
+                }),
+              });
+            }
+          }
+        } catch {
+          // Ignore storage parse errors
+        }
+      }
     });
 
     return () => {
@@ -75,12 +105,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithEmail = async (email: string, password: string) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
+        email: email.trim().toLowerCase(),
         password,
       });
 
       if (error) {
         return { error };
+      }
+
+      // Block sign-in if account is still awaiting OTP verification
+      if (data.user?.user_metadata?.pending_otp_verification === true) {
+        await supabase.auth.signOut();
+        return {
+          error: {
+            name: "AuthApiError",
+            message: "Email not confirmed. Please verify your email with the code sent to your inbox.",
+            status: 400,
+          } as AuthError,
+        };
       }
 
       setSession(data.session);
@@ -93,7 +135,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUpWithEmail = async (email: string, password: string, name?: string) => {
     try {
-      const trimmedEmail = email.trim();
+      const trimmedEmail = email.trim().toLowerCase();
       const displayName = name?.trim() || "";
 
       const { data, error } = await supabase.auth.signUp({
@@ -184,4 +226,3 @@ export function useAuth() {
   }
   return context;
 }
-
