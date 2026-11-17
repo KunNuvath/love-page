@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Mail,
   Send,
@@ -13,9 +13,15 @@ import {
   Check,
   Loader2,
   ExternalLink,
+  Lock,
+  LogIn,
+  UserPlus,
 } from "lucide-react";
+import { useAuth } from "@/src/context/AuthContext";
 
 export default function ContactFeedbackSection() {
+  const { user, openAuthModal } = useAuth();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [category, setCategory] = useState<"feedback" | "bug" | "feature" | "general">("feedback");
@@ -26,6 +32,20 @@ export default function ContactFeedbackSection() {
   const [hasCopiedEmail, setHasCopiedEmail] = useState(false);
 
   const SUPPORT_EMAIL = "support@lovepage.site";
+
+  // Pre-fill name and email from logged-in user
+  useEffect(() => {
+    if (user) {
+      if (user.email) {
+        setEmail(user.email);
+      }
+      const metaName =
+        user.user_metadata?.name || user.user_metadata?.display_name || "";
+      if (metaName && !name) {
+        setName(metaName);
+      }
+    }
+  }, [user, name]);
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(SUPPORT_EMAIL);
@@ -53,6 +73,16 @@ export default function ContactFeedbackSection() {
     e.preventDefault();
     setErrorMessage(null);
 
+    if (!user) {
+      openAuthModal({
+        title: "Sign In to Send Feedback",
+        subtitle:
+          "Only signed-in members can send feedback and support messages.",
+        defaultMode: "signin",
+      });
+      return;
+    }
+
     if (!email.trim() || !message.trim()) {
       setErrorMessage("Please enter both your email address and message.");
       return;
@@ -64,24 +94,34 @@ export default function ContactFeedbackSection() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, category, message }),
+        body: JSON.stringify({
+          userId: user.id,
+          name: name.trim(),
+          email: email.trim(),
+          category,
+          message: message.trim(),
+        }),
       });
 
+      const data = await res.json().catch(() => ({}));
+
       if (!res.ok) {
-        throw new Error("Unable to send at this moment. Please try again or email directly.");
+        throw new Error(
+          data.error || "Unable to send at this moment. Please try again."
+        );
       }
 
       setIsSubmitted(true);
     } catch (err: any) {
-      setErrorMessage(err?.message || "Failed to submit. You can also email us directly!");
+      setErrorMessage(
+        err?.message || "Failed to submit. You can also email us directly!"
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleResetForm = () => {
-    setName("");
-    setEmail("");
     setMessage("");
     setIsSubmitted(false);
     setErrorMessage(null);
@@ -104,7 +144,7 @@ export default function ContactFeedbackSection() {
             <span>Get In Touch</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#2d221e] tracking-tight mb-3">
-            Feedback & Support
+            Feedback &amp; Support
           </h2>
           <p className="text-[#68584f] text-sm max-w-lg mx-auto">
             Have an idea to make LovePage better, found a bug, or just want to say hi?
@@ -150,7 +190,55 @@ export default function ContactFeedbackSection() {
             </span>
           </div>
 
-          {isSubmitted ? (
+          {!user ? (
+            /* Auth Gated State: Only Signed-In Users Can Give Feedback & Support */
+            <div className="py-8 sm:py-10 px-3 text-center">
+              <div className="h-14 w-14 rounded-2xl bg-[#cf493e]/10 text-[#cf493e] flex items-center justify-center mx-auto mb-4 border border-[#cf493e]/20">
+                <Lock className="h-6 w-6" />
+              </div>
+
+              <h3 className="text-xl sm:text-2xl font-extrabold text-[#2d221e] tracking-tight mb-2">
+                Sign In to Send Feedback &amp; Support
+              </h3>
+              <p className="text-[#68584f] text-xs sm:text-sm max-w-md mx-auto mb-6 leading-relaxed">
+                To prevent spam and make sure we can reply to your real email address, only signed-in members can submit feedback or support requests.
+              </p>
+
+              <div className="flex flex-col xs:flex-row items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() =>
+                    openAuthModal({
+                      title: "Sign In to Send Feedback",
+                      subtitle:
+                        "Sign in with your verified account to send a message to our support team.",
+                      defaultMode: "signin",
+                    })
+                  }
+                  className="w-full xs:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-[#cf493e] hover:bg-[#b83b31] text-white text-xs sm:text-sm font-bold shadow-[0_4px_14px_rgba(207,73,62,0.3)] transition-all cursor-pointer active:scale-95"
+                >
+                  <LogIn className="h-4 w-4" />
+                  <span>Sign In</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    openAuthModal({
+                      title: "Create Account for Feedback",
+                      subtitle:
+                        "Create a free verified account to send feedback and save your love keepsakes.",
+                      defaultMode: "signup",
+                    })
+                  }
+                  className="w-full xs:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-white hover:bg-[#faf3ed] text-[#4a3a32] border border-[#d8c8b4] text-xs sm:text-sm font-semibold shadow-2xs transition-all cursor-pointer active:scale-95"
+                >
+                  <UserPlus className="h-4 w-4 text-[#cf493e]" />
+                  <span>Create Account</span>
+                </button>
+              </div>
+            </div>
+          ) : isSubmitted ? (
             /* Success State */
             <div className="py-10 text-center animate-fade-up">
               <div className="h-16 w-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-5 shadow-sm">
@@ -161,8 +249,9 @@ export default function ContactFeedbackSection() {
                 Thank You for Your Note!
               </h3>
               <p className="text-[#68584f] text-sm sm:text-base max-w-md mx-auto mb-6 leading-relaxed">
-                We received your message and will review it right away. If you provided an email,
-                we will get back to you directly from <strong className="text-[#cf493e] font-mono">{SUPPORT_EMAIL}</strong>.
+                We received your message and will review it right away. We will get back to you at{" "}
+                <strong className="text-[#2d221e]">{email}</strong> from{" "}
+                <strong className="text-[#cf493e] font-mono">{SUPPORT_EMAIL}</strong>.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -186,7 +275,7 @@ export default function ContactFeedbackSection() {
               </div>
             </div>
           ) : (
-            /* The Active Contact Form */
+            /* The Active Contact Form (For Logged-In Users) */
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Category Pills */}
               <div>

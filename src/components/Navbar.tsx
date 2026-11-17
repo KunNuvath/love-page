@@ -79,21 +79,16 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
         isScrolled ? "shadow-xs" : ""
       }`}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-2">
         {/* ── Brand Logo ─────────────────────────────────────────── */}
         <Link
           href="/"
-          className="flex items-center gap-2.5 group transition-transform hover:scale-102"
+          className="flex items-center gap-2 group transition-transform hover:scale-102 shrink-0"
         >
           <BrandLogo size="lg" className="group-hover:rotate-6 transition-transform" />
-          <div className="flex items-center gap-1.5">
-            <span className="font-handwriting text-2xl sm:text-3xl font-bold tracking-tight text-[#2d2420]">
-              LovePage
-            </span>
-            <span className="text-[10px] uppercase font-typewriter tracking-widest px-1.5 py-0.5 rounded bg-[#cf493e]/10 text-[#cf493e] font-bold hidden xs:inline-block">
-              Keepsake
-            </span>
-          </div>
+          <span className="font-handwriting text-2xl sm:text-3xl font-bold tracking-tight text-[#2d2420]">
+            LovePage
+          </span>
         </Link>
 
         {/* ── Desktop Navigation (Clean, Curated & Uncluttered) ─── */}
@@ -351,20 +346,32 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
           {/* User Account State in Mobile Drawer */}
           <div className="mb-4 pt-3 border-t border-[#ebdcd0]">
             {user ? (
-              <div className="flex items-center justify-between p-3 rounded-xl bg-white border border-[#e8dccf]">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="h-8 w-8 rounded-full bg-[#cf493e] text-white flex items-center justify-center text-xs font-bold shrink-0">
-                    {user.user_metadata?.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
+              <div className="flex flex-col gap-2.5 p-3 rounded-xl bg-white border border-[#e8dccf]">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="h-8 w-8 rounded-full bg-[#cf493e] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                      {user.user_metadata?.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-[#2d221e] truncate">
+                        {user.user_metadata?.name || "Member"}
+                      </p>
+                      <p className="text-[10px] text-[#8c786a] font-mono truncate">{user.email}</p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-[#2d221e] truncate">
-                      {user.user_metadata?.name || "Member"}
-                    </p>
-                    <p className="text-[10px] text-[#8c786a] font-mono truncate">{user.email}</p>
-                  </div>
+                  {!confirmingSignOut && (
+                    <button
+                      type="button"
+                      onClick={() => setConfirmingSignOut(true)}
+                      className="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer shrink-0"
+                    >
+                      <LogOut className="h-3 w-3" />
+                      <span>Sign Out</span>
+                    </button>
+                  )}
                 </div>
-                {confirmingSignOut ? (
-                  <div className="mt-2 px-3 py-2.5 rounded-xl bg-red-50 border border-red-100">
+                {confirmingSignOut && (
+                  <div className="px-3 py-2.5 rounded-xl bg-red-50 border border-red-100">
                     <p className="text-xs text-red-700 font-semibold mb-2">Sign out of your account?</p>
                     <div className="flex gap-2">
                       <button
@@ -387,15 +394,6 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
                       </button>
                     </div>
                   </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setConfirmingSignOut(true)}
-                    className="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
-                  >
-                    <LogOut className="h-3 w-3" />
-                    <span>Sign Out</span>
-                  </button>
                 )}
               </div>
             ) : (

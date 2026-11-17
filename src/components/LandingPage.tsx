@@ -216,26 +216,26 @@ export default function LandingPage() {
       {/* ─────────────────────────────────────────────────────────────
           2. HERO SECTION
       ───────────────────────────────────────────────────────────── */}
-      <section className="relative pt-6 sm:pt-16 pb-14 sm:pb-24 px-3.5 sm:px-6 max-w-6xl mx-auto flex flex-col items-center text-center">
+      <section className="relative pt-6 sm:pt-16 pb-14 sm:pb-24 px-4 xs:px-5 sm:px-6 max-w-6xl mx-auto flex flex-col items-center text-center overflow-hidden">
         {/* Glowing Ambient Backdrop */}
         <div className="absolute top-10 left-1/2 -translate-x-1/2 w-3/4 max-w-2xl h-80 glow-romantic -z-10 blur-3xl pointer-events-none" />
 
         {/* Top Floating Badge */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-[#e8d7c5] shadow-xs mb-5 sm:mb-8 animate-fade-up">
+        <div className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/80 border border-[#e8d7c5] shadow-xs mb-5 sm:mb-8 animate-fade-up max-w-full">
           <Heart className="h-3.5 w-3.5 fill-[#cf493e] text-[#cf493e] animate-pulse shrink-0" />
-          <span className="text-xs sm:text-sm font-semibold tracking-wide text-[#5a483e]">
+          <span className="text-[11px] xs:text-xs sm:text-sm font-semibold tracking-wide text-[#5a483e] truncate">
             The Sweetest Digital Keepsakes • 2 Templates
           </span>
-          <span className="text-xs">✨</span>
+          <span className="text-xs shrink-0">✨</span>
         </div>
 
         {/* Headline */}
-        <h1 className="text-3xl xs:text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-[#2d221e] max-w-4xl leading-[1.18] sm:leading-[1.12] mb-5 sm:mb-6">
+        <h1 className="text-2xl xs:text-3xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-[#2d221e] max-w-4xl leading-[1.2] sm:leading-[1.12] mb-5 sm:mb-6 px-1">
           Turn Your Cherished Moments Into A{" "}
-          <span className="font-handwriting font-bold text-4xl xs:text-5xl sm:text-7xl md:text-8xl text-[#cf493e] inline-block -rotate-1 relative mx-1">
+          <span className="font-handwriting font-bold text-3xl xs:text-4xl sm:text-7xl md:text-8xl text-[#cf493e] inline-block -rotate-1 relative mx-0.5 sm:mx-1">
             Timeless Love Story
             <svg
-              className="absolute -bottom-2 left-0 w-full text-[#cf493e]/40 h-3"
+              className="absolute -bottom-1.5 sm:-bottom-2 left-0 w-full text-[#cf493e]/40 h-2.5 sm:h-3"
               viewBox="0 0 100 20"
               preserveAspectRatio="none"
             >
@@ -250,25 +250,25 @@ export default function LandingPage() {
         </h1>
 
         {/* Subtitle */}
-        <p className="text-sm sm:text-xl text-[#6b584d] max-w-2xl leading-relaxed mb-7 sm:mb-10 px-1">
+        <p className="text-xs xs:text-sm sm:text-xl text-[#6b584d] max-w-2xl leading-relaxed mb-7 sm:mb-10 px-2">
           Create a personalized romantic keepsake: choose between our <strong>Retro Polaroid Scrapbook</strong> or the brand new <strong>Spiral Bound Little Book</strong> with 18 photo frames on a craft cutting mat.
         </p>
 
         {/* Dual Primary Call to Actions */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full sm:w-auto mb-10 sm:mb-20 max-w-md sm:max-w-none">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full sm:w-auto mb-10 sm:mb-20 max-w-sm sm:max-w-none px-1">
           <button
             type="button"
             onClick={() => setIsChooserOpen(true)}
-            className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-6 sm:px-7 py-3.5 sm:py-4 rounded-full bg-[#cf493e] text-white font-bold text-sm sm:text-base shadow-[0_8px_24px_rgba(207,73,62,0.38)] hover:bg-[#b83b31] hover:shadow-[0_10px_28px_rgba(207,73,62,0.48)] hover:scale-102 active:scale-95 transition-all group cursor-pointer"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 sm:py-4 rounded-full bg-[#cf493e] text-white font-bold text-xs xs:text-sm sm:text-base shadow-[0_8px_24px_rgba(207,73,62,0.38)] hover:bg-[#b83b31] hover:shadow-[0_10px_28px_rgba(207,73,62,0.48)] hover:scale-102 active:scale-95 transition-all group cursor-pointer"
           >
-            <Sparkles className="h-4.5 w-4.5 fill-white group-hover:scale-110 transition-transform shrink-0" />
+            <Sparkles className="h-4 w-4 fill-white group-hover:scale-110 transition-transform shrink-0" />
             <span>Choose &amp; Launch Template</span>
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform shrink-0" />
           </button>
 
           <a
             href="#studio"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 sm:py-4 rounded-full bg-white/90 text-[#3d332a] font-semibold text-sm sm:text-base border border-[#d8c7b4] shadow-xs hover:bg-white hover:border-[#cf493e]/50 hover:shadow-md hover:scale-102 active:scale-95 transition-all"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 sm:py-4 rounded-full bg-white/90 text-[#3d332a] font-semibold text-xs xs:text-sm sm:text-base border border-[#d8c7b4] shadow-xs hover:bg-white hover:border-[#cf493e]/50 hover:shadow-md hover:scale-102 active:scale-95 transition-all"
           >
             <Wand2 className="h-4 w-4 text-[#cf493e] shrink-0" />
             <span>Quick Personalize &amp; Preview</span>
@@ -278,42 +278,42 @@ export default function LandingPage() {
         {/* ─────────────────────────────────────────────────────────────
             HERO VISUAL SHOWCASE (Interactive Scrapbook Teaser Card)
         ───────────────────────────────────────────────────────────── */}
-        <div className="w-full max-w-4xl relative group">
+        <div className="w-full max-w-[92vw] xs:max-w-[92vw] sm:max-w-4xl mx-auto relative group">
           {/* Decorative Corner Washi Tapes */}
           <div className="absolute -top-3.5 left-10 w-28 h-7 washi-tape-green -rotate-3 z-20 pointer-events-none hidden sm:block" />
           <div className="absolute -top-3 right-10 w-28 h-7 washi-tape-mauve rotate-6 z-20 pointer-events-none hidden sm:block" />
 
           {/* Main Showcase Scrapbook Paper Container */}
-          <div className="scrapbook-paper rounded-xl p-3.5 xs:p-5 sm:p-8 md:p-10 border border-[#d8c8b4] shadow-[0_20px_50px_rgba(140,70,60,0.18)] text-left relative overflow-hidden transition-all duration-300">
+          <div className="scrapbook-paper rounded-xl p-4 xs:p-5 sm:p-8 md:p-10 border border-[#d8c8b4] shadow-[0_20px_50px_rgba(140,70,60,0.18)] text-left relative overflow-hidden transition-all duration-300">
             {/* Header Stamp & Curated By */}
-            <div className="flex items-start justify-between border-b border-dashed border-[#cbbeaa] pb-4 sm:pb-5 mb-5 sm:mb-6">
-              <div>
-                <span className="font-handwriting text-xl xs:text-2xl sm:text-3xl text-[#36322d]">
+            <div className="flex items-start justify-between gap-2 border-b border-dashed border-[#cbbeaa] pb-4 sm:pb-5 mb-5 sm:mb-6">
+              <div className="min-w-0">
+                <span className="font-handwriting text-xl xs:text-2xl sm:text-3xl text-[#36322d] block truncate">
                   Curated for {partnerName}
                 </span>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-2 mt-1 flex-wrap">
                   <span className="font-typewriter text-[9px] xs:text-[10px] sm:text-xs font-bold tracking-widest px-2 py-0.5 highlighter-badge text-[#2c475d] rounded">
                     VOL. 01 / ORIGINAL
                   </span>
-                  <span className="text-[11px] sm:text-xs text-[#7d6c5e]">
+                  <span className="text-[11px] sm:text-xs text-[#7d6c5e] truncate">
                     • by {yourName}
                   </span>
                 </div>
               </div>
 
               {/* MEMORIES Stamp */}
-              <div className="inline-block -rotate-6 px-2.5 py-1 stamp-memories">
-                <span className="font-typewriter text-[10px] xs:text-xs font-bold tracking-widest block">
+              <div className="inline-block -rotate-6 px-2 sm:px-2.5 py-1 stamp-memories shrink-0">
+                <span className="font-typewriter text-[9px] xs:text-xs font-bold tracking-widest block">
                   MEMORIES
                 </span>
               </div>
             </div>
 
             {/* 3 Interactive Polaroid Teaser Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5 my-4 sm:my-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 my-4 sm:my-6 px-1 sm:px-0">
               {/* Polaroid 1 */}
-              <div className="polaroid-card p-2 sm:p-2.5 pb-3 sm:pb-4 rounded-[3px] -rotate-1 group/card hover:rotate-0 transition-transform">
-                <div className="aspect-[4/3.2] bg-linear-to-br from-rose-100 to-amber-100 rounded-[2px] overflow-hidden flex flex-col items-center justify-center p-3 text-center border border-[#e4dcce] relative">
+              <div className="polaroid-card p-2.5 sm:p-2.5 pb-3.5 sm:pb-4 rounded-[3px] -rotate-1 group/card hover:rotate-0 transition-transform">
+                <div className="aspect-[4/3.2] bg-gradient-to-br from-rose-100 to-amber-100 rounded-[2px] overflow-hidden flex flex-col items-center justify-center p-3 text-center border border-[#e4dcce] relative">
                   <Camera className="h-6 w-6 sm:h-7 sm:w-7 text-[#cf493e]/70 mb-1 group-hover/card:scale-110 transition-transform" />
                   <span className="text-xs font-medium text-[#7d675b]">
                     Our First Date
@@ -328,8 +328,8 @@ export default function LandingPage() {
               </div>
 
               {/* Polaroid 2 (Center) */}
-              <div className="polaroid-card p-2 sm:p-2.5 pb-3 sm:pb-4 rounded-[3px] rotate-2 group/card hover:rotate-0 transition-transform">
-                <div className="aspect-[4/3.2] bg-linear-to-br from-pink-100 to-rose-200 rounded-[2px] overflow-hidden flex flex-col items-center justify-center p-3 text-center border border-[#e4dcce] relative">
+              <div className="polaroid-card p-2.5 sm:p-2.5 pb-3.5 sm:pb-4 rounded-[3px] rotate-1 sm:rotate-2 group/card hover:rotate-0 transition-transform">
+                <div className="aspect-[4/3.2] bg-gradient-to-br from-pink-100 to-rose-200 rounded-[2px] overflow-hidden flex flex-col items-center justify-center p-3 text-center border border-[#e4dcce] relative">
                   <Heart className="h-6 w-6 sm:h-7 sm:w-7 fill-[#cf493e]/80 text-[#cf493e] mb-1 group-hover/card:scale-110 transition-transform" />
                   <span className="text-xs font-medium text-[#7d675b]">
                     Sweet Moments
@@ -344,8 +344,8 @@ export default function LandingPage() {
               </div>
 
               {/* Polaroid 3 */}
-              <div className="polaroid-card p-2 sm:p-2.5 pb-3 sm:pb-4 rounded-[3px] -rotate-2 group/card hover:rotate-0 transition-transform">
-                <div className="aspect-[4/3.2] bg-linear-to-br from-amber-100 to-yellow-100 rounded-[2px] overflow-hidden flex flex-col items-center justify-center p-3 text-center border border-[#e4dcce] relative">
+              <div className="polaroid-card p-2.5 sm:p-2.5 pb-3.5 sm:pb-4 rounded-[3px] -rotate-1 sm:-rotate-2 group/card hover:rotate-0 transition-transform">
+                <div className="aspect-[4/3.2] bg-gradient-to-br from-amber-100 to-yellow-100 rounded-[2px] overflow-hidden flex flex-col items-center justify-center p-3 text-center border border-[#e4dcce] relative">
                   <Coffee className="h-6 w-6 sm:h-7 sm:w-7 text-amber-700/70 mb-1 group-hover/card:scale-110 transition-transform" />
                   <span className="text-xs font-medium text-[#7d675b]">
                     Laughs & Coffee
@@ -575,10 +575,10 @@ export default function LandingPage() {
             </div>
 
             {/* Right Column: Live Interactive Preview Card (5 cols) */}
-            <div className="lg:col-span-5 flex flex-col items-center w-full">
-              <div className="w-full scrapbook-paper p-4 sm:p-7 rounded-xl border border-[#d8c8b4] shadow-lg lg:sticky lg:top-28">
+            <div className="lg:col-span-5 flex flex-col items-center w-full mt-2 lg:mt-0">
+              <div className="w-full max-w-[92vw] xs:max-w-[92vw] sm:max-w-none mx-auto scrapbook-paper p-4 xs:p-5 sm:p-7 rounded-xl border border-[#d8c8b4] shadow-lg lg:sticky lg:top-28">
                 {/* Washi tape sticker */}
-                <div className="w-24 h-6 washi-tape-green mx-auto -mt-9 mb-4 -rotate-2" />
+                <div className="w-24 h-6 washi-tape-green mx-auto -mt-6 sm:-mt-9 mb-4 -rotate-2" />
 
                 <div className="flex items-center justify-between border-b border-dashed border-[#cbbeaa] pb-3 mb-4">
                   <span className="font-handwriting text-2xl text-[#36322d]">
@@ -994,7 +994,7 @@ export default function LandingPage() {
       {/* ─────────────────────────────────────────────────────────────
           9. ROMANTIC FINAL CALL TO ACTION (CTA BANNER)
       ───────────────────────────────────────────────────────────── */}
-      <section className="py-20 sm:py-28 px-4 sm:px-6 relative overflow-hidden bg-linear-to-b from-[#f7ebe6] to-[#eddcca] text-center">
+      <section className="py-20 sm:py-28 px-4 sm:px-6 relative overflow-hidden bg-gradient-to-b from-[#f7ebe6] to-[#eddcca] text-center">
         <div className="max-w-4xl mx-auto relative z-10">
           <div className="h-16 w-16 rounded-full bg-[#cf493e] text-white flex items-center justify-center mx-auto mb-6 shadow-[0_8px_24px_rgba(207,73,62,0.4)] animate-pulse-heart">
             <Heart className="h-8 w-8 fill-white" />

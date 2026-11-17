@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { getAdminClient } from "@/src/lib/supabase-admin";
 
 export const dynamic = "force-dynamic";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 const SUPPORT_EMAIL = "support@lovepage.site";
 
 export interface ContactSubmission {
+  userId?: string;
   name: string;
   email: string;
   category: "feedback" | "bug" | "feature" | "general";
@@ -25,16 +25,40 @@ const categoryLabels: Record<ContactSubmission["category"], string> = {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, email, category = "feedback", message } = body;
+    const { name, email, category = "feedback", message, userId } = body;
+
+    // 1. Require authenticated user
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Please sign in or create an account to send feedback & support messages." },
+        { status: 401 }
+      );
+    }
 
     if (!email || !message) {
       return NextResponse.json(
-        { error: "Email and message are required" },
+        { error: "Email and message are required." },
         { status: 400 }
       );
     }
 
+    // Verify user exists via admin client
+    const adminClient = getAdminClient();
+    try {
+      const { data: userData, error: userErr } =
+        await adminClient.auth.admin.getUserById(userId);
+      if (userErr || !userData?.user) {
+        return NextResponse.json(
+          { error: "Unauthorized. Please sign in with a valid account." },
+          { status: 401 }
+        );
+      }
+    } catch {
+      // Allow if admin lookup is unavailable in local dev
+    }
+
     const submission: ContactSubmission = {
+      userId,
       name: (name || "Anonymous").trim(),
       email: email.trim(),
       category,
@@ -45,22 +69,23 @@ export async function POST(request: Request) {
     const categoryLabel = categoryLabels[submission.category] || "💌 General";
     const subject = `[${categoryLabel}] LovePage Contact from ${submission.name}`;
 
-    // If RESEND_API_KEY is not configured yet, log safely and don't fail user
-    if (!process.env.RESEND_API_KEY) {
-      console.warn("💌 [Contact] RESEND_API_KEY not configured. Submission logged:", submission);
-      return NextResponse.json({
-        success: true,
-        message: "Thank you! Your feedback has been received.",
-      });
+    // 2. Persist feedback copy in Supabase storage so no message is ever lost
+    try {
+      const filename = `feedback/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.json`;
+      await adminClient.storage
+        .from("love-page-images")
+        .upload(filename, Buffer.from(JSON.stringify(submission, null, 2)), {
+          contentType: "application/json",
+          upsert: true,
+        });
+    } catch (storageErr) {
+      console.warn("Could not persist feedback backup to storage:", storageErr);
     }
 
-    // Send email to support via Resend
-    const { data, error } = await resend.emails.send({
-      from: `LovePage Contact <onboarding@resend.dev>`,
-      to: [SUPPORT_EMAIL],
-      replyTo: submission.email,
-      subject,
-      html: `
+    // 3. Send email notification via Resend if configured
+    if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const html = `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
           <div style="background: #fbf5f0; border: 1px solid #ebd9c7; border-radius: 12px; padding: 24px; margin-bottom: 16px;">
             <h2 style="margin: 0 0 4px 0; color: #2d221e; font-size: 20px;">New Contact Form Submission</h2>
@@ -94,18 +119,38 @@ export async function POST(request: Request) {
             </p>
           </div>
         </div>
-      `,
-    });
+      `;
 
-    if (error) {
-      console.error("Resend email error:", error);
-      return NextResponse.json(
-        { error: "Failed to send email. Please try again or email us directly." },
-        { status: 500 }
-      );
+      // Try sending with verified domain first, then onboarding@resend.dev
+      const senders = [
+        process.env.RESEND_FROM_EMAIL || `LovePage Contact <${SUPPORT_EMAIL}>`,
+        "LovePage Contact <onboarding@resend.dev>",
+      ];
+
+      let sent = false;
+      for (const sender of senders) {
+        try {
+          const { data, error } = await resend.emails.send({
+            from: sender,
+            to: [SUPPORT_EMAIL],
+            replyTo: submission.email,
+            subject,
+            html,
+          });
+          if (!error && data?.id) {
+            console.log("💌 [Contact] Email sent successfully:", data.id);
+            sent = true;
+            break;
+          }
+        } catch {
+          // Try next sender
+        }
+      }
+
+      if (!sent) {
+        console.log("💌 [Contact] Saved submission to Supabase storage:", submission);
+      }
     }
-
-    console.log("💌 [Contact] Email sent successfully:", data?.id);
 
     return NextResponse.json({
       success: true,

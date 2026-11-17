@@ -87,6 +87,23 @@ const config: Config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xs: "2px",
+      },
+      spacing: {
+        "4.5": "1.125rem",
+        "5.5": "1.375rem",
+      },
+      scale: {
+        "98": "0.98",
+        "102": "1.02",
+        "103": "1.03",
+      },
+      boxShadow: {
+        xs: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+        "2xs": "0 1px 1px 0 rgba(0, 0, 0, 0.04)",
+      },
+      backdropBlur: {
+        xs: "2px",
       },
       keyframes: {
         float: {
