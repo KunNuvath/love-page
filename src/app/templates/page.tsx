@@ -1,27 +1,38 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import type { Metadata } from "next";
+import { useRouter } from "next/navigation";
 import {
   Heart,
   Sparkles,
   ArrowRight,
-  Camera,
-  Music,
   BookOpen,
   CheckCircle2,
   ArrowLeft,
   Layers,
-  Wand2,
+  Crown,
+  Lock,
+  Compass,
+  Newspaper,
 } from "lucide-react";
 import BrandLogo from "@/src/components/BrandLogo";
-
-export const metadata: Metadata = {
-  title: "LovePage Templates — Choose Your Memory Keepsake",
-  description:
-    "Explore our collection of romantic scrapbook and memory journal templates. Handcrafted for couples.",
-};
+import { useAuth } from "@/src/context/AuthContext";
+import { hasTemplateAccess } from "@/src/lib/premium";
+import { ADVENTURE_TEMPLATE_ID } from "@/src/lib/adventure";
+import PremiumUnlockModal from "@/src/components/adventure/PremiumUnlockModal";
 
 export default function TemplatesPage() {
+  const router = useRouter();
+  const { user } = useAuth();
+  const [activeCategory, setActiveCategory] = useState<"all" | "free" | "premium">("all");
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isUnlockModalOpen, setIsUnlockModalOpen] = useState(false);
+
+  useEffect(() => {
+    setIsUnlocked(hasTemplateAccess(user, ADVENTURE_TEMPLATE_ID));
+  }, [user]);
+
   return (
     <div className="min-h-screen bg-[#f7ebe6] text-[#362e2b] selection:bg-[#cf493e]/20 font-sans py-10 px-4 sm:px-6 flex flex-col items-center">
       {/* Top Bar */}
@@ -44,7 +55,7 @@ export default function TemplatesPage() {
       </div>
 
       {/* Header */}
-      <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14 px-2">
+      <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10 px-2">
         <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#cf493e]/10 text-[#cf493e] text-xs font-bold tracking-wider uppercase mb-3">
           <Layers className="h-3.5 w-3.5" />
           <span>Template Collection</span>
@@ -53,153 +64,356 @@ export default function TemplatesPage() {
           Choose Your Perfect Love Template
         </h1>
         <p className="text-[#68584f] text-xs sm:text-sm md:text-base leading-relaxed">
-          Every love story is unique. Pick the keepsake format that matches your memories and surprise your favorite person.
+          Every love story is unique. Pick a free keepsake or unlock our handmade Premium Travel Collage to surprise your favorite person.
         </p>
-      </div>
 
-      {/* Templates Showcase Grid */}
-      <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-        {/* ═══════════════════════════════════════════════════════════
-            TEMPLATE 1: Retro Polaroid Scrapbook (Vol. 01)
-        ═══════════════════════════════════════════════════════════ */}
-        <div className="glass-panel rounded-3xl p-4.5 xs:p-6 sm:p-9 border border-[#e2d2c1] shadow-md flex flex-col justify-between group hover:shadow-xl transition-all">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#cf493e]/15 text-[#cf493e]">
-                Vol. 01 • Classic Scrapbook
-              </span>
-              <Heart className="h-5 w-5 text-[#cf493e]" />
-            </div>
-
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#2d221e] mb-2">
-              Retro Polaroid Scrapbook
-            </h2>
-            <p className="text-xs sm:text-sm text-[#68584f] mb-6 leading-relaxed">
-              A classic nostalgic craft paper aesthetic with 6 rotatable polaroid photo snaps, a custom romantic love note, and background couple song player.
-            </p>
-
-            {/* Visual Teaser Mockup */}
-            <div className="aspect-[16/9] bg-[#faf6ee] rounded-2xl border border-dashed border-[#cbbeaa] p-4 mb-6 relative overflow-hidden flex flex-col justify-between group-hover:scale-[1.01] transition-transform shadow-inner">
-              <div className="w-24 h-5 washi-tape-green mx-auto -mt-5 -rotate-2" />
-              <div className="grid grid-cols-3 gap-2">
-                <div className="bg-white p-1.5 rounded shadow-xs text-center -rotate-2">
-                  <div className="aspect-square bg-rose-100 rounded-xs mb-1" />
-                  <span className="font-handwriting text-xs">First Date</span>
-                </div>
-                <div className="bg-white p-1.5 rounded shadow-xs text-center rotate-2">
-                  <div className="aspect-square bg-pink-100 rounded-xs mb-1" />
-                  <span className="font-handwriting text-xs">Sweet Us</span>
-                </div>
-                <div className="bg-white p-1.5 rounded shadow-xs text-center -rotate-1">
-                  <div className="aspect-square bg-amber-100 rounded-xs mb-1" />
-                  <span className="font-handwriting text-xs">Forever</span>
-                </div>
-              </div>
-              <div className="text-xs font-typewriter text-[#cf493e] font-bold text-center">
-                ♫ Miguel - Sure Thing
-              </div>
-            </div>
-
-            {/* Specifications */}
-            <div className="space-y-2.5 text-xs sm:text-sm text-[#5a4b41] mb-8">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                <span><strong>6 Polaroid Cards:</strong> Upload, tilt physics, and zoom lightbox</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                <span><strong>Melody Player:</strong> Plays your couple song on repeat</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                <span><strong>Cursive Love Letter:</strong> Editable topic & love message</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                <span><strong>Aesthetic Accents:</strong> Washi tapes, pressed rose, floating hearts</span>
-              </div>
-            </div>
-          </div>
-
-          <Link
-            href="/scrapbook"
-            className="w-full py-4 rounded-2xl bg-[#cf493e] hover:bg-[#b83b31] text-white font-bold text-sm sm:text-base shadow-[0_6px_20px_rgba(207,73,62,0.35)] flex items-center justify-center gap-2 transition-all active:scale-98"
+        {/* Category Filter Tabs */}
+        <div className="mt-6 inline-flex items-center p-1.5 rounded-2xl bg-white/80 border border-[#e2d2c1] shadow-xs gap-1 flex-wrap justify-center">
+          <button
+            type="button"
+            onClick={() => setActiveCategory("all")}
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              activeCategory === "all"
+                ? "bg-[#2d221e] text-white shadow-xs"
+                : "text-[#68584f] hover:text-[#2d221e]"
+            }`}
           >
-            <Sparkles className="h-4 w-4" />
-            <span>Launch Polaroid Scrapbook</span>
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-
-        {/* ═══════════════════════════════════════════════════════════
-            TEMPLATE 2: "Our Little Book" Spiral Journal (Vol. 02)
-        ═══════════════════════════════════════════════════════════ */}
-        <div className="glass-panel rounded-3xl p-4.5 xs:p-6 sm:p-9 border-2 border-emerald-600/40 shadow-md flex flex-col justify-between group hover:shadow-xl transition-all relative overflow-hidden">
-          {/* Ribbon */}
-          <div className="absolute top-0 right-0 bg-washi-cherry text-white text-[10px] font-bold uppercase tracking-widest px-6 py-1 rounded-bl-xl shadow-xs">
-            NEW ✨ 18 Photos
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-600/15 text-emerald-700">
-                Vol. 02 • Spiral Bound Journal
-              </span>
-              <Sparkles className="h-5 w-5 text-emerald-600" />
-            </div>
-
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#2d221e] mb-2">
-              Our Little Book (Spiral Journal)
-            </h2>
-            <p className="text-xs sm:text-sm text-[#68584f] mb-6 leading-relaxed">
-              A rich craft cutting-mat desk environment with two 4:5 pages, a 17-hole central spiral coil, and 4 interactive spread tabs (18 photo frames total).
-            </p>
-
-            {/* Visual Teaser Mockup */}
-            <div className="aspect-[16/9] bg-[#2f6b58] rounded-2xl p-3 mb-6 relative overflow-hidden flex items-center justify-center group-hover:scale-[1.01] transition-transform shadow-inner">
-              <div className="flex items-center w-full h-full bg-[#fbfaf4] rounded-sm p-3 shadow-md relative">
-                <div className="flex-1 text-[10px] font-bagel text-washi-navy text-center border-r border-dashed border-neutral-300 pr-2">
-                  <span className="bg-washi-mustard/40 px-1.5 py-0.5 rounded">Hello, You</span>
-                  <div className="h-10 bg-amber-100 rounded-xs mt-1.5" />
-                </div>
-                <div className="flex-1 text-[10px] font-gaegu text-washi-cherry text-center pl-2">
-                  <div className="h-10 bg-teal-100 rounded-xs mb-1.5" />
-                  <span>Little Things</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Specifications */}
-            <div className="space-y-2.5 text-xs sm:text-sm text-[#5a4b41] mb-8">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                <span><strong>18 Photo Frames:</strong> 4 interactive tabs (Hello, Little Things, Memories, Love This)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                <span><strong>Bulk Photo Fill:</strong> Auto-populates all empty frames with 1 file selection</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                <span><strong>Canvas Compression:</strong> Auto-downscales images client-side for smooth performance</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                <span><strong>Authentic Washi Tapes:</strong> 6 custom patterns with zigzag cut edges</span>
-              </div>
-            </div>
-          </div>
-
-          <Link
-            href="/book"
-            className="w-full py-4 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm sm:text-base shadow-[0_6px_20px_rgba(20,90,70,0.35)] flex items-center justify-center gap-2 transition-all active:scale-98"
+            All Templates (3)
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveCategory("free")}
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              activeCategory === "free"
+                ? "bg-emerald-700 text-white shadow-xs"
+                : "text-[#68584f] hover:text-emerald-700"
+            }`}
           >
-            <BookOpen className="h-4 w-4" />
-            <span>Launch Spiral Little Book</span>
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+            Free Collection (2)
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveCategory("premium")}
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeCategory === "premium"
+                ? "bg-[#1d2742] text-[#f7d56a] shadow-xs"
+                : "text-[#1d2742] hover:bg-[#f7d56a]/25"
+            }`}
+          >
+            <Crown className="h-3.5 w-3.5 text-[#e5533d] fill-[#f7d56a]" />
+            <span>Premium Category (1)</span>
+          </button>
         </div>
       </div>
+
+      {/* ═══════════════════════════════════════════════════════════
+          1. FREE COLLECTION (Vol. 01 & Vol. 02)
+      ═══════════════════════════════════════════════════════════ */}
+      {(activeCategory === "all" || activeCategory === "free") && (
+        <div className="w-full max-w-5xl mb-12">
+          <div className="flex items-center justify-between mb-4 px-1">
+            <h2 className="text-lg sm:text-xl font-extrabold text-[#2d221e]">
+              Free Keepsake Templates
+            </h2>
+            <span className="text-xs font-bold text-emerald-700 bg-emerald-600/10 px-3 py-1 rounded-full">
+              100% Free
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* TEMPLATE 1: Retro Polaroid Scrapbook (Vol. 01) */}
+            <div className="glass-panel rounded-3xl p-4.5 xs:p-6 sm:p-9 border border-[#e2d2c1] shadow-md flex flex-col justify-between group hover:shadow-xl transition-all">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#cf493e]/15 text-[#cf493e]">
+                    Vol. 01 • Free • Classic Scrapbook
+                  </span>
+                  <Heart className="h-5 w-5 text-[#cf493e]" />
+                </div>
+
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-[#2d221e] mb-2">
+                  Retro Polaroid Scrapbook
+                </h3>
+                <p className="text-xs sm:text-sm text-[#68584f] mb-6 leading-relaxed">
+                  A classic nostalgic craft paper aesthetic with 6 rotatable polaroid photo snaps, a custom romantic love note, and background couple song player.
+                </p>
+
+                <div className="aspect-[16/9] bg-[#faf6ee] rounded-2xl border border-dashed border-[#cbbeaa] p-4 mb-6 relative overflow-hidden flex flex-col justify-between group-hover:scale-[1.01] transition-transform shadow-inner">
+                  <div className="w-24 h-5 washi-tape-green mx-auto -mt-5 -rotate-2" />
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="bg-white p-1.5 rounded shadow-xs text-center -rotate-2">
+                      <div className="aspect-square bg-rose-100 rounded-xs mb-1" />
+                      <span className="font-handwriting text-xs">First Date</span>
+                    </div>
+                    <div className="bg-white p-1.5 rounded shadow-xs text-center rotate-2">
+                      <div className="aspect-square bg-pink-100 rounded-xs mb-1" />
+                      <span className="font-handwriting text-xs">Sweet Us</span>
+                    </div>
+                    <div className="bg-white p-1.5 rounded shadow-xs text-center -rotate-1">
+                      <div className="aspect-square bg-amber-100 rounded-xs mb-1" />
+                      <span className="font-handwriting text-xs">Forever</span>
+                    </div>
+                  </div>
+                  <div className="text-xs font-typewriter text-[#cf493e] font-bold text-center">
+                    ♫ Miguel - Sure Thing
+                  </div>
+                </div>
+
+                <div className="space-y-2.5 text-xs sm:text-sm text-[#5a4b41] mb-8">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                    <span><strong>6 Polaroid Cards:</strong> Upload, tilt physics, and zoom lightbox</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                    <span><strong>Melody Player:</strong> Plays your couple song on repeat</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                    <span><strong>Cursive Love Letter:</strong> Editable topic &amp; love message</span>
+                  </div>
+                </div>
+              </div>
+
+              <Link
+                href="/scrapbook"
+                className="w-full py-4 rounded-2xl bg-[#cf493e] hover:bg-[#b83b31] text-white font-bold text-sm sm:text-base shadow-[0_6px_20px_rgba(207,73,62,0.35)] flex items-center justify-center gap-2 transition-all active:scale-98"
+              >
+                <Sparkles className="h-4 w-4" />
+                <span>Launch Polaroid Scrapbook</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+
+            {/* TEMPLATE 2: "Our Little Book" Spiral Journal (Vol. 02) */}
+            <div className="glass-panel rounded-3xl p-4.5 xs:p-6 sm:p-9 border-2 border-emerald-600/40 shadow-md flex flex-col justify-between group hover:shadow-xl transition-all relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-washi-cherry text-white text-[10px] font-bold uppercase tracking-widest px-6 py-1 rounded-bl-xl shadow-xs">
+                18 Photos
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-600/15 text-emerald-700">
+                    Vol. 02 • Free • Spiral Journal
+                  </span>
+                  <Sparkles className="h-5 w-5 text-emerald-600" />
+                </div>
+
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-[#2d221e] mb-2">
+                  Our Little Book (Spiral Journal)
+                </h3>
+                <p className="text-xs sm:text-sm text-[#68584f] mb-6 leading-relaxed">
+                  A rich craft cutting-mat desk environment with two 4:5 pages, a 17-hole central spiral coil, and 4 interactive spread tabs (18 photo frames total).
+                </p>
+
+                <div className="aspect-[16/9] bg-[#2f6b58] rounded-2xl p-3 mb-6 relative overflow-hidden flex items-center justify-center group-hover:scale-[1.01] transition-transform shadow-inner">
+                  <div className="flex items-center w-full h-full bg-[#fbfaf4] rounded-sm p-3 shadow-md relative">
+                    <div className="flex-1 text-[10px] font-bagel text-washi-navy text-center border-r border-dashed border-neutral-300 pr-2">
+                      <span className="bg-washi-mustard/40 px-1.5 py-0.5 rounded">Hello, You</span>
+                      <div className="h-10 bg-amber-100 rounded-xs mt-1.5" />
+                    </div>
+                    <div className="flex-1 text-[10px] font-gaegu text-washi-cherry text-center pl-2">
+                      <div className="h-10 bg-teal-100 rounded-xs mb-1.5" />
+                      <span>Little Things</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2.5 text-xs sm:text-sm text-[#5a4b41] mb-8">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                    <span><strong>18 Photo Frames:</strong> 4 interactive tabs (Hello, Little Things, Memories, Love This)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                    <span><strong>Song &amp; 30s Trimmer:</strong> Custom background soundtrack</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                    <span><strong>Authentic Washi Tapes:</strong> 6 custom patterns with zigzag cut edges</span>
+                  </div>
+                </div>
+              </div>
+
+              <Link
+                href="/book"
+                className="w-full py-4 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm sm:text-base shadow-[0_6px_20px_rgba(20,90,70,0.35)] flex items-center justify-center gap-2 transition-all active:scale-98"
+              >
+                <BookOpen className="h-4 w-4" />
+                <span>Launch Spiral Little Book</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════
+          2. PREMIUM CATEGORY (Vol. 03 — "Our Little Adventure")
+      ═══════════════════════════════════════════════════════════ */}
+      {(activeCategory === "all" || activeCategory === "premium") && (
+        <div className="w-full max-w-5xl mb-16">
+          <div className="flex items-center justify-between mb-4 px-1">
+            <div className="flex items-center gap-2.5">
+              <div className="h-9 w-9 rounded-xl bg-[#1d2742] text-[#f7d56a] flex items-center justify-center shadow-xs">
+                <Crown className="h-5 w-5 fill-[#f7d56a]" />
+              </div>
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#e5533d] block">
+                  Premium Category • Handmade Travel Collage
+                </span>
+                <h2 className="text-xl sm:text-2xl font-extrabold text-[#2d221e]">
+                  Artisanal Torn-Paper Keepsake
+                </h2>
+              </div>
+            </div>
+            <span className="px-3.5 py-1 rounded-full bg-[#1d2742] text-[#f7d56a] text-xs font-extrabold border border-[#1d2742]">
+              {isUnlocked ? "👑 Unlocked" : "$4.99 One-Time"}
+            </span>
+          </div>
+
+          <div className="rounded-3xl p-5 xs:p-6 sm:p-9 bg-[#24395f] text-[#fbf6ea] border-2 border-[#1d2742] shadow-[0_22px_50px_rgba(20,29,51,0.35)] relative overflow-hidden">
+            {/* Corner Badge */}
+            <div className="absolute top-0 right-0 bg-[#f7d56a] text-[#1d2742] text-[10px] font-extrabold uppercase tracking-widest px-5 py-1.5 rounded-bl-2xl border-l-2 border-b-2 border-[#1d2742] flex items-center gap-1">
+              <Crown className="h-3 w-3 text-[#e5533d] fill-[#e5533d]" />
+              <span>{isUnlocked ? "PREMIUM UNLOCKED" : "VOL. 03 • PREMIUM"}</span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
+              {/* Left: Mini Visual Mockup of the Kraft Sheet & 6 Shapes */}
+              <div className="lg:col-span-6 bg-[#d3b088] text-[#1d2742] p-4 sm:p-5 rounded-2xl border-2 border-[#1d2742] shadow-[5px_5px_0_#1d2742]">
+                {/* Mini Ransom Header */}
+                <div className="flex flex-wrap items-center justify-center gap-1 mb-3">
+                  {["O", "U", "R", " ", "A", "D", "V", "E", "N", "T", "U", "R", "E"].map((ch, i) =>
+                    ch === " " ? (
+                      <span key={i} className="w-2" />
+                    ) : (
+                      <span
+                        key={i}
+                        style={{
+                          backgroundColor: ["#fbf6ea", "#f7d56a", "#e5533d", "#a6d9c0", "#9cc9ee"][i % 5],
+                          color: i % 5 === 2 ? "#fbf6ea" : "#1d2742",
+                          transform: `rotate(${i % 2 === 0 ? -3 : 3}deg)`,
+                        }}
+                        className="px-1.5 py-0.5 text-xs font-extrabold border border-[#1d2742] shadow-[1.5px_1.5px_0_#1d2742]"
+                      >
+                        {ch}
+                      </span>
+                    )
+                  )}
+                </div>
+
+                {/* 6 Custom Shape Previews + Daily Us Newspaper */}
+                <div className="grid grid-cols-3 gap-2.5 text-[10px] font-bold text-center">
+                  <div className="bg-[#fbf6ea] p-2 rounded border border-[#1d2742] -rotate-2">
+                    <div className="aspect-[4/3] bg-[#e5533d]/25 rounded-xs mb-1" />
+                    <span>1. Torn Paper</span>
+                  </div>
+                  <div className="bg-[#fbf6ea] p-2 rounded-full border-2 border-[#1d2742] aspect-square flex flex-col items-center justify-center rotate-2">
+                    <span>2. Circle</span>
+                  </div>
+                  <div className="bg-[#f7d56a] p-2 rounded border border-[#1d2742] -rotate-1">
+                    <div className="aspect-[4/3] bg-white/70 rounded-xs mb-1" />
+                    <span>3. Ticket Stub</span>
+                  </div>
+                  <div className="bg-[#15161b] text-[#fbf6ea] p-2 rounded border border-[#1d2742] rotate-1">
+                    <div className="aspect-[16/9] bg-[#9cc9ee]/35 rounded-xs mb-1" />
+                    <span>4. Film Strip</span>
+                  </div>
+                  <div className="bg-[#9cc9ee] p-2 rounded-t-full border border-[#1d2742] -rotate-2">
+                    <div className="aspect-[4/3] bg-white/70 rounded-t-full mb-1" />
+                    <span>5. Sky Arch</span>
+                  </div>
+                  <div className="bg-[#e5533d] text-[#fbf6ea] p-2 rounded-xl border border-[#1d2742] rotate-2 flex flex-col items-center justify-center">
+                    <Heart className="h-5 w-5 fill-[#fbf6ea] mb-0.5" />
+                    <span>6. Heart Cutout</span>
+                  </div>
+                </div>
+
+                <div className="mt-2.5 bg-[#f3ecda] border border-[#1d2742] px-3 py-1.5 text-[10px] font-mono flex items-center justify-between">
+                  <span className="font-bold">📰 THE DAILY US — EXTRA, EXTRA!</span>
+                  <span className="text-[#e5533d] font-bold">♥ Journey Path</span>
+                </div>
+              </div>
+
+              {/* Right: Description & Unlock / Launch Buttons */}
+              <div className="lg:col-span-6 flex flex-col justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f7d56a]/15 border border-[#f7d56a]/40 text-[#f7d56a] text-xs font-bold uppercase tracking-wider mb-3">
+                    <Compass className="h-3.5 w-3.5" />
+                    <span>Vol. 03 • Torn-Paper Travel Collage</span>
+                  </div>
+
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-[#fbf6ea] mb-2">
+                    Our Little Adventure
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#fbf6ea]/80 mb-5 leading-relaxed">
+                    A handmade travel-journal collage on a deep navy desk with a torn kraft-paper sheet, ransom-note cutout title letters, 6 uniquely shaped photo slots, a &ldquo;THE DAILY US&rdquo; newspaper clipping, doodle stickers, and a scroll-following red heart sticker.
+                  </p>
+
+                  <div className="space-y-2 text-xs sm:text-sm text-[#fbf6ea]/90 mb-6">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#a6d9c0] shrink-0" />
+                      <span><strong>6 Shaped Photo Cutouts:</strong> Torn rectangle, Circle, Ticket stub, Film strip, Arch &amp; Heart</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#a6d9c0] shrink-0" />
+                      <span><strong>Ransom-Note Header &amp; Newspaper:</strong> Editable paper-chip title + 2-column &ldquo;THE DAILY US&rdquo; story</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#a6d9c0] shrink-0" />
+                      <span><strong>Scroll Journey Path:</strong> Wavy dotted route with a red heart sticker that travels as you scroll</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  {isUnlocked ? (
+                    <Link
+                      href="/adventure"
+                      className="flex-1 py-4 px-6 rounded-2xl bg-[#e5533d] hover:bg-[#cc442f] text-[#fbf6ea] font-bold text-sm sm:text-base border-2 border-[#1d2742] shadow-[4px_4px_0_#1d2742] flex items-center justify-center gap-2 transition-all"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      <span>Open Our Little Adventure</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setIsUnlockModalOpen(true)}
+                        className="flex-1 py-4 px-6 rounded-2xl bg-[#f7d56a] hover:bg-[#efc74c] text-[#1d2742] font-extrabold text-sm sm:text-base border-2 border-[#1d2742] shadow-[4px_4px_0_#1d2742] flex items-center justify-center gap-2 transition-all cursor-pointer"
+                      >
+                        <Lock className="h-4 w-4 text-[#e5533d]" />
+                        <span>Unlock Premium • $4.99</span>
+                      </button>
+
+                      <Link
+                        href="/adventure"
+                        className="py-4 px-5 rounded-2xl bg-white/10 hover:bg-white/20 text-[#fbf6ea] border border-white/25 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all"
+                      >
+                        <Newspaper className="h-4 w-4 text-[#f7d56a]" />
+                        <span>Preview</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <PremiumUnlockModal
+        isOpen={isUnlockModalOpen}
+        onClose={() => setIsUnlockModalOpen(false)}
+        onUnlocked={() => {
+          setIsUnlocked(true);
+          setIsUnlockModalOpen(false);
+          router.push("/adventure");
+        }}
+      />
     </div>
   );
 }

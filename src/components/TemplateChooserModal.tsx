@@ -9,6 +9,8 @@ import {
   X,
   Layers,
   CheckCircle2,
+  Crown,
+  Compass,
 } from "lucide-react";
 
 interface TemplateChooserModalProps {
@@ -237,6 +239,32 @@ export default function TemplateChooserModal({
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
+          </div>
+
+          {/* PREMIUM CATEGORY BANNER: Vol. 03 — Our Little Adventure */}
+          <div className="mt-5 p-4 sm:p-5 rounded-2xl bg-[#24395f] text-[#fbf6ea] border-2 border-[#1d2742] shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#f7d56a] text-[#1d2742] text-[10px] font-extrabold uppercase tracking-wider">
+                <Crown className="h-3 w-3 text-[#e5533d] fill-[#e5533d]" />
+                <span>Vol. 03 • Premium Category • $4.99</span>
+              </div>
+              <h4 className="font-extrabold text-base sm:text-lg text-[#fbf6ea] flex items-center gap-2">
+                <Compass className="h-4 w-4 text-[#f7d56a]" />
+                <span>Our Little Adventure (Torn-Paper Travel Collage)</span>
+              </h4>
+              <p className="text-xs text-[#fbf6ea]/80 leading-relaxed max-w-xl">
+                Handmade kraft-paper sheet on a deep navy desk, ransom-note cutout title, 6 unique photo shapes (Torn, Circle, Ticket, Film, Arch, Heart), &ldquo;THE DAILY US&rdquo; newspaper clipping, and scroll-following heart path.
+              </p>
+            </div>
+
+            <Link
+              href="/adventure"
+              onClick={onClose}
+              className="w-full sm:w-auto shrink-0 py-3 px-5 rounded-xl bg-[#f7d56a] hover:bg-[#efc74c] text-[#1d2742] font-extrabold text-xs sm:text-sm border-2 border-[#1d2742] shadow-[3px_3px_0_#1d2742] flex items-center justify-center gap-1.5 transition-all"
+            >
+              <span>Open Travel Collage</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
 

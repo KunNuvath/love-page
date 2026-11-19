@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import type { LovePage } from "@/src/lib/supabase";
 import { getAdminClient } from "@/src/lib/supabase-admin";
+import { sanitizeAdventure } from "@/src/lib/adventure";
+import AdventureScrapbook from "@/src/components/adventure/AdventureScrapbook";
 import ShareView from "@/src/app/share/[slug]/ShareView";
 import LittleBookShareView from "@/src/app/share/[slug]/LittleBookShareView";
 
@@ -53,6 +55,16 @@ export default async function PublicPage({ params }: Props) {
     config = JSON.parse(page.message);
   } catch {
     config = null;
+  }
+
+  if (config?.type === "adventure-scrapbook") {
+    return (
+      <AdventureScrapbook
+        readOnly
+        initialData={sanitizeAdventure(config)}
+        initialId={page.slug}
+      />
+    );
   }
 
   if (config?.type === "little-book") {

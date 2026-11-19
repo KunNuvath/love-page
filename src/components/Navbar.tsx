@@ -100,7 +100,7 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
             <Layers className="h-3.5 w-3.5 text-[#cf493e] group-hover:scale-110 transition-transform" />
             <span>Templates</span>
             <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-[#cf493e]/10 text-[#cf493e]">
-              2
+              3
             </span>
           </Link>
 
@@ -287,6 +287,25 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
                 </div>
                 <span className="text-[10px] text-[#8c786a] leading-tight">
                   Vol. 02 • Spiral desk
+                </span>
+              </Link>
+
+              <Link
+                href="/adventure"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="col-span-2 flex items-center justify-between p-2.5 rounded-xl bg-[#24395f] text-[#fbf6ea] border border-[#1d2742] shadow-xs transition-all active:scale-98"
+              >
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#f7d56a]">
+                    <Sparkles className="h-3.5 w-3.5 text-[#e5533d]" />
+                    <span>Our Little Adventure</span>
+                  </div>
+                  <span className="text-[10px] text-[#fbf6ea]/80 leading-tight">
+                    Vol. 03 • Premium Torn-Paper Travel Collage
+                  </span>
+                </div>
+                <span className="px-2 py-0.5 rounded-full bg-[#f7d56a] text-[#1d2742] text-[10px] font-extrabold">
+                  $4.99
                 </span>
               </Link>
             </div>
