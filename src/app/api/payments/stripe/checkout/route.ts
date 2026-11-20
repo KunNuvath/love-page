@@ -40,6 +40,7 @@ export async function POST(request: Request) {
 
   const form = new URLSearchParams();
   form.set("mode", "payment");
+  form.set("allow_promotion_codes", "true");
   form.set("success_url", `${cleanOrigin}${template.href}?stripe_session_id={CHECKOUT_SESSION_ID}`);
   form.set("cancel_url", `${cleanOrigin}${template.href}?canceled=1`);
   form.set("client_reference_id", user.id);
