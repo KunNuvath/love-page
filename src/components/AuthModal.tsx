@@ -389,13 +389,23 @@ export default function AuthModal() {
     }
   };
 
-  // Handle verifying the 6-digit OTP code
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const resetOtpForRetry = (msg: string) => {
+    setErrorMsg(msg);
+    setSuccessMsg(null);
+    setIsLoading(false);
+    setOtpDigits(["", "", "", "", "", ""]);
+    setTimeout(() => {
+      otpInputRefs.current[0]?.focus();
+    }, 60);
+  };
+
+  // Core 6-digit OTP verification function (called automatically on 6th digit or form submit)
+  const submitOtpCode = async (rawCode: string) => {
+    if (isLoading) return;
     setErrorMsg(null);
     setSuccessMsg(null);
 
-    const code = otpDigits.join("").trim();
+    const code = rawCode.trim();
     if (code.length !== 6 || !/^\d{6}$/.test(code)) {
       setErrorMsg("Please enter the complete 6-digit verification code from your email.");
       return;
@@ -426,10 +436,9 @@ export default function AuthModal() {
           return;
         }
 
-        // If delivery was Resend only, report the error directly
+        // If delivery was Resend only, report the error and reset boxes for immediate retry
         if (deliveryMethod === "resend") {
-          setErrorMsg(data.error || "Invalid verification code. Please try again.");
-          setIsLoading(false);
+          resetOtpForRetry("Incorrect verification code. Please try again.");
           return;
         }
       }
@@ -455,10 +464,9 @@ export default function AuthModal() {
       }
 
       if (!supabaseVerified) {
-        setErrorMsg(
-          "Invalid or expired verification code. Please check your email inbox or click Resend Code."
+        resetOtpForRetry(
+          "Incorrect or expired verification code. Please try again or click Resend Code."
         );
-        setIsLoading(false);
         return;
       }
 
@@ -485,12 +493,16 @@ export default function AuthModal() {
 
       await completeVerifiedSignup();
     } catch (err: any) {
-      setErrorMsg(err?.message || "Verification failed. Please try again.");
-      setIsLoading(false);
+      resetOtpForRetry(err?.message || "Verification failed. Please try again.");
     }
   };
 
-  // OTP 6-box digit change handler
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await submitOtpCode(otpDigits.join(""));
+  };
+
+  // OTP 6-box digit change handler (auto-submits when all 6 digits are filled)
   const handleOtpDigitChange = (index: number, value: string) => {
     const digit = value.replace(/\D/g, "").slice(-1);
     const updated = [...otpDigits];
@@ -499,6 +511,11 @@ export default function AuthModal() {
 
     if (digit && index < 5) {
       otpInputRefs.current[index + 1]?.focus();
+    }
+
+    const joined = updated.join("");
+    if (digit && joined.length === 6 && /^\d{6}$/.test(joined)) {
+      void submitOtpCode(joined);
     }
   };
 
@@ -522,6 +539,10 @@ export default function AuthModal() {
     setOtpDigits(updated);
     const focusIdx = Math.min(pasted.length, 5);
     otpInputRefs.current[focusIdx]?.focus();
+
+    if (pasted.length === 6 && /^\d{6}$/.test(pasted)) {
+      void submitOtpCode(pasted);
+    }
   };
 
   const handleGoogleSignIn = async () => {
