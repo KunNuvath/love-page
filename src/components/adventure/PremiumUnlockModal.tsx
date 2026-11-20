@@ -21,6 +21,9 @@ interface PremiumUnlockModalProps {
   onClose: () => void;
   onUnlocked: () => void;
   price?: string;
+  templateId?: string;
+  templateTitle?: string;
+  bullets?: string[];
 }
 
 export default function PremiumUnlockModal({
@@ -28,6 +31,13 @@ export default function PremiumUnlockModal({
   onClose,
   onUnlocked,
   price = "$4.99",
+  templateId = ADVENTURE_TEMPLATE_ID,
+  templateTitle = "Our Little Adventure",
+  bullets = [
+    "6 shaped cutouts (Torn, Circle, Ticket, Film, Arch, Heart)",
+    'Editable ransom-note title & "THE DAILY US" story',
+    "Unlimited photo uploads & permanent share links",
+  ],
 }: PremiumUnlockModalProps) {
   const { user, session, openAuthModal } = useAuth();
   const [showCodeBox, setShowCodeBox] = useState(false);
@@ -58,7 +68,7 @@ export default function PremiumUnlockModal({
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ templateId: ADVENTURE_TEMPLATE_ID }),
+        body: JSON.stringify({ templateId }),
       });
 
       const data = await res.json();
@@ -108,7 +118,7 @@ export default function PremiumUnlockModal({
         method: "POST",
         headers,
         body: JSON.stringify({
-          templateId: ADVENTURE_TEMPLATE_ID,
+          templateId,
           method: "code",
           code: passCode,
         }),
@@ -122,9 +132,9 @@ export default function PremiumUnlockModal({
       }
 
       try {
-        localStorage.setItem(`lovepage_unlocked_${ADVENTURE_TEMPLATE_ID}`, "true");
+        localStorage.setItem(`lovepage_unlocked_${templateId}`, "true");
         if (user?.id) {
-          localStorage.setItem(`lovepage_unlocked_${ADVENTURE_TEMPLATE_ID}_${user.id}`, "true");
+          localStorage.setItem(`lovepage_unlocked_${templateId}_${user.id}`, "true");
         }
       } catch {}
 
@@ -165,7 +175,7 @@ export default function PremiumUnlockModal({
             <span>Vol. 03 • Premium Template</span>
           </div>
           <h3 className={`${styles.hand} text-3xl sm:text-4xl font-bold text-[#1d2742]`}>
-            Unlock &ldquo;Our Little Adventure&rdquo;
+            Unlock &ldquo;{templateTitle}&rdquo;
           </h3>
           <p className={`${styles.type} text-xs text-[#1d2742]/75 mt-1`}>
             One-time payment • Lifetime access • Instant unlock
@@ -175,18 +185,12 @@ export default function PremiumUnlockModal({
         {/* Summary Card */}
         <div className="p-4 rounded-xl bg-[#d3b088]/35 border-2 border-[#1d2742] mb-5 flex items-center justify-between gap-3">
           <ul className="text-xs text-[#1d2742] space-y-1.5">
-            <li className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-[#e5533d] shrink-0" />
-              <span>6 shaped cutouts (Torn, Circle, Ticket, Film, Arch, Heart)</span>
-            </li>
-            <li className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-[#e5533d] shrink-0" />
-              <span>Editable ransom-note title &amp; &ldquo;THE DAILY US&rdquo; story</span>
-            </li>
-            <li className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-[#e5533d] shrink-0" />
-              <span>Unlimited photo uploads &amp; permanent share links</span>
-            </li>
+            {bullets.map((b, i) => (
+              <li key={i} className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-[#e5533d] shrink-0" />
+                <span>{b}</span>
+              </li>
+            ))}
           </ul>
           <div className="text-right shrink-0 pl-3 border-l-2 border-dashed border-[#1d2742]/30">
             <span className="block text-[10px] uppercase font-bold text-[#1d2742]/70">One-Time</span>

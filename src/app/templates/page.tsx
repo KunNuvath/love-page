@@ -20,6 +20,7 @@ import BrandLogo from "@/src/components/BrandLogo";
 import { useAuth } from "@/src/context/AuthContext";
 import { hasTemplateAccess } from "@/src/lib/premium";
 import { ADVENTURE_TEMPLATE_ID } from "@/src/lib/adventure";
+import { ALBUM_TEMPLATE_ID } from "@/src/lib/album";
 import PremiumUnlockModal from "@/src/components/adventure/PremiumUnlockModal";
 
 export default function TemplatesPage() {
@@ -27,10 +28,12 @@ export default function TemplatesPage() {
   const { user } = useAuth();
   const [activeCategory, setActiveCategory] = useState<"all" | "free" | "premium">("all");
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const [isUnlockModalOpen, setIsUnlockModalOpen] = useState(false);
+  const [isAlbumUnlocked, setIsAlbumUnlocked] = useState(false);
+  const [modalTemplate, setModalTemplate] = useState<string | null>(null);
 
   useEffect(() => {
     setIsUnlocked(hasTemplateAccess(user, ADVENTURE_TEMPLATE_ID));
+    setIsAlbumUnlocked(hasTemplateAccess(user, ALBUM_TEMPLATE_ID));
   }, [user]);
 
   return (
@@ -78,7 +81,7 @@ export default function TemplatesPage() {
                 : "text-[#68584f] hover:text-[#2d221e]"
             }`}
           >
-            All Templates (3)
+            All Templates (4)
           </button>
           <button
             type="button"
@@ -101,7 +104,7 @@ export default function TemplatesPage() {
             }`}
           >
             <Crown className="h-3.5 w-3.5 text-[#e5533d] fill-[#f7d56a]" />
-            <span>Premium Category (1)</span>
+            <span>Premium Category (2)</span>
           </button>
         </div>
       </div>
@@ -381,7 +384,7 @@ export default function TemplatesPage() {
                     <>
                       <button
                         type="button"
-                        onClick={() => setIsUnlockModalOpen(true)}
+                        onClick={() => setModalTemplate(ADVENTURE_TEMPLATE_ID)}
                         className="flex-1 py-4 px-6 rounded-2xl bg-[#f7d56a] hover:bg-[#efc74c] text-[#1d2742] font-extrabold text-sm sm:text-base border-2 border-[#1d2742] shadow-[4px_4px_0_#1d2742] flex items-center justify-center gap-2 transition-all cursor-pointer"
                       >
                         <Lock className="h-4 w-4 text-[#e5533d]" />
@@ -402,16 +405,136 @@ export default function TemplatesPage() {
               </div>
             </div>
           </div>
+
+          {/* ── VOL. 04 PREMIUM: Scrapbook Album (9-Page Flip Photo Album) ── */}
+          <div className="mt-8 rounded-3xl p-5 xs:p-6 sm:p-9 bg-[#faf6ef] text-[#4a3f38] border-2 border-[#8aa67c] shadow-[0_20px_50px_rgba(74,63,56,0.16)] relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-[#8aa67c] text-white text-[10px] font-extrabold uppercase tracking-widest px-5 py-1.5 rounded-bl-2xl flex items-center gap-1">
+              <Crown className="h-3 w-3 text-[#e9c46a] fill-[#e9c46a]" />
+              <span>{isAlbumUnlocked ? "PREMIUM UNLOCKED" : "VOL. 04 • PREMIUM"}</span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
+              {/* Left: Mini 9-Page Flip Album Preview */}
+              <div className="lg:col-span-6 bg-[#efe6d8] p-4 sm:p-5 rounded-2xl border border-[#4a3f38]/15 shadow-inner">
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-[#4a3f38]/75 mb-3">
+                  <span>9-PAGE 3D FLIP PHOTO ALBUM</span>
+                  <span className="px-2 py-0.5 rounded-full bg-white text-[#8aa67c]">1 / 9 → 9 / 9</span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-[10px] font-bold text-center">
+                  {[
+                    { p: "1. Our Family", bg: "#faf6ef", badge: "3×2 Polaroids" },
+                    { p: "2. Story Begins", bg: "#faf6ef", badge: "Sand Circle" },
+                    { p: "3. Memories", bg: "#e9c46a", badge: "5 Photos + Tile" },
+                    { p: "4. FAMILY", bg: "#faf6ef", badge: "Photo Letters" },
+                    { p: "5. Clothesline", bg: "#faf6ef", badge: "5 Pegged Snaps" },
+                    { p: "6. Just Us", bg: "#8aa67c", badge: "Sage Circles" },
+                    { p: "7. Tall Center", bg: "#faf6ef", badge: "5-Photo Bento" },
+                    { p: "8. Sticker Cut", bg: "#f5d0c8", badge: "Heart & Star" },
+                    { p: "9. Forever", bg: "#faf6ef", badge: "Closing Note" },
+                  ].map((item, idx) => (
+                    <div
+                      key={idx}
+                      style={{ backgroundColor: item.bg }}
+                      className="p-2 rounded-xl border border-[#4a3f38]/20 shadow-2xs flex flex-col justify-between"
+                    >
+                      <span className="text-[#4a3f38] truncate">{item.p}</span>
+                      <span className="mt-1 text-[9px] font-normal text-[#4a3f38]/75 bg-white/70 rounded px-1 py-0.5 truncate">
+                        {item.badge}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right: Description & Unlock / Launch CTA */}
+              <div className="lg:col-span-6 flex flex-col justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8aa67c]/15 text-[#4a3f38] text-xs font-bold uppercase tracking-wider mb-3">
+                    <BookOpen className="h-3.5 w-3.5 text-[#8aa67c]" />
+                    <span>Vol. 04 • 9-Page Flip Photo Album</span>
+                  </div>
+
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-[#4a3f38] mb-2">
+                    Scrapbook Album (9-Page Flip Book)
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#4a3f38]/80 mb-5 leading-relaxed">
+                    A soft, airy 9-page family &amp; couple collage album with 3D page-flip animation, scalloped paper borders, clothesline polaroids with pegs, photo-clipped &ldquo;FAMILY&rdquo; letters, a cut-paper heart &amp; star sticker page, and a secret owner edit token link.
+                  </p>
+
+                  <div className="space-y-2 text-xs sm:text-sm text-[#4a3f38]/90 mb-6">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#8aa67c] shrink-0" />
+                      <span><strong>9 Unique Collage Pages:</strong> 3×2 polaroids, clothesline pegs, FAMILY photo-letters &amp; heart cutouts</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#8aa67c] shrink-0" />
+                      <span><strong>3D Page-Flip &amp; Decorations:</strong> Scalloped borders, zigzag strips, corner washi &amp; floating emoji stickers</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#8aa67c] shrink-0" />
+                      <span><strong>Public Share + Secret Edit Link:</strong> Read-only `/album/[slug]` + secret owner edit token URL</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  {isAlbumUnlocked ? (
+                    <Link
+                      href="/album"
+                      className="flex-1 py-4 px-6 rounded-2xl bg-[#4a3f38] hover:bg-[#382f29] text-[#faf6ef] font-bold text-sm sm:text-base shadow-lg flex items-center justify-center gap-2 transition-all"
+                    >
+                      <Sparkles className="h-4 w-4 text-[#e9c46a]" />
+                      <span>Open 9-Page Scrapbook Album</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setModalTemplate(ALBUM_TEMPLATE_ID)}
+                        className="flex-1 py-4 px-6 rounded-2xl bg-[#e9c46a] hover:bg-[#dfb54e] text-[#4a3f38] font-extrabold text-sm sm:text-base border-2 border-[#4a3f38] shadow-[4px_4px_0_#4a3f38] flex items-center justify-center gap-2 transition-all cursor-pointer"
+                      >
+                        <Lock className="h-4 w-4 text-[#c94a3e]" />
+                        <span>Unlock Album • $4.99</span>
+                      </button>
+
+                      <Link
+                        href="/album"
+                        className="py-4 px-5 rounded-2xl bg-white hover:bg-[#efe6d8] text-[#4a3f38] border border-[#4a3f38]/25 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all"
+                      >
+                        <BookOpen className="h-4 w-4 text-[#8aa67c]" />
+                        <span>Preview</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
       <PremiumUnlockModal
-        isOpen={isUnlockModalOpen}
-        onClose={() => setIsUnlockModalOpen(false)}
+        isOpen={modalTemplate !== null}
+        onClose={() => setModalTemplate(null)}
+        templateId={modalTemplate || ADVENTURE_TEMPLATE_ID}
+        templateTitle={
+          modalTemplate === ALBUM_TEMPLATE_ID
+            ? "Scrapbook Album (9-Page Flip Album)"
+            : "Our Little Adventure"
+        }
         onUnlocked={() => {
-          setIsUnlocked(true);
-          setIsUnlockModalOpen(false);
-          router.push("/adventure");
+          const target = modalTemplate;
+          setModalTemplate(null);
+          if (target === ALBUM_TEMPLATE_ID) {
+            setIsAlbumUnlocked(true);
+            router.push("/album");
+          } else {
+            setIsUnlocked(true);
+            router.push("/adventure");
+          }
         }}
       />
     </div>

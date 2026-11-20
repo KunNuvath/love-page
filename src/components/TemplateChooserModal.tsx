@@ -266,6 +266,32 @@ export default function TemplateChooserModal({
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
+
+          {/* PREMIUM CATEGORY BANNER 2: Vol. 04 — Scrapbook Album (9-Page Flip Book) */}
+          <div className="mt-4 p-4 sm:p-5 rounded-2xl bg-[#faf6ef] text-[#4a3f38] border-2 border-[#8aa67c] shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#8aa67c] text-white text-[10px] font-extrabold uppercase tracking-wider">
+                <Crown className="h-3 w-3 text-[#e9c46a] fill-[#e9c46a]" />
+                <span>Vol. 04 • Premium Category • $4.99</span>
+              </div>
+              <h4 className="font-extrabold text-base sm:text-lg text-[#4a3f38] flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-[#8aa67c]" />
+                <span>Scrapbook Album (9-Page Flip Photo Album)</span>
+              </h4>
+              <p className="text-xs text-[#4a3f38]/80 leading-relaxed max-w-xl">
+                9-page family &amp; couple flip album with 3D page-flip animation, clothesline polaroids with pegs, photo-filled &ldquo;FAMILY&rdquo; letters, cut-paper heart &amp; star sticker spread, and secret owner edit link.
+              </p>
+            </div>
+
+            <Link
+              href="/album"
+              onClick={onClose}
+              className="w-full sm:w-auto shrink-0 py-3 px-5 rounded-xl bg-[#e9c46a] hover:bg-[#dfb54e] text-[#4a3f38] font-extrabold text-xs sm:text-sm border-2 border-[#4a3f38] shadow-[3px_3px_0_#4a3f38] flex items-center justify-center gap-1.5 transition-all"
+            >
+              <span>Open 9-Page Album</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
 
         {/* Footer */}

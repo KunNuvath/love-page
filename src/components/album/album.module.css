@@ -1,0 +1,268 @@
+/* ─────────────────────────────────────────────────────────────
+   "Scrapbook Album" — 9-Page Family & Couple Flip Album
+   Palette: sage #8aa67c, blush #eab7aa, mustard #e9c46a, brown #4a3f38
+───────────────────────────────────────────────────────────── */
+
+.scene {
+  --sage: #8aa67c;
+  --blush: #eab7aa;
+  --mustard: #e9c46a;
+  --brown: #4a3f38;
+  --paper: #faf6ef;
+  background-color: #efe6d8;
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgba(234, 183, 170, 0.25), transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(138, 166, 124, 0.2), transparent 60%);
+  color: #4a3f38;
+  padding-bottom: max(2rem, env(safe-area-inset-bottom, 1.5rem));
+}
+
+@media (prefers-color-scheme: dark) {
+  .scene {
+    background-color: #211c19;
+    background-image:
+      radial-gradient(ellipse at 50% 0%, rgba(234, 183, 170, 0.12), transparent 60%),
+      radial-gradient(ellipse at 50% 100%, rgba(138, 166, 124, 0.12), transparent 60%);
+    color: #f3ece2;
+  }
+}
+
+.serif {
+  font-family: var(--font-album-serif), "Playfair Display", Georgia, serif;
+}
+
+.hand {
+  font-family: var(--font-album-hand), var(--font-handwriting), "Caveat", cursive;
+}
+
+/* ── Book viewport & 3D Page Flip (rotateY, origin left) ── */
+.bookStage {
+  perspective: 1800px;
+  overflow-x: clip;
+}
+
+.pageCard {
+  position: relative;
+  background-color: #faf6ef;
+  color: #4a3f38;
+  border-radius: 18px;
+  box-shadow:
+    0 20px 50px rgba(74, 63, 56, 0.22),
+    0 3px 10px rgba(74, 63, 56, 0.12),
+    inset 14px 0 22px -14px rgba(74, 63, 56, 0.22);
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+.pagePink {
+  background-color: #f5d0c8;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.35) 1.5px, transparent 1.5px);
+  background-size: 16px 16px;
+}
+
+@keyframes flipForward {
+  0% {
+    opacity: 0.35;
+    transform: rotateY(-68deg) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: rotateY(0deg) scale(1);
+  }
+}
+
+@keyframes flipBackward {
+  0% {
+    opacity: 0.35;
+    transform: rotateY(55deg) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: rotateY(0deg) scale(1);
+  }
+}
+
+.flipNext {
+  animation: flipForward 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.flipPrev {
+  animation: flipBackward 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Top Scalloped Border & Bottom Zigzag Strip ───────────── */
+.scallopTop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 18px;
+  z-index: 12;
+  pointer-events: none;
+  background-color: var(--border-tint, #8aa67c);
+  -webkit-mask: radial-gradient(circle 10px at 10px 0, #000 96%, transparent 100%) 0 0 / 20px 18px repeat-x;
+  mask: radial-gradient(circle 10px at 10px 0, #000 96%, transparent 100%) 0 0 / 20px 18px repeat-x;
+}
+
+.zigzagBottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 14px;
+  z-index: 12;
+  pointer-events: none;
+  background:
+    linear-gradient(-45deg, var(--border-tint, #eab7aa) 7px, transparent 0) 0 0 / 14px 14px repeat-x,
+    linear-gradient(45deg, var(--border-tint, #eab7aa) 7px, transparent 0) 0 0 / 14px 14px repeat-x;
+}
+
+/* ── Opposite-Corner Washi Tape Strips ────────────────────── */
+.washiCornerTL,
+.washiCornerBR {
+  position: absolute;
+  width: 86px;
+  height: 22px;
+  z-index: 15;
+  opacity: 0.82;
+  pointer-events: none;
+  box-shadow: 0 2px 4px rgba(74, 63, 56, 0.14);
+  clip-path: polygon(
+    0 12%, 4% 0, 8% 12%, 12% 0, 88% 0, 92% 12%, 96% 0, 100% 12%,
+    100% 88%, 96% 100%, 92% 88%, 88% 100%, 12% 100%, 8% 88%, 4% 100%, 0 88%
+  );
+}
+
+.washiCornerTL {
+  top: 14px;
+  left: -18px;
+  transform: rotate(-34deg);
+}
+
+.washiCornerBR {
+  bottom: 14px;
+  right: -18px;
+  transform: rotate(-34deg);
+}
+
+/* ── White-Outlined Emoji Stickers with Float Animation ──── */
+@keyframes floatSticker {
+  0%, 100% {
+    transform: translateY(0px) rotate(var(--st-rot, 0deg));
+  }
+  50% {
+    transform: translateY(-5px) rotate(calc(var(--st-rot, 0deg) + 4deg));
+  }
+}
+
+.emojiSticker {
+  position: absolute;
+  z-index: 22;
+  pointer-events: none;
+  user-select: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  filter:
+    drop-shadow(2px 0 0 #ffffff)
+    drop-shadow(-2px 0 0 #ffffff)
+    drop-shadow(0 2px 0 #ffffff)
+    drop-shadow(0 -2px 0 #ffffff)
+    drop-shadow(1.5px 1.5px 0 #ffffff)
+    drop-shadow(-1.5px -1.5px 0 #ffffff)
+    drop-shadow(0 4px 6px rgba(74, 63, 56, 0.24));
+  animation: floatSticker 3.6s ease-in-out infinite;
+}
+
+/* ── Photo Slots ──────────────────────────────────────────── */
+.slotBtn {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: #efe9de;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: none;
+  padding: 0;
+  color: #4a3f38;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.slotBtn:focus-visible {
+  outline: 3px solid #e9c46a;
+  outline-offset: 3px;
+}
+
+.polaroid {
+  background: #ffffff;
+  padding: 6px 6px 20px;
+  border-radius: 4px;
+  box-shadow: 0 6px 16px rgba(74, 63, 56, 0.16);
+}
+
+.whiteBorder {
+  background: #ffffff;
+  padding: 6px;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(74, 63, 56, 0.16);
+}
+
+.starClip {
+  clip-path: polygon(
+    50% 0%,
+    63% 34%,
+    98% 35%,
+    70% 57%,
+    81% 91%,
+    50% 71%,
+    19% 91%,
+    30% 57%,
+    2% 35%,
+    37% 34%
+  );
+}
+
+/* ── Page 4: FAMILY huge photo-filled letters ────────────── */
+.photoWord {
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 0.95;
+  background-size: cover;
+  background-position: center;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: 2px #4a3f38;
+  filter: drop-shadow(0 4px 8px rgba(74, 63, 56, 0.2));
+}
+
+/* ── Editable Text ────────────────────────────────────────── */
+.editableText {
+  outline: none;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.editableActive {
+  cursor: text;
+}
+
+.editableActive:hover {
+  background-color: rgba(233, 196, 106, 0.28);
+}
+
+.editableActive:focus,
+.editableActive:focus-visible {
+  background-color: rgba(233, 196, 106, 0.55);
+  box-shadow: 0 0 0 2px #4a3f38;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flipNext,
+  .flipPrev,
+  .emojiSticker {
+    animation: none;
+  }
+}

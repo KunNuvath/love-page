@@ -14,6 +14,12 @@ export const PREMIUM_TEMPLATES: Record<string, PremiumTemplate> = {
     price: process.env.NEXT_PUBLIC_PREMIUM_PRICE || "$4.99",
     href: "/adventure",
   },
+  "family-album": {
+    id: "family-album",
+    name: "Scrapbook Album (9-Page Flip Album)",
+    price: process.env.NEXT_PUBLIC_PREMIUM_PRICE || "$4.99",
+    href: "/album",
+  },
 };
 
 export function getUnlockedTemplates(
