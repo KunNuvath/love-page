@@ -51,7 +51,6 @@
     0 3px 10px rgba(74, 63, 56, 0.12),
     inset 14px 0 22px -14px rgba(74, 63, 56, 0.22);
   transform-origin: left center;
-  transform-style: preserve-3d;
   overflow: hidden;
 }
 
@@ -68,7 +67,7 @@
   }
   100% {
     opacity: 1;
-    transform: rotateY(0deg) scale(1);
+    transform: none;
   }
 }
 
@@ -79,7 +78,7 @@
   }
   100% {
     opacity: 1;
-    transform: rotateY(0deg) scale(1);
+    transform: none;
   }
 }
 

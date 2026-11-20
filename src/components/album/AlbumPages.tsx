@@ -129,18 +129,27 @@ export function AlbumSlot({
           style={bgStyle}
           className={`${styles.slotBtn} group/slot cursor-pointer overflow-hidden`}
         >
+          {url && (
+            <img
+              src={url}
+              alt={alt}
+              loading="lazy"
+              draggable={false}
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+            />
+          )}
           {!url && !isUploading && (
             <span className="flex flex-col items-center justify-center w-full h-full text-[#4a3f38]/65 group-hover/slot:text-[#4a3f38] transition-colors">
               <span className="text-2xl sm:text-3xl font-light leading-none">＋</span>
             </span>
           )}
           {url && !isUploading && (
-            <span className="absolute bottom-1.5 right-1.5 opacity-0 group-hover/slot:opacity-100 transition-opacity px-2 py-0.5 rounded-full bg-white/90 text-[#4a3f38] text-[10px] font-semibold shadow">
+            <span className="absolute bottom-1.5 right-1.5 z-10 opacity-0 group-hover/slot:opacity-100 transition-opacity px-2 py-0.5 rounded-full bg-white/90 text-[#4a3f38] text-[10px] font-semibold shadow">
               Change
             </span>
           )}
           {isUploading && (
-            <span className="absolute inset-0 bg-[#4a3f38]/55 flex items-center justify-center text-white">
+            <span className="absolute inset-0 z-10 bg-[#4a3f38]/55 flex items-center justify-center text-white">
               <Loader2 className="h-5 w-5 animate-spin" />
             </span>
           )}
@@ -152,6 +161,15 @@ export function AlbumSlot({
           style={bgStyle}
           className={`${styles.slotBtn} overflow-hidden`}
         >
+          {url && (
+            <img
+              src={url}
+              alt={alt}
+              loading="lazy"
+              draggable={false}
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+            />
+          )}
           {!url && !readOnly && (
             <span className="flex items-center justify-center w-full h-full text-[#4a3f38]/40 text-2xl font-light">
               ＋
@@ -798,9 +816,9 @@ export function AlbumPageContent({ page }: { page: number }) {
       ═══════════════════════════════════════════════════════════ */
       case 8:
         return (
-          <div className="relative flex flex-col justify-between h-full py-1">
+          <div className="relative flex flex-col justify-between h-full py-0.5">
             {/* Red Ribbon Banner: "Love Grows Stronger" */}
-            <div className="relative z-20 flex justify-center">
+            <div className="relative z-30 flex justify-center">
               <div className="relative bg-[#c94a3e] text-[#faf6ef] px-6 py-1.5 rounded-sm shadow-md border-2 border-white -rotate-1">
                 <AlbumText
                   id="p8-ribbon"
@@ -810,60 +828,52 @@ export function AlbumPageContent({ page }: { page: number }) {
               </div>
             </div>
 
-            {/* Collage Stage */}
-            <div className="relative flex-1 my-2 grid grid-cols-12 gap-1.5 xs:gap-2 items-center min-h-[250px] xs:min-h-[290px] sm:min-h-[340px]">
-              {/* Left Column: Round Photo 1 + Star-Shaped Photo */}
-              <div className="col-span-4 flex flex-col items-center justify-between gap-2.5 h-full py-1.5">
-                <div className="w-16 h-16 xs:w-20 xs:h-20 sm:w-26 sm:h-26 rounded-full p-1 sm:p-1.5 bg-white shadow-md -rotate-3">
-                  <AlbumSlot
-                    slotId="p8-round1"
-                    alt="Round memory 1"
-                    className="w-full h-full rounded-full overflow-hidden"
-                  />
-                </div>
-
-                {/* Star-Shaped Photo with white drop-shadow outline */}
-                <div
-                  style={{
-                    filter:
-                      "drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 5px 10px rgba(74,63,56,0.22))",
-                  }}
-                  className="w-16 h-16 xs:w-20 xs:h-20 sm:w-26 sm:h-26 rotate-6"
-                >
-                  <AlbumSlot
-                    slotId="p8-star"
-                    alt="Star shaped memory"
-                    className={`w-full h-full ${styles.starClip} overflow-hidden`}
-                  />
-                </div>
+            {/* Full-Page Collage Stage: 4 Large Corner Cutouts + Huge Centerpiece Heart */}
+            <div className="relative flex-1 w-full my-1.5 min-h-[320px] xs:min-h-[360px] sm:min-h-[410px]">
+              {/* Top-Left: Round Photo 1 */}
+              <div className="absolute top-0 left-0 z-10 w-24 h-24 xs:w-28 xs:h-28 sm:w-32 sm:h-32 rounded-full p-1.5 bg-white shadow-md -rotate-3">
+                <AlbumSlot
+                  slotId="p8-round1"
+                  alt="Round memory 1"
+                  className="w-full h-full rounded-full overflow-hidden"
+                />
               </div>
 
-              {/* Center: Big Heart Photo layered over Red & Mustard Cut-Paper Hearts */}
-              <div className="col-span-4 flex items-center justify-center relative">
+              {/* Top-Right: Round Photo 2 */}
+              <div className="absolute top-0 right-0 z-10 w-24 h-24 xs:w-28 xs:h-28 sm:w-32 sm:h-32 rounded-full p-1.5 bg-white shadow-md rotate-3">
+                <AlbumSlot
+                  slotId="p8-round2"
+                  alt="Round memory 2"
+                  className="w-full h-full rounded-full overflow-hidden"
+                />
+              </div>
+
+              {/* Center Hero: Big Heart Photo layered over Red & Mustard Cut-Paper Hearts */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center">
                 {/* Mustard backing heart */}
                 <div
                   aria-hidden="true"
                   style={{
                     clipPath: "url(#album-heart-clip)",
-                    transform: "rotate(-10deg) translate(-6px, 5px) scale(1.08)",
+                    transform: "rotate(-10deg) translate(-9px, 7px) scale(1.08)",
                   }}
-                  className="absolute w-24 h-24 xs:w-32 xs:h-32 sm:w-40 sm:h-40 bg-[#e9c46a] shadow"
+                  className="absolute w-40 h-40 xs:w-48 xs:h-48 sm:w-56 sm:h-56 bg-[#e9c46a] shadow"
                 />
                 {/* Red backing heart */}
                 <div
                   aria-hidden="true"
                   style={{
                     clipPath: "url(#album-heart-clip)",
-                    transform: "rotate(8deg) translate(6px, -4px) scale(1.06)",
+                    transform: "rotate(8deg) translate(9px, -6px) scale(1.06)",
                   }}
-                  className="absolute w-24 h-24 xs:w-32 xs:h-32 sm:w-40 sm:h-40 bg-[#c94a3e] shadow"
+                  className="absolute w-40 h-40 xs:w-48 xs:h-48 sm:w-56 sm:h-56 bg-[#c94a3e] shadow"
                 />
                 {/* White outline + Heart Photo */}
                 <div
                   style={{
                     clipPath: "url(#album-heart-clip)",
                   }}
-                  className="relative z-10 w-24 h-24 xs:w-32 xs:h-32 sm:w-40 sm:h-40 bg-white p-1 sm:p-1.5 shadow-lg"
+                  className="relative z-10 w-40 h-40 xs:w-48 xs:h-48 sm:w-56 sm:h-56 bg-white p-1.5 sm:p-2 shadow-xl"
                 >
                   <AlbumSlot
                     slotId="p8-heart"
@@ -874,37 +884,37 @@ export function AlbumPageContent({ page }: { page: number }) {
                 </div>
               </div>
 
-              {/* Right Column: Round Photo 2 + Taped Polaroid */}
-              <div className="col-span-4 flex flex-col items-center justify-between gap-2.5 h-full py-1.5">
-                <div className="w-16 h-16 xs:w-20 xs:h-20 sm:w-26 sm:h-26 rounded-full p-1 sm:p-1.5 bg-white shadow-md rotate-3">
+              {/* Bottom-Left: Star-Shaped Photo with crisp white backing star */}
+              <div className="absolute bottom-0 left-0 z-10 w-28 h-28 xs:w-32 xs:h-32 sm:w-36 sm:h-36 rotate-6 drop-shadow-md">
+                <div className={`w-full h-full bg-white p-1.5 ${styles.starClip}`}>
                   <AlbumSlot
-                    slotId="p8-round2"
-                    alt="Round memory 2"
-                    className="w-full h-full rounded-full overflow-hidden"
+                    slotId="p8-star"
+                    alt="Star shaped memory"
+                    className={`w-full h-full ${styles.starClip} overflow-hidden`}
                   />
                 </div>
+              </div>
 
-                {/* Taped Polaroid */}
-                <div className="relative bg-white p-1 sm:p-1.5 pb-3 sm:pb-4 rounded-[3px] shadow-md -rotate-3 w-16 xs:w-20 sm:w-26">
-                  <span
-                    aria-hidden="true"
-                    className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-9 sm:w-12 h-2.5 sm:h-3 bg-[#e9c46a]/80 rotate-2 shadow-2xs"
-                  />
-                  <AlbumSlot
-                    slotId="p8-polaroid"
-                    alt="Taped polaroid memory"
-                    className="w-full aspect-square rounded-[2px] overflow-hidden"
-                  />
-                  <AlbumText
-                    id="p8-polaroid"
-                    className={`${styles.hand} text-center text-[10px] xs:text-xs text-[#4a3f38] mt-0.5 leading-none truncate`}
-                  />
-                </div>
+              {/* Bottom-Right: Taped Polaroid */}
+              <div className="absolute bottom-0 right-0 z-10 bg-white p-1.5 pb-3.5 sm:pb-4 rounded-[3px] shadow-md -rotate-3 w-24 xs:w-28 sm:w-32">
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-2 left-1/2 -translate-x-1/2 w-12 sm:w-14 h-3 bg-[#e9c46a]/85 rotate-2 shadow-2xs"
+                />
+                <AlbumSlot
+                  slotId="p8-polaroid"
+                  alt="Taped polaroid memory"
+                  className="w-full aspect-square rounded-[2px] overflow-hidden"
+                />
+                <AlbumText
+                  id="p8-polaroid"
+                  className={`${styles.hand} text-center text-xs sm:text-sm text-[#4a3f38] mt-1 leading-none truncate`}
+                />
               </div>
             </div>
 
             {/* Torn Mustard Scrap: "more beautiful together" */}
-            <div className="relative z-20 flex justify-center">
+            <div className="relative z-30 flex justify-center">
               <div
                 style={{
                   clipPath:
