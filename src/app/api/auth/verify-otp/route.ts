@@ -81,7 +81,7 @@ export async function POST(request: Request) {
       otpSentAt = 0,
     } = body;
 
-    if (!email || !password) {
+    if (!email || (!password && action !== "verify-google-otp")) {
       return NextResponse.json(
         { error: "Email and password are required." },
         { status: 400 }
@@ -89,6 +89,52 @@ export async function POST(request: Request) {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
+
+    // Action 0: Verify 6-digit OTP for Google OAuth sign-in
+    if (action === "verify-google-otp") {
+      if (!code || !token) {
+        return NextResponse.json(
+          { error: "Please enter the 6-digit verification code." },
+          { status: 400 }
+        );
+      }
+
+      const check = verifyOtpToken(normalizedEmail, code, token);
+      if (!check.valid) {
+        return NextResponse.json(
+          { error: check.reason || "Invalid verification code." },
+          { status: 400 }
+        );
+      }
+
+      try {
+        const adminClient = getAdminClient();
+        const { data: usersData } = await adminClient.auth.admin.listUsers({
+          page: 1,
+          perPage: 1000,
+        });
+        const existingUser = usersData?.users?.find(
+          (u) => u.email?.toLowerCase() === normalizedEmail
+        );
+        if (existingUser) {
+          await adminClient.auth.admin.updateUserById(existingUser.id, {
+            email_confirm: true,
+            user_metadata: {
+              ...existingUser.user_metadata,
+              google_otp_verified: true,
+              email_verified: true,
+            },
+          });
+        }
+      } catch (err) {
+        console.warn("Could not update Google OTP metadata:", err);
+      }
+
+      return NextResponse.json({
+        success: true,
+        verified: true,
+      });
+    }
 
     // Action 1: Verify 6-digit HMAC code
     if (action === "verify-code") {

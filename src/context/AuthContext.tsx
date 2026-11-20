@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { User, Session, AuthError } from "@supabase/supabase-js";
 import { supabase } from "@/src/lib/supabase";
 
@@ -19,6 +19,11 @@ interface AuthContextType {
   signUpWithEmail: (email: string, password: string, name?: string) => Promise<{ error: AuthError | null; session: Session | null; user: User | null }>;
   signInWithGoogle: () => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
+  // Google OAuth 2-step OTP verification
+  pendingGoogleEmail: string | null;
+  pendingGoogleName: string;
+  completeGoogleOtp: () => void;
+  cancelGoogleOtp: () => Promise<void>;
   // Modal controls
   isAuthModalOpen: boolean;
   authModalOptions: AuthModalOptions;
@@ -28,25 +33,56 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const GOOGLE_OTP_PENDING_KEY = "lovepage_google_otp_pending";
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Holds the Google OAuth session until the user confirms the 6-digit OTP sent to their Gmail
+  const pendingGoogleSessionRef = useRef<Session | null>(null);
+  const [pendingGoogleEmail, setPendingGoogleEmail] = useState<string | null>(null);
+  const [pendingGoogleName, setPendingGoogleName] = useState<string>("");
+
   // Modal state
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalOptions, setAuthModalOptions] = useState<AuthModalOptions>({});
 
+  const applyOrGateSession = useCallback((currentSession: Session | null) => {
+    const isGoogleOtpPending =
+      typeof window !== "undefined" &&
+      localStorage.getItem(GOOGLE_OTP_PENDING_KEY) === "true";
+
+    if (currentSession?.user?.email && isGoogleOtpPending) {
+      pendingGoogleSessionRef.current = currentSession;
+      setPendingGoogleEmail(currentSession.user.email);
+      setPendingGoogleName(
+        currentSession.user.user_metadata?.full_name ||
+          currentSession.user.user_metadata?.name ||
+          ""
+      );
+      setSession(null);
+      setUser(null);
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    pendingGoogleSessionRef.current = null;
+    setPendingGoogleEmail(null);
+    setPendingGoogleName("");
+    setSession(currentSession);
+    setUser(currentSession?.user ?? null);
+  }, []);
+
   useEffect(() => {
-    // 1. Initial session fetch
     let mounted = true;
 
     async function initSession() {
       try {
         const { data, error } = await supabase.auth.getSession();
         if (!error && mounted) {
-          setSession(data.session);
-          setUser(data.session?.user ?? null);
+          applyOrGateSession(data.session);
         }
       } catch (err) {
         console.warn("Error fetching Supabase session:", err);
@@ -57,15 +93,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     initSession();
 
-    // 2. Real-time auth listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, currentSession) => {
-      setSession(currentSession);
-      setUser(currentSession?.user ?? null);
+      applyOrGateSession(currentSession);
       setLoading(false);
 
-      // If the user clicked the verification link in their Gmail inbox,
+      // If the user clicked the verification link in their Gmail inbox for email signup,
       // finalize their pending signup password & display name automatically.
       if (currentSession?.user?.email && typeof window !== "undefined") {
         try {
@@ -100,6 +134,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       mounted = false;
       subscription.unsubscribe();
     };
+  }, [applyOrGateSession]);
+
+  const completeGoogleOtp = useCallback(() => {
+    try {
+      localStorage.removeItem(GOOGLE_OTP_PENDING_KEY);
+    } catch {}
+    const confirmedSession = pendingGoogleSessionRef.current;
+    pendingGoogleSessionRef.current = null;
+    setPendingGoogleEmail(null);
+    setPendingGoogleName("");
+    if (confirmedSession) {
+      setSession(confirmedSession);
+      setUser(confirmedSession.user);
+    }
+  }, []);
+
+  const cancelGoogleOtp = useCallback(async () => {
+    try {
+      localStorage.removeItem(GOOGLE_OTP_PENDING_KEY);
+    } catch {}
+    pendingGoogleSessionRef.current = null;
+    setPendingGoogleEmail(null);
+    setPendingGoogleName("");
+    setSession(null);
+    setUser(null);
+    await supabase.auth.signOut().catch(() => {});
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
@@ -113,7 +173,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { error };
       }
 
-      // Block sign-in if account is still awaiting OTP verification
       if (data.user?.user_metadata?.pending_otp_verification === true) {
         await supabase.auth.signOut();
         return {
@@ -125,8 +184,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
       }
 
-      setSession(data.session);
-      setUser(data.user);
       return { error: null };
     } catch (err: any) {
       return { error: err };
@@ -135,27 +192,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUpWithEmail = async (email: string, password: string, name?: string) => {
     try {
-      const trimmedEmail = email.trim().toLowerCase();
-      const displayName = name?.trim() || "";
-
+      const redirectUrl = typeof window !== "undefined" ? `${window.location.origin}/` : undefined;
       const { data, error } = await supabase.auth.signUp({
-        email: trimmedEmail,
+        email: email.trim().toLowerCase(),
         password,
         options: {
+          emailRedirectTo: redirectUrl,
           data: {
-            name: displayName,
-            display_name: displayName,
+            name: name?.trim() || "",
+            display_name: name?.trim() || "",
           },
         },
       });
 
       if (error) {
         return { error, session: null, user: null };
-      }
-
-      if (data.session) {
-        setSession(data.session);
-        setUser(data.user);
       }
 
       return { error: null, session: data.session, user: data.user };
@@ -167,6 +218,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGoogle = async () => {
     try {
       const returnUrl = typeof window !== "undefined" ? window.location.href : "";
+      try {
+        localStorage.setItem(GOOGLE_OTP_PENDING_KEY, "true");
+      } catch {}
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
@@ -176,14 +231,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           },
         },
       });
+      if (error) {
+        try {
+          localStorage.removeItem(GOOGLE_OTP_PENDING_KEY);
+        } catch {}
+      }
       return { error };
     } catch (err: any) {
+      try {
+        localStorage.removeItem(GOOGLE_OTP_PENDING_KEY);
+      } catch {}
       return { error: err };
     }
   };
 
   const signOut = async () => {
     try {
+      try {
+        localStorage.removeItem(GOOGLE_OTP_PENDING_KEY);
+      } catch {}
+      pendingGoogleSessionRef.current = null;
+      setPendingGoogleEmail(null);
+      setPendingGoogleName("");
       await supabase.auth.signOut();
       setUser(null);
       setSession(null);
@@ -211,6 +280,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signUpWithEmail,
         signInWithGoogle,
         signOut,
+        pendingGoogleEmail,
+        pendingGoogleName,
+        completeGoogleOtp,
+        cancelGoogleOtp,
         isAuthModalOpen,
         authModalOptions,
         openAuthModal,

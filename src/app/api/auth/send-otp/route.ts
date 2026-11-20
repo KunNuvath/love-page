@@ -42,7 +42,7 @@ function buildVerificationEmailHtml(name: string, code: string, email: string): 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, name = "", isResend = false } = body;
+    const { email, name = "", isResend = false, forGoogleOAuth = false } = body;
 
     // 1. Validate email format, block disposable/fake domains, catch typos
     const validation = validateEmailFormat(email);
@@ -79,7 +79,7 @@ export async function POST(request: Request) {
         (u) => u.email?.toLowerCase() === normalizedEmail
       );
 
-      if (existingUser && !isResend) {
+      if (existingUser && !isResend && !forGoogleOAuth) {
         const isPendingVerification =
           existingUser.user_metadata?.pending_otp_verification === true;
 

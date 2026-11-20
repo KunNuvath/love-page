@@ -30,6 +30,10 @@ export default function AuthModal() {
     closeAuthModal,
     signInWithEmail,
     signInWithGoogle,
+    pendingGoogleEmail,
+    pendingGoogleName,
+    completeGoogleOtp,
+    cancelGoogleOtp,
   } = useAuth();
 
   const [mode, setMode] = useState<"signin" | "signup">("signin");
@@ -49,24 +53,91 @@ export default function AuthModal() {
   const [otpSentAt, setOtpSentAt] = useState<number>(0);
   const [resendCooldown, setResendCooldown] = useState<number>(0);
   const otpInputRefs = useRef<Array<HTMLInputElement | null>>([]);
+  const sentGoogleOtpForRef = useRef<string | null>(null);
 
   // Feedback state
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Sync mode with options when modal opens
-  useEffect(() => {
-    if (isAuthModalOpen) {
-      if (authModalOptions.defaultMode) {
-        setMode(authModalOptions.defaultMode);
-      }
-      setStep("form");
+  const sendGoogleOtpCode = useCallback(
+    async (targetEmail: string, targetName: string, isResend = false) => {
+      setIsLoading(true);
       setErrorMsg(null);
-      setSuccessMsg(null);
-      setOtpDigits(["", "", "", "", "", ""]);
+      setSuccessMsg(`Sending 6-digit verification code to ${targetEmail}...`);
+      try {
+        const res = await fetch("/api/auth/send-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: targetEmail.trim().toLowerCase(),
+            name: targetName.trim(),
+            isResend,
+            forGoogleOAuth: true,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setErrorMsg(data.error || "Failed to send verification code. Please click Resend Code.");
+          setSuccessMsg(null);
+          setIsLoading(false);
+          return;
+        }
+        setVerificationToken(data.token || "");
+        setDeliveryMethod(data.delivery || "resend");
+        setOtpSentAt(data.otpSentAt || Date.now());
+        setResendCooldown(60);
+        setOtpDigits(["", "", "", "", "", ""]);
+        setStep("verify");
+        setSuccessMsg(
+          data.message ||
+            `Verification code sent to ${targetEmail}! Enter the 6-digit code to finish signing in with Google.`
+        );
+        setIsLoading(false);
+        setTimeout(() => {
+          otpInputRefs.current[0]?.focus();
+        }, 150);
+      } catch (err: any) {
+        setErrorMsg(err?.message || "Failed to send verification code.");
+        setSuccessMsg(null);
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  // Sync mode with options when modal opens (or trigger Google OTP verification if returning from Google OAuth)
+  useEffect(() => {
+    if (!isAuthModalOpen) {
+      sentGoogleOtpForRef.current = null;
+      return;
     }
-  }, [isAuthModalOpen, authModalOptions.defaultMode]);
+
+    if (pendingGoogleEmail) {
+      setEmail(pendingGoogleEmail);
+      setName(pendingGoogleName || "");
+      setStep("verify");
+      if (sentGoogleOtpForRef.current !== pendingGoogleEmail) {
+        sentGoogleOtpForRef.current = pendingGoogleEmail;
+        sendGoogleOtpCode(pendingGoogleEmail, pendingGoogleName || "", false);
+      }
+      return;
+    }
+
+    if (authModalOptions.defaultMode) {
+      setMode(authModalOptions.defaultMode);
+    }
+    setStep("form");
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    setOtpDigits(["", "", "", "", "", ""]);
+  }, [
+    isAuthModalOpen,
+    authModalOptions.defaultMode,
+    pendingGoogleEmail,
+    pendingGoogleName,
+    sendGoogleOtpCode,
+  ]);
 
   // Cooldown countdown timer for Resend Code button
   useEffect(() => {
@@ -79,6 +150,21 @@ export default function AuthModal() {
 
   // Complete verification helper (signs in and closes modal)
   const completeVerifiedSignup = useCallback(async () => {
+    if (pendingGoogleEmail) {
+      setIsLoading(true);
+      setErrorMsg(null);
+      setSuccessMsg("Google account verified! Welcome 💖");
+      completeGoogleOtp();
+      setTimeout(() => {
+        setIsLoading(false);
+        closeAuthModal();
+        if (authModalOptions.onSuccess) {
+          authModalOptions.onSuccess();
+        }
+      }, 650);
+      return;
+    }
+
     const normalizedEmail = email.trim().toLowerCase();
     try {
       localStorage.removeItem("lovepage_pending_signup");
@@ -105,7 +191,15 @@ export default function AuthModal() {
         authModalOptions.onSuccess();
       }
     }, 650);
-  }, [email, password, signInWithEmail, closeAuthModal, authModalOptions]);
+  }, [
+    pendingGoogleEmail,
+    completeGoogleOtp,
+    email,
+    password,
+    signInWithEmail,
+    closeAuthModal,
+    authModalOptions,
+  ]);
 
   // Poll every 3s while on "verify" step in case user clicked confirmation link in Gmail
   useEffect(() => {
@@ -156,6 +250,11 @@ export default function AuthModal() {
 
   // Send OTP Code to user's email
   const requestVerificationCode = async (isResend = false) => {
+    if (pendingGoogleEmail) {
+      await sendGoogleOtpCode(pendingGoogleEmail, pendingGoogleName || "", isResend);
+      return;
+    }
+
     setErrorMsg(null);
     setSuccessMsg(null);
 
@@ -312,7 +411,7 @@ export default function AuthModal() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            action: "verify-code",
+            action: pendingGoogleEmail ? "verify-google-otp" : "verify-code",
             email: normalizedEmail,
             password,
             name: name.trim(),
@@ -363,23 +462,25 @@ export default function AuthModal() {
         return;
       }
 
-      // Finalize password & metadata on server
-      const finalizeRes = await fetch("/api/auth/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "finalize-supabase",
-          email: normalizedEmail,
-          password,
-          name: name.trim(),
-        }),
-      });
+      // Finalize password & metadata on server (for email+password signup)
+      if (!pendingGoogleEmail) {
+        const finalizeRes = await fetch("/api/auth/verify-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "finalize-supabase",
+            email: normalizedEmail,
+            password,
+            name: name.trim(),
+          }),
+        });
 
-      if (!finalizeRes.ok) {
-        const errData = await finalizeRes.json().catch(() => ({}));
-        setErrorMsg(errData.error || "Could not finalize account creation.");
-        setIsLoading(false);
-        return;
+        if (!finalizeRes.ok) {
+          const errData = await finalizeRes.json().catch(() => ({}));
+          setErrorMsg(errData.error || "Could not finalize account creation.");
+          setIsLoading(false);
+          return;
+        }
       }
 
       await completeVerifiedSignup();
@@ -466,7 +567,12 @@ export default function AuthModal() {
         {/* Close Button */}
         <button
           type="button"
-          onClick={closeAuthModal}
+          onClick={async () => {
+            if (pendingGoogleEmail) {
+              await cancelGoogleOtp();
+            }
+            closeAuthModal();
+          }}
           className="absolute top-4 right-4 p-2 rounded-full hover:bg-black/5 text-[#8c786a] hover:text-[#2d221e] transition-colors cursor-pointer"
           aria-label="Close modal"
         >
@@ -484,7 +590,9 @@ export default function AuthModal() {
               Verify Your Email
             </h3>
             <p className="text-xs text-[#7d6b60] max-w-xs mx-auto leading-relaxed mb-3">
-              To confirm your account is real, please enter the 6-digit verification code sent to:
+              {pendingGoogleEmail
+                ? "To finish signing in with Google, please enter the 6-digit verification code sent to:"
+                : "To confirm your account is real, please enter the 6-digit verification code sent to:"}
             </p>
 
             {/* Target Email Badge */}
@@ -493,7 +601,10 @@ export default function AuthModal() {
               <span>{email.trim().toLowerCase()}</span>
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
+                  if (pendingGoogleEmail) {
+                    await cancelGoogleOtp();
+                  }
                   setStep("form");
                   setErrorMsg(null);
                   setSuccessMsg(null);
@@ -565,7 +676,9 @@ export default function AuthModal() {
                 ) : (
                   <>
                     <ShieldCheck className="h-4 w-4" />
-                    <span>Verify &amp; Create Account</span>
+                    <span>
+                      {pendingGoogleEmail ? "Verify & Continue with Google" : "Verify & Create Account"}
+                    </span>
                   </>
                 )}
               </button>
@@ -575,7 +688,10 @@ export default function AuthModal() {
             <div className="mt-5 pt-4 border-t border-[#ebd8c7] flex items-center justify-between text-xs text-[#8c786a]">
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
+                  if (pendingGoogleEmail) {
+                    await cancelGoogleOtp();
+                  }
                   setStep("form");
                   setErrorMsg(null);
                   setSuccessMsg(null);
