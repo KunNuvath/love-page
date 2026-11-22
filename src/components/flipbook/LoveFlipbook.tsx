@@ -142,20 +142,25 @@ export default function LoveFlipbook({
     };
   }, [readOnly, user, showToast]);
 
-  // Fit book to viewport exactly like the original fit() function
+  // Fit book to viewport with symmetric margins across all phone/tablet/desktop models
   useEffect(() => {
     const updateFit = () => {
-      const topReserve = readOnly ? 130 : 185;
-      const s = Math.min(
-        (window.innerWidth * 0.93) / 1004,
-        (window.innerHeight - topReserve) / 724,
-        1.35
-      );
-      setScale(Math.max(0.28, s));
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const sideMargin = vw < 640 ? 24 : 48;
+      const topReserve = readOnly ? (vw < 640 ? 155 : 140) : vw < 640 ? 220 : 190;
+      const availW = Math.max(280, vw - sideMargin);
+      const availH = Math.max(220, vh - topReserve);
+      const s = Math.min(availW / 1004, availH / 724, 1.3);
+      setScale(Math.max(0.26, s));
     };
     updateFit();
     window.addEventListener("resize", updateFit);
-    return () => window.removeEventListener("resize", updateFit);
+    window.addEventListener("orientationchange", updateFit);
+    return () => {
+      window.removeEventListener("resize", updateFit);
+      window.removeEventListener("orientationchange", updateFit);
+    };
   }, [readOnly]);
 
   const go = useCallback(

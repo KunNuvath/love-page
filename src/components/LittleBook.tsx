@@ -800,7 +800,7 @@ export default function LittleBook() {
   };
 
   return (
-    <div className="min-h-screen cutting-mat-bg text-desk-text py-5 sm:py-10 px-4 xs:px-5 sm:px-6 relative flex flex-col items-center selection:bg-washi-cherry/30 overflow-x-hidden">
+    <div className="min-h-screen min-h-[100dvh] cutting-mat-bg text-desk-text pt-[max(1rem,env(safe-area-inset-top))] pb-[max(2.25rem,env(safe-area-inset-bottom))] pl-[max(0.875rem,env(safe-area-inset-left))] pr-[max(0.875rem,env(safe-area-inset-right))] sm:py-10 sm:px-6 relative flex flex-col items-center selection:bg-washi-cherry/30 overflow-x-clip">
       {/* Vignette Overlay */}
       <div className="fixed inset-0 cutting-mat-vignette pointer-events-none z-0" />
 
@@ -882,7 +882,7 @@ export default function LittleBook() {
       {/* ─────────────────────────────────────────────────────────────
           1. MASTHEAD & HEADER (Tilted -1.2° Title Card)
       ───────────────────────────────────────────────────────────── */}
-      <div className="relative z-20 w-full max-w-[92vw] xs:max-w-md sm:max-w-xl text-center mb-4 sm:mb-7">
+      <div className="relative z-20 w-full max-w-md sm:max-w-xl text-center mb-4 sm:mb-7">
         {/* Paper Title Card */}
         <div className="relative inline-block w-full max-w-md book-page-paper p-3 xs:p-4 sm:p-6 rounded-sm transform -rotate-[1deg] shadow-xl border border-[#dcd7c3]">
           {/* Inner Dashed Border */}

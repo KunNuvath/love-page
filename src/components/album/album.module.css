@@ -14,7 +14,11 @@
     radial-gradient(ellipse at 50% 0%, rgba(234, 183, 170, 0.25), transparent 60%),
     radial-gradient(ellipse at 50% 100%, rgba(138, 166, 124, 0.2), transparent 60%);
   color: #4a3f38;
+  overflow-x: clip;
+  padding-top: max(1rem, env(safe-area-inset-top, 1rem));
   padding-bottom: max(2rem, env(safe-area-inset-bottom, 1.5rem));
+  padding-left: max(0.875rem, env(safe-area-inset-left, 0.875rem));
+  padding-right: max(0.875rem, env(safe-area-inset-right, 0.875rem));
 }
 
 @media (prefers-color-scheme: dark) {

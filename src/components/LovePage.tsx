@@ -1087,7 +1087,7 @@ function LovePageContent() {
 
   return (
     <main
-      className={`relative min-h-screen py-6 sm:py-14 px-5 xs:px-6 sm:px-6 flex flex-col items-center justify-start overflow-x-hidden transition-colors duration-700 ease-in-out ${activeVibe.mainClass}`}
+      className={`relative min-h-screen min-h-[100dvh] pt-[calc(3.75rem+env(safe-area-inset-top))] sm:pt-20 pb-[max(2.5rem,env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:px-6 flex flex-col items-center justify-start overflow-x-clip transition-colors duration-700 ease-in-out ${activeVibe.mainClass}`}
     >
       {/* Ambient Vibe Glow */}
       <div
@@ -1098,7 +1098,7 @@ function LovePageContent() {
       <FloatingHearts heartColor={activeVibe.heartColor} />
 
       {/* Floating Top Bar (Back to Home, Vibe Switcher, Share, Edit) */}
-      <div className="fixed top-2.5 sm:top-5 inset-x-2.5 sm:inset-x-6 z-30 flex items-center justify-between pointer-events-none">
+      <div className="fixed top-[max(0.75rem,env(safe-area-inset-top))] sm:top-5 inset-x-[max(0.875rem,env(safe-area-inset-left))] sm:inset-x-6 z-30 flex items-center justify-between pointer-events-none">
         {/* Left: Back to Home Link */}
         <Link
           href="/"

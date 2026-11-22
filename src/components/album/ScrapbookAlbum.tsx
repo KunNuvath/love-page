@@ -405,7 +405,7 @@ export default function ScrapbookAlbum({
       }}
     >
       <div
-        className={`${playfairAlbum.variable} ${caveatAlbum.variable} ${styles.scene} min-h-screen min-h-[100dvh] py-4 sm:py-8 px-3 xs:px-4 sm:px-6 flex flex-col items-center justify-between overflow-x-hidden selection:bg-[#e9c46a]/45`}
+        className={`${playfairAlbum.variable} ${caveatAlbum.variable} ${styles.scene} min-h-screen min-h-[100dvh] sm:py-8 sm:px-6 flex flex-col items-center justify-between selection:bg-[#e9c46a]/45`}
       >
         {/* Shared SVG objectBoundingBox clipPath for Page 8 Heart Photo */}
         <svg width="0" height="0" className="absolute pointer-events-none" aria-hidden="true">
@@ -428,7 +428,7 @@ export default function ScrapbookAlbum({
         )}
 
         {/* ─── TOP BAR ─── */}
-        <div className="w-full max-w-lg flex flex-wrap items-center justify-between gap-2 mb-3 sm:mb-4">
+        <div className="w-full max-w-[490px] flex flex-wrap items-center justify-between gap-2 mb-3 sm:mb-4">
           <Link
             href="/"
             className={`${pillBtn} bg-white/80 hover:bg-white text-[#4a3f38] border border-[#4a3f38]/15 shadow-2xs`}

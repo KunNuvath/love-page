@@ -320,7 +320,7 @@ export default function AdventureScrapbook({
 
   return (
     <div
-      className={`${gochiHand.variable} ${specialElite.variable} ${styles.desk} min-h-screen py-5 sm:py-10 px-3 xs:px-4 sm:px-6 relative flex flex-col items-center overflow-x-hidden selection:bg-[#f7d56a] selection:text-[#1d2742]`}
+      className={`${gochiHand.variable} ${specialElite.variable} ${styles.desk} min-h-screen min-h-[100dvh] pt-[max(1rem,env(safe-area-inset-top))] pb-[max(2.25rem,env(safe-area-inset-bottom))] pl-[max(0.875rem,env(safe-area-inset-left))] pr-[max(0.875rem,env(safe-area-inset-right))] sm:py-10 sm:px-6 relative flex flex-col items-center overflow-x-clip selection:bg-[#f7d56a] selection:text-[#1d2742]`}
     >
       {/* Background Couple Soundtrack */}
       <audio

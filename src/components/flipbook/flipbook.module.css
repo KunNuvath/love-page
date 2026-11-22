@@ -15,13 +15,16 @@
     #fdfbf7;
   font-family: var(--body);
   color: var(--ink);
-  overflow-x: hidden;
+  overflow-x: clip;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: max(12px, env(safe-area-inset-top)) 12px max(24px, env(safe-area-inset-bottom));
+  padding-top: max(12px, env(safe-area-inset-top));
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+  padding-left: max(12px, env(safe-area-inset-left));
+  padding-right: max(12px, env(safe-area-inset-right));
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
