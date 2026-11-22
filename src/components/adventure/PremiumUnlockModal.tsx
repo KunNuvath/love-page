@@ -19,6 +19,9 @@ declare global {
   interface Window {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Paddle?: any;
+    __lovepagePaddleToken?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    __lovepagePaddleEventHandler?: (event: any) => void;
   }
 }
 
@@ -115,44 +118,71 @@ export default function PremiumUnlockModal({
         return;
       }
 
-      if (cfg.environment === "sandbox") {
-        window.Paddle.Environment.set("sandbox");
-      }
-
-      window.Paddle.Initialize({
-        token: cfg.clientToken,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        eventCallback: async (event: any) => {
-          if (event?.name === "checkout.completed") {
-            const txnId = event?.data?.transaction_id;
-            try {
-              if (txnId) {
-                await fetch("/api/payments/paddle/verify", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                  },
-                  body: JSON.stringify({
-                    transactionId: txnId,
-                    templateId,
-                  }),
-                });
-              }
-              try {
-                localStorage.setItem(`lovepage_unlocked_${templateId}`, "true");
-                if (user?.id) {
-                  localStorage.setItem(`lovepage_unlocked_${templateId}_${user.id}`, "true");
-                }
-              } catch {}
-              await supabase.auth.refreshSession().catch(() => {});
-              onUnlocked();
-            } catch (err) {
-              console.error("Failed to finalize Paddle unlock:", err);
-            }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      window.__lovepagePaddleEventHandler = async (event: any) => {
+        if (event?.name === "checkout.error") {
+          const code = event?.data?.error?.code || event?.code || "";
+          const detail =
+            event?.data?.error?.detail ||
+            event?.detail ||
+            "Paddle checkout encountered an error.";
+          try {
+            window.Paddle?.Checkout?.close?.();
+          } catch {}
+          if (String(code).includes("transaction_checkout_not_enabled") || String(detail).includes("transaction_checkout_not_enabled")) {
+            setErrorMsg(
+              "Live Paddle Checkout is awaiting domain approval in your Paddle Dashboard (Checkout → Website approval → lovepage.site). You can use a VIP / Gift Code below in the meantime!"
+            );
+            setShowCodeBox(true);
+          } else {
+            setErrorMsg(detail);
           }
-        },
-      });
+          return;
+        }
+
+        if (event?.name === "checkout.completed") {
+          const txnId = event?.data?.transaction_id;
+          try {
+            if (txnId) {
+              await fetch("/api/payments/paddle/verify", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  transactionId: txnId,
+                  templateId,
+                }),
+              });
+            }
+            try {
+              localStorage.setItem(`lovepage_unlocked_${templateId}`, "true");
+              if (user?.id) {
+                localStorage.setItem(`lovepage_unlocked_${templateId}_${user.id}`, "true");
+              }
+            } catch {}
+            await supabase.auth.refreshSession().catch(() => {});
+            onUnlocked();
+          } catch (err) {
+            console.error("Failed to finalize Paddle unlock:", err);
+          }
+        }
+      };
+
+      if (window.__lovepagePaddleToken !== cfg.clientToken) {
+        if (cfg.environment === "sandbox") {
+          window.Paddle.Environment.set("sandbox");
+        }
+        window.Paddle.Initialize({
+          token: cfg.clientToken,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          eventCallback: (event: any) => {
+            window.__lovepagePaddleEventHandler?.(event);
+          },
+        });
+        window.__lovepagePaddleToken = cfg.clientToken;
+      }
 
       setIsProcessing(false);
 

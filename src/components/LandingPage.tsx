@@ -940,8 +940,8 @@ export default function LandingPage() {
           <div className="space-y-3.5">
             {[
               {
-                q: "Is LovePage completely free to use and host?",
-                a: "Yes! LovePage is 100% free and open-source. You can customize the page directly in your browser, copy a shareable link, or deploy the repository to Vercel/Netlify with one click on their free hobby tiers.",
+                q: "What is the pricing for LovePage templates?",
+                a: "Our classic templates (Vol. 01 Polaroid Scrapbook and Vol. 02 Little Book of Us) are 100% free to customize and share. Our artisanal Premium templates (Vol. 03 Our Little Adventure and Vol. 04 9-Page Scrapbook Album) are a one-time payment of $4.99 USD with lifetime access and a 14-day refund policy.",
               },
               {
                 q: "How do I add my own photos and music file?",
@@ -1047,7 +1047,7 @@ export default function LandingPage() {
               href="/templates"
               className="hover:text-[#cf493e] transition-colors font-semibold text-[#cf493e]"
             >
-              All Templates
+              Templates & Pricing
             </Link>
             <Link
               href="/book"
@@ -1061,16 +1061,28 @@ export default function LandingPage() {
             >
               Polaroid Scrapbook
             </Link>
-            <a href="#studio" className="hover:text-[#cf493e] transition-colors">
-              Quick Builder
-            </a>
-            <a href="#faq" className="hover:text-[#cf493e] transition-colors">
-              FAQ
-            </a>
+            <Link
+              href="/terms"
+              className="hover:text-[#cf493e] transition-colors"
+            >
+              Terms of Service
+            </Link>
+            <Link
+              href="/privacy"
+              className="hover:text-[#cf493e] transition-colors"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              href="/refund"
+              className="hover:text-[#cf493e] transition-colors"
+            >
+              Refund Policy
+            </Link>
           </div>
 
           <p className="font-typewriter text-[11px] text-[#9c897c]">
-            Crafted with love by Vath • © {new Date().getFullYear()}
+            Crafted with love by Vath • © {new Date().getFullYear()} LovePage
           </p>
         </div>
       </footer>

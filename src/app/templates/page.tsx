@@ -516,6 +516,22 @@ export default function TemplatesPage() {
         </div>
       )}
 
+      {/* Footer Legal Links for Paddle Compliance */}
+      <div className="w-full max-w-5xl mt-4 pt-6 border-t border-[#e2d0bf] flex flex-wrap items-center justify-center gap-5 text-xs font-medium text-[#7e6d60]">
+        <Link href="/terms" className="hover:text-[#cf493e] transition-colors">
+          Terms of Service
+        </Link>
+        <Link href="/privacy" className="hover:text-[#cf493e] transition-colors">
+          Privacy Policy
+        </Link>
+        <Link href="/refund" className="hover:text-[#cf493e] transition-colors">
+          14-Day Refund Policy
+        </Link>
+        <a href="mailto:hello@lovepage.site" className="hover:text-[#cf493e] transition-colors">
+          hello@lovepage.site
+        </a>
+      </div>
+
       <PremiumUnlockModal
         isOpen={modalTemplate !== null}
         onClose={() => setModalTemplate(null)}
