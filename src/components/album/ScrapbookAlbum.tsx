@@ -65,7 +65,13 @@ export default function ScrapbookAlbum({
 
   const [data, setData] = useState<AlbumData>(() => initialData || createDefaultAlbum());
   const [currentPage, setCurrentPage] = useState(1);
-  const [flipDir, setFlipDir] = useState<"next" | "prev">("next");
+  const [turnState, setTurnState] = useState<{
+    from: number;
+    to: number;
+    dir: "next" | "prev";
+    id: number;
+  } | null>(null);
+  const turnTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isUnlocked, setIsUnlocked] = useState<boolean>(
     readOnly || Boolean(initialEditToken)
   );
@@ -164,24 +170,37 @@ export default function ScrapbookAlbum({
     [initialSlug]
   );
 
-  // Page turn navigation + ArrowLeft / ArrowRight keyboard support
+  // Flipbook-style 3D page turn transition + ArrowLeft / ArrowRight keyboard support
+  const triggerTurn = useCallback(
+    (target: number, dir: "next" | "prev") => {
+      if (target === currentPage) return;
+      if (turnTimerRef.current) clearTimeout(turnTimerRef.current);
+      setTurnState({ from: currentPage, to: target, dir, id: Date.now() });
+      setCurrentPage(target);
+      turnTimerRef.current = setTimeout(() => {
+        setTurnState(null);
+        turnTimerRef.current = null;
+      }, 1020);
+    },
+    [currentPage]
+  );
+
   const goPrev = useCallback(() => {
-    setFlipDir("prev");
-    setCurrentPage((p) => (p > 1 ? p - 1 : ALBUM_PAGE_COUNT));
-  }, []);
+    const target = currentPage > 1 ? currentPage - 1 : ALBUM_PAGE_COUNT;
+    triggerTurn(target, "prev");
+  }, [currentPage, triggerTurn]);
 
   const goNext = useCallback(() => {
-    setFlipDir("next");
-    setCurrentPage((p) => (p < ALBUM_PAGE_COUNT ? p + 1 : 1));
-  }, []);
+    const target = currentPage < ALBUM_PAGE_COUNT ? currentPage + 1 : 1;
+    triggerTurn(target, "next");
+  }, [currentPage, triggerTurn]);
 
   const jumpToPage = useCallback(
     (target: number) => {
       if (target === currentPage) return;
-      setFlipDir(target > currentPage ? "next" : "prev");
-      setCurrentPage(target);
+      triggerTurn(target, target > currentPage ? "next" : "prev");
     },
-    [currentPage]
+    [currentPage, triggerTurn]
   );
 
   useEffect(() => {
@@ -536,15 +555,56 @@ export default function ScrapbookAlbum({
             }
           }}
         >
-          <article
-            key={currentPage}
-            aria-label={`Album page ${currentPage} of ${ALBUM_PAGE_COUNT}`}
-            className={`${styles.pageCard} ${currentPage === 8 ? styles.pagePink : ""} ${
-              flipDir === "next" ? styles.flipNext : styles.flipPrev
-            } w-full aspect-[3/4.1] min-h-[430px] xs:min-h-[480px] sm:min-h-[550px] px-3.5 xs:px-5 sm:px-7 py-6 sm:py-8 flex flex-col justify-between`}
-          >
-            <AlbumPageContent page={currentPage} />
-          </article>
+          {/* Base Page underneath (flat, crisp — zero blur) */}
+          {(() => {
+            const basePage = turnState?.dir === "prev" ? turnState.from : currentPage;
+            return (
+              <article
+                aria-label={`Album page ${currentPage} of ${ALBUM_PAGE_COUNT}`}
+                className={`${styles.pageCard} ${basePage === 8 ? styles.pagePink : ""} w-full aspect-[3/4.1] min-h-[430px] xs:min-h-[480px] sm:min-h-[550px] px-3.5 xs:px-5 sm:px-7 py-6 sm:py-8 flex flex-col justify-between`}
+              >
+                <AlbumPageContent page={basePage} />
+              </article>
+            );
+          })()}
+
+          {/* Flipbook-style 3D Turning Page & Cast Shadow Sweep */}
+          {turnState && (
+            <>
+              <div key={`cast-${turnState.id}`} className={styles.castOverlay} aria-hidden="true">
+                <div
+                  className={`${styles.castBar} ${
+                    turnState.dir === "next" ? styles.castNext : styles.castPrev
+                  }`}
+                />
+              </div>
+
+              {(() => {
+                const leafPage = turnState.dir === "next" ? turnState.from : turnState.to;
+                return (
+                  <div
+                    key={`leaf-${turnState.id}`}
+                    aria-hidden="true"
+                    className={`${styles.turningLeafWrap} ${
+                      turnState.dir === "next" ? styles.turnNext : styles.turnPrev
+                    }`}
+                  >
+                    <article
+                      className={`${styles.pageCard} ${styles.leafFaceFront} ${
+                        leafPage === 8 ? styles.pagePink : ""
+                      } w-full h-full px-3.5 xs:px-5 sm:px-7 py-6 sm:py-8 flex flex-col justify-between`}
+                    >
+                      <AlbumPageContent page={leafPage} />
+                      <div className={styles.turnSheen} />
+                    </article>
+                    <div className={styles.leafFaceBack}>
+                      <div className={styles.turnSheen} />
+                    </div>
+                  </div>
+                );
+              })()}
+            </>
+          )}
         </main>
 
         {/* ─── BOTTOM PAGE-FLIP CONTROLS & "3 / 9" COUNTER ─── */}

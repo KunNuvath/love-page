@@ -35,10 +35,10 @@
   font-family: var(--font-album-hand), var(--font-handwriting), "Caveat", cursive;
 }
 
-/* ── Book viewport & 3D Page Flip (rotateY, origin left) ── */
+/* ── Book viewport & 3D Flipbook Page Turn (exact Love Flipbook 1s physics) ── */
 .bookStage {
-  perspective: 1800px;
-  overflow-x: clip;
+  position: relative;
+  perspective: 2800px;
 }
 
 .pageCard {
@@ -60,34 +60,130 @@
   background-size: 16px 16px;
 }
 
-@keyframes flipForward {
+.turningLeafWrap {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+}
+
+.leafFaceFront,
+.leafFaceBack {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.leafFaceBack {
+  transform: rotateY(180deg);
+  background: linear-gradient(270deg, rgba(74, 63, 56, 0.16), transparent 22%), #f3ecdf;
+  box-shadow: inset -12px 0 24px -12px rgba(74, 63, 56, 0.28);
+}
+
+@keyframes albumTurnNext {
   0% {
-    opacity: 0.35;
-    transform: rotateY(-68deg) scale(0.98);
+    transform: rotateY(0deg);
   }
   100% {
-    opacity: 1;
-    transform: none;
+    transform: rotateY(-180deg);
   }
 }
 
-@keyframes flipBackward {
+@keyframes albumTurnPrev {
   0% {
-    opacity: 0.35;
-    transform: rotateY(55deg) scale(0.98);
+    transform: rotateY(-180deg);
   }
   100% {
-    opacity: 1;
-    transform: none;
+    transform: rotateY(0deg);
   }
 }
 
-.flipNext {
-  animation: flipForward 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+.turnNext {
+  animation: albumTurnNext 1s cubic-bezier(0.55, 0.05, 0.2, 1) forwards;
 }
 
-.flipPrev {
-  animation: flipBackward 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+.turnPrev {
+  animation: albumTurnPrev 1s cubic-bezier(0.55, 0.05, 0.2, 1) forwards;
+}
+
+.turnSheen {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.44),
+    rgba(255, 255, 255, 0.16) 45%,
+    rgba(0, 0, 0, 0.24)
+  );
+  animation: sheenPulse 1s ease-in-out forwards;
+}
+
+@keyframes sheenPulse {
+  50% {
+    opacity: 1;
+  }
+}
+
+.castOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.castBar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 55%;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.34), transparent);
+}
+
+.castNext {
+  animation: castSweepNext 1s ease-in-out forwards;
+}
+
+.castPrev {
+  animation: castSweepPrev 1s ease-in-out forwards;
+}
+
+@keyframes castSweepNext {
+  0% {
+    opacity: 0;
+    transform: translateX(150%);
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-60%);
+  }
+}
+
+@keyframes castSweepPrev {
+  0% {
+    opacity: 0;
+    transform: translateX(-60%);
+  }
+  65% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(150%);
+  }
 }
 
 /* ── Top Scalloped Border & Bottom Zigzag Strip ───────────── */

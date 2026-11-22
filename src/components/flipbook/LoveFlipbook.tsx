@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
+  Layers,
   Share2,
   Copy,
   Check,
@@ -51,7 +52,6 @@ export default function LoveFlipbook({
   const [cur, setCur] = useState(0); // 0..7 (spread index)
   const [movingLeaf, setMovingLeaf] = useState<number | null>(null);
   const [castDir, setCastDir] = useState<"" | "f" | "b">("");
-  const [soundEnabled, setSoundEnabled] = useState(true);
   const [scale, setScale] = useState(0.85);
   const [interactionMode, setInteractionMode] = useState<"edit" | "flip">("edit");
 
@@ -70,7 +70,6 @@ export default function LoveFlipbook({
   const [toast, setToast] = useState<string | null>(null);
 
   const busyRef = useRef(false);
-  const audioCtxRef = useRef<AudioContext | null>(null);
   const touchStartX = useRef<number | null>(null);
   const singleFileInputRef = useRef<HTMLInputElement | null>(null);
   const batchFileInputRef = useRef<HTMLInputElement | null>(null);
@@ -159,33 +158,6 @@ export default function LoveFlipbook({
     return () => window.removeEventListener("resize", updateFit);
   }, [readOnly]);
 
-  // Realistic paper-flip rustle sound via Web Audio API
-  const playFlipSound = useCallback(() => {
-    if (!soundEnabled || typeof window === "undefined") return;
-    try {
-      const AudioCtx =
-        window.AudioContext ||
-        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      if (!AudioCtx) return;
-      const ac = audioCtxRef.current || new AudioCtx();
-      audioCtxRef.current = ac;
-      const n = Math.floor(ac.sampleRate * 0.5);
-      const buf = ac.createBuffer(1, n, ac.sampleRate);
-      const d = buf.getChannelData(0);
-      for (let i = 0; i < n; i++) {
-        d[i] = (Math.random() * 2 - 1) * Math.pow(Math.sin((Math.PI * i) / n), 2) * 0.45;
-      }
-      const src = ac.createBufferSource();
-      const filter = ac.createBiquadFilter();
-      src.buffer = buf;
-      filter.type = "bandpass";
-      filter.frequency.value = 2400;
-      filter.Q.value = 0.6;
-      src.connect(filter).connect(ac.destination);
-      src.start();
-    } catch {}
-  }, [soundEnabled]);
-
   const go = useCallback(
     (d: 1 | -1) => {
       if (busyRef.current) return;
@@ -199,7 +171,6 @@ export default function LoveFlipbook({
       requestAnimationFrame(() => {
         setCastDir(d > 0 ? "f" : "b");
       });
-      playFlipSound();
       setCur(target);
 
       setTimeout(() => {
@@ -208,7 +179,7 @@ export default function LoveFlipbook({
         busyRef.current = false;
       }, 1020);
     },
-    [cur, playFlipSound]
+    [cur]
   );
 
   useEffect(() => {
@@ -607,25 +578,15 @@ export default function LoveFlipbook({
       case 3:
         return (
           <>
-            <div
-              className={styles.ab}
-              style={{
-                left: 40,
-                top: 92,
-                width: 400,
-                height: 540,
-                borderRadius: "200px 200px 10px 10px",
-                border: "2px solid rgba(255,255,255,.95)",
-                boxShadow:
-                  "inset 3px 3px 9px rgba(255,255,255,.9), inset -3px -3px 9px rgba(120,90,50,.16), 0 0 0 1px rgba(120,90,50,.1)",
-                pointerEvents: "none",
-              }}
-            />
-            {renderScript("p3-title", 0, 150, 19, false, {
+            {renderScript("p3-title", 0, 68, 26, false, {
               width: 480,
               textAlign: "center",
             })}
-            {renderText("p3-body", 62, 206, 356, false, { color: "#2a1209" })}
+            {renderText("p3-body", 46, 142, 388, false, {
+              color: "#2f170d",
+              fontSize: "15px",
+              lineHeight: 1.78,
+            })}
             <div className={`${styles.st} ${styles.stD}`} />
           </>
         );
@@ -641,8 +602,8 @@ export default function LoveFlipbook({
                 top: 0,
                 width: 480,
                 height: 372,
-                background: "#2a1209",
-                boxShadow: "0 6px 14px rgba(0,0,0,.5)",
+                background: "#623a29",
+                boxShadow: "0 6px 14px rgba(42,18,9,.28)",
               }}
             />
             <div
@@ -771,8 +732,8 @@ export default function LoveFlipbook({
                 top: 0,
                 width: 480,
                 height: 336,
-                background: "radial-gradient(ellipse at 40% 30%, #f4eedf, #dfd3b8)",
-                boxShadow: "0 6px 14px rgba(0,0,0,.5)",
+                background: "radial-gradient(ellipse at 40% 30%, #fffdf8, #f2e8d4)",
+                boxShadow: "0 6px 14px rgba(42,18,9,.3)",
               }}
             />
             {renderPhotoFrame(20, 28, 34, 160, 216, -2, "fr", "c")}
@@ -996,42 +957,52 @@ export default function LoveFlipbook({
         onChange={handleBatchFilesChange}
       />
 
-      {/* Top Action Bar for Editor */}
-      {!readOnly && (
-        <div className="w-full max-w-5xl px-3 sm:px-6 pt-2 pb-1 flex flex-wrap items-center justify-between gap-2 z-20">
-          <div className="flex items-center gap-2">
-            <Link
-              href="/templates"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/85 hover:bg-white text-[#2a1209] border border-[#2a1209]/20 text-xs font-semibold shadow-2xs transition-all"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Templates</span>
-            </Link>
+      {/* Top Action Bar pinned at top (matching Vol. 03 & Vol. 04) */}
+      <div className="w-full max-w-5xl px-1 sm:px-4 pt-1 pb-3 flex flex-wrap items-center justify-between gap-2 z-20">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/90 hover:bg-white text-[#351a0f] border border-[#351a0f]/15 text-xs sm:text-sm font-semibold shadow-2xs transition-all active:scale-95"
+          >
+            <ArrowLeft className="h-3.5 w-3.5 text-[#cf493e]" />
+            <span className="hidden xs:inline">Back</span>
+          </Link>
 
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#2a1209] text-[#f3e8dc] text-[11px] font-bold">
+          <Link
+            href="/templates"
+            className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/90 hover:bg-white text-[#351a0f] border border-[#351a0f]/15 text-xs sm:text-sm font-semibold shadow-2xs transition-all active:scale-95"
+          >
+            <Layers className="h-3.5 w-3.5 text-[#b56c4b]" />
+            <span>Templates</span>
+          </Link>
+
+          {!readOnly && (
+            <span className="hidden md:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#4a281b] text-[#faf4e6] text-[11px] font-bold">
               <Crown className="h-3 w-3 text-[#e6c26a] fill-[#e6c26a]" />
               <span>{isUnlocked ? "Vol. 05 Unlocked" : "Vol. 05 • $9.99"}</span>
             </span>
-          </div>
+          )}
+        </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+        {!readOnly && (
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 justify-end">
             {/* Toggle Edit vs Flip Mode */}
             <button
               type="button"
               onClick={() =>
                 setInteractionMode((m) => (m === "edit" ? "flip" : "edit"))
               }
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 hover:bg-white text-[#2a1209] border border-[#2a1209]/20 text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-white/90 hover:bg-white text-[#351a0f] border border-[#351a0f]/15 text-xs sm:text-sm font-semibold shadow-2xs transition-all cursor-pointer active:scale-95"
             >
               {interactionMode === "edit" ? (
                 <>
-                  <Eye className="h-3.5 w-3.5 text-[#5b3a25]" />
-                  <span>Preview Flip Mode</span>
+                  <Eye className="h-3.5 w-3.5 text-[#7a4b34]" />
+                  <span className="hidden sm:inline">Preview Flip</span>
                 </>
               ) : (
                 <>
-                  <Pencil className="h-3.5 w-3.5 text-[#5b3a25]" />
-                  <span>Back to Edit Mode</span>
+                  <Pencil className="h-3.5 w-3.5 text-[#7a4b34]" />
+                  <span className="hidden sm:inline">Edit Mode</span>
                 </>
               )}
             </button>
@@ -1047,14 +1018,14 @@ export default function LoveFlipbook({
                 }
                 batchFileInputRef.current?.click();
               }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 hover:bg-white text-[#2a1209] border border-[#2a1209]/20 text-xs font-semibold shadow-2xs transition-all cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-white/90 hover:bg-white text-[#351a0f] border border-[#351a0f]/15 text-xs sm:text-sm font-semibold shadow-2xs transition-all cursor-pointer active:scale-95 disabled:opacity-50"
             >
               {isBatchUploading ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
               ) : (
-                <ImagePlus className="h-3.5 w-3.5 text-[#5b3a25]" />
+                <ImagePlus className="h-3.5 w-3.5 text-[#7a4b34]" />
               )}
-              <span>Batch Upload Photos</span>
+              <span>Batch Upload</span>
             </button>
 
             {/* Unlock or Publish & Share */}
@@ -1062,17 +1033,17 @@ export default function LoveFlipbook({
               <button
                 type="button"
                 onClick={() => setIsUnlockModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#2a1209] hover:bg-[#3f1d10] text-[#f3e8dc] text-xs font-bold shadow-md transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#4a281b] hover:bg-[#5e3424] text-[#faf4e6] text-xs sm:text-sm font-bold shadow-md transition-all cursor-pointer active:scale-95"
               >
                 <Crown className="h-3.5 w-3.5 text-[#e6c26a] fill-[#e6c26a]" />
-                <span>Unlock Flipbook • $9.99</span>
+                <span>Unlock • $9.99</span>
               </button>
             ) : (
               <button
                 type="button"
                 disabled={isSaving}
                 onClick={handleSaveClick}
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#2a1209] hover:bg-[#3f1d10] text-[#f3e8dc] text-xs font-bold shadow-md transition-all cursor-pointer disabled:opacity-60"
+                className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#4a281b] hover:bg-[#5e3424] text-[#faf4e6] text-xs sm:text-sm font-bold shadow-md transition-all cursor-pointer active:scale-95 disabled:opacity-60"
               >
                 {isSaving ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -1083,8 +1054,8 @@ export default function LoveFlipbook({
               </button>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Spread Heading */}
       <h1 className={styles.ttl}>{spreadLabel}</h1>
@@ -1175,7 +1146,7 @@ export default function LoveFlipbook({
         </div>
       </div>
 
-      {/* Bottom Spread Navigation & Sound Controls */}
+      {/* Bottom Spread Navigation Controls */}
       <div className={styles.ui}>
         <button
           type="button"
@@ -1195,14 +1166,6 @@ export default function LoveFlipbook({
           className={styles.navBtn}
         >
           ›
-        </button>
-        <button
-          type="button"
-          onClick={() => setSoundEnabled((s) => !s)}
-          aria-label="Toggle page flip sound"
-          className={`${styles.navBtn} ${styles.muteBtn}`}
-        >
-          {soundEnabled ? "🔊" : "🔇"}
         </button>
       </div>
 
