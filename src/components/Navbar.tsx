@@ -100,7 +100,7 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
             <Layers className="h-3.5 w-3.5 text-[#cf493e] group-hover:scale-110 transition-transform" />
             <span>Templates</span>
             <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-[#cf493e]/10 text-[#cf493e]">
-              4
+              5
             </span>
           </Link>
 
@@ -325,6 +325,25 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
                 </div>
                 <span className="px-2 py-0.5 rounded-full bg-[#e9c46a] text-[#4a3f38] text-[10px] font-extrabold">
                   $4.99
+                </span>
+              </Link>
+
+              <Link
+                href="/flipbook"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="col-span-2 flex items-center justify-between p-2.5 rounded-xl bg-[#2a1209] text-[#f4e9dc] border border-[#e6c26a] shadow-xs transition-all active:scale-98"
+              >
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#e6c26a]">
+                    <BookOpen className="h-3.5 w-3.5 text-[#e6c26a]" />
+                    <span>Love Flipbook (16 Pages)</span>
+                  </div>
+                  <span className="text-[10px] text-[#f4e9dc]/80 leading-tight">
+                    Vol. 05 • 16-Page Leather Scrapbook • 37 Photos
+                  </span>
+                </div>
+                <span className="px-2 py-0.5 rounded-full bg-[#e6c26a] text-[#2a1209] text-[10px] font-extrabold">
+                  $9.99
                 </span>
               </Link>
             </div>

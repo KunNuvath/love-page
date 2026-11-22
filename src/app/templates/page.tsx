@@ -21,6 +21,7 @@ import { useAuth } from "@/src/context/AuthContext";
 import { hasTemplateAccess } from "@/src/lib/premium";
 import { ADVENTURE_TEMPLATE_ID } from "@/src/lib/adventure";
 import { ALBUM_TEMPLATE_ID } from "@/src/lib/album";
+import { FLIPBOOK_TEMPLATE_ID } from "@/src/lib/flipbook";
 import PremiumUnlockModal from "@/src/components/adventure/PremiumUnlockModal";
 
 export default function TemplatesPage() {
@@ -29,11 +30,13 @@ export default function TemplatesPage() {
   const [activeCategory, setActiveCategory] = useState<"all" | "free" | "premium">("all");
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isAlbumUnlocked, setIsAlbumUnlocked] = useState(false);
+  const [isFlipbookUnlocked, setIsFlipbookUnlocked] = useState(false);
   const [modalTemplate, setModalTemplate] = useState<string | null>(null);
 
   useEffect(() => {
     setIsUnlocked(hasTemplateAccess(user, ADVENTURE_TEMPLATE_ID));
     setIsAlbumUnlocked(hasTemplateAccess(user, ALBUM_TEMPLATE_ID));
+    setIsFlipbookUnlocked(hasTemplateAccess(user, FLIPBOOK_TEMPLATE_ID));
   }, [user]);
 
   return (
@@ -81,7 +84,7 @@ export default function TemplatesPage() {
                 : "text-[#68584f] hover:text-[#2d221e]"
             }`}
           >
-            All Templates (4)
+            All Templates (5)
           </button>
           <button
             type="button"
@@ -104,7 +107,7 @@ export default function TemplatesPage() {
             }`}
           >
             <Crown className="h-3.5 w-3.5 text-[#e5533d] fill-[#f7d56a]" />
-            <span>Premium Category (2)</span>
+            <span>Premium Category (3)</span>
           </button>
         </div>
       </div>
@@ -513,6 +516,124 @@ export default function TemplatesPage() {
               </div>
             </div>
           </div>
+
+          {/* ── VOL. 05 PREMIUM: Love Flipbook (16-Page Leather Scrapbook • $9.99) ── */}
+          <div className="mt-8 rounded-3xl p-5 xs:p-6 sm:p-9 bg-[#2a1209] text-[#f4e9dc] border-2 border-[#e6c26a]/60 shadow-[0_24px_60px_rgba(42,18,9,0.45)] relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-[#e6c26a] text-[#2a1209] text-[10px] font-extrabold uppercase tracking-widest px-5 py-1.5 rounded-bl-2xl flex items-center gap-1">
+              <Crown className="h-3 w-3 text-[#2a1209] fill-[#2a1209]" />
+              <span>{isFlipbookUnlocked ? "PREMIUM UNLOCKED" : "VOL. 05 • $9.99 DELUXE"}</span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
+              {/* Left: Mini 16-Page Leather Spread Preview */}
+              <div className="lg:col-span-6 bg-[#1b0b06] p-4 sm:p-5 rounded-2xl border border-[#e6c26a]/30 shadow-inner">
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-[#e6c26a] mb-3">
+                  <span>16-PAGE 3D LEATHER SPREAD FLIPBOOK</span>
+                  <span className="px-2 py-0.5 rounded-full bg-[#e6c26a]/20 text-[#e6c26a]">
+                    37 PHOTOS • 8 SPREADS
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2.5 text-[10px] font-bold">
+                  <div className="bg-[#2a1209] border border-dashed border-[#f4e9dc]/35 rounded-xl p-3 flex flex-col justify-between">
+                    <span className="text-[#e6c26a] text-xs">Page 1 &amp; 2 • Lace &amp; Strip</span>
+                    <span className="text-[#f4e9dc]/75 font-normal mt-1">
+                      4-photo B&amp;W photobooth strip + vintage lace &amp; polka dots
+                    </span>
+                  </div>
+                  <div className="bg-[#f2ebd9] text-[#2a1209] border border-[#2a1209]/30 rounded-xl p-3 flex flex-col justify-between">
+                    <span className="text-[#2a1209] text-xs">Page 5 &amp; 6 • Meet Boy &amp; Girl</span>
+                    <span className="text-[#2a1209]/75 font-normal mt-1">
+                      Dual dotted heart photo cutouts + handwritten story notes
+                    </span>
+                  </div>
+                  <div className="bg-[#3d2417] border border-[#e6c26a]/30 rounded-xl p-3 flex flex-col justify-between">
+                    <span className="text-[#e6c26a] text-xs">Page 11 &amp; 12 • 9-Photo Wishlist</span>
+                    <span className="text-[#f4e9dc]/75 font-normal mt-1">
+                      &ldquo;Make a wish&rdquo; + 9 captioned polaroids (Roadtrip, Picnic...)
+                    </span>
+                  </div>
+                  <div className="bg-[#e6dac3] text-[#2a1209] border border-[#2a1209]/30 rounded-xl p-3 flex flex-col justify-between">
+                    <span className="text-[#2a1209] text-xs">Page 13–16 • Plaid &amp; Finale</span>
+                    <span className="text-[#2a1209]/75 font-normal mt-1">
+                      Plaid spreads, &ldquo;I love this man/girl&rdquo; &amp; &ldquo;Love actually is all around&rdquo;
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Description & Unlock / Launch CTA */}
+              <div className="lg:col-span-6 flex flex-col justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e6c26a]/15 border border-[#e6c26a]/40 text-[#e6c26a] text-xs font-bold uppercase tracking-wider mb-3">
+                    <BookOpen className="h-3.5 w-3.5 text-[#e6c26a]" />
+                    <span>Vol. 05 • 16-Page Leather Book • $9.99</span>
+                  </div>
+
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-[#f4e9dc] mb-2">
+                    Love Flipbook (16-Page Leather Scrapbook)
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#f4e9dc]/80 mb-5 leading-relaxed">
+                    An heirloom 16-page open leather-bound scrapbook with realistic 3D dual-page turn physics, paper-rustle sound effect, scalloped lace borders, photobooth strips, heart photo cutouts, wood &amp; plaid textures, and a 9-polaroid couple wishlist.
+                  </p>
+
+                  <div className="space-y-2 text-xs sm:text-sm text-[#f4e9dc]/90 mb-6">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#e6c26a] shrink-0" />
+                      <span>
+                        <strong>16 Pages (8 Open Spreads) &amp; 37 Photos:</strong> Photobooth strip, heart cutouts, lace &amp; 9-polaroid Wishlist
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#e6c26a] shrink-0" />
+                      <span>
+                        <strong>Realistic 3D Leather Book &amp; Sound:</strong> Stitched cover, shadow sweep &amp; paper-flip audio
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#e6c26a] shrink-0" />
+                      <span>
+                        <strong>Batch Photo Upload + Share Links:</strong> Fill 37 photos in one click + public &amp; secret owner edit URL
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  {isFlipbookUnlocked ? (
+                    <Link
+                      href="/flipbook"
+                      className="flex-1 py-4 px-6 rounded-2xl bg-[#e6c26a] hover:bg-[#d9b255] text-[#2a1209] font-extrabold text-sm sm:text-base shadow-lg flex items-center justify-center gap-2 transition-all"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      <span>Open 16-Page Love Flipbook</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setModalTemplate(FLIPBOOK_TEMPLATE_ID)}
+                        className="flex-1 py-4 px-6 rounded-2xl bg-[#e6c26a] hover:bg-[#d9b255] text-[#2a1209] font-extrabold text-sm sm:text-base border-2 border-[#1b0b06] shadow-[4px_4px_0_#1b0b06] flex items-center justify-center gap-2 transition-all cursor-pointer"
+                      >
+                        <Lock className="h-4 w-4 text-[#2a1209]" />
+                        <span>Unlock Flipbook • $9.99</span>
+                      </button>
+
+                      <Link
+                        href="/flipbook"
+                        className="py-4 px-5 rounded-2xl bg-white/10 hover:bg-white/20 text-[#f4e9dc] border border-white/25 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all"
+                      >
+                        <BookOpen className="h-4 w-4 text-[#e6c26a]" />
+                        <span>Preview</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -535,16 +656,22 @@ export default function TemplatesPage() {
       <PremiumUnlockModal
         isOpen={modalTemplate !== null}
         onClose={() => setModalTemplate(null)}
+        price={modalTemplate === FLIPBOOK_TEMPLATE_ID ? "$9.99" : "$4.99"}
         templateId={modalTemplate || ADVENTURE_TEMPLATE_ID}
         templateTitle={
-          modalTemplate === ALBUM_TEMPLATE_ID
-            ? "Scrapbook Album (9-Page Flip Album)"
-            : "Our Little Adventure"
+          modalTemplate === FLIPBOOK_TEMPLATE_ID
+            ? "Love Flipbook (16-Page Leather Scrapbook)"
+            : modalTemplate === ALBUM_TEMPLATE_ID
+              ? "Scrapbook Album (9-Page Flip Album)"
+              : "Our Little Adventure"
         }
         onUnlocked={() => {
           const target = modalTemplate;
           setModalTemplate(null);
-          if (target === ALBUM_TEMPLATE_ID) {
+          if (target === FLIPBOOK_TEMPLATE_ID) {
+            setIsFlipbookUnlocked(true);
+            router.push("/flipbook");
+          } else if (target === ALBUM_TEMPLATE_ID) {
             setIsAlbumUnlocked(true);
             router.push("/album");
           } else {

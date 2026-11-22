@@ -4,8 +4,10 @@ import type { LovePage } from "@/src/lib/supabase";
 import { getAdminClient } from "@/src/lib/supabase-admin";
 import { sanitizeAdventure } from "@/src/lib/adventure";
 import { sanitizeAlbum } from "@/src/lib/album";
+import { sanitizeFlipbook } from "@/src/lib/flipbook";
 import AdventureScrapbook from "@/src/components/adventure/AdventureScrapbook";
 import ScrapbookAlbum from "@/src/components/album/ScrapbookAlbum";
+import LoveFlipbook from "@/src/components/flipbook/LoveFlipbook";
 import ShareView from "@/src/app/share/[slug]/ShareView";
 import LittleBookShareView from "@/src/app/share/[slug]/LittleBookShareView";
 
@@ -57,6 +59,16 @@ export default async function PublicPage({ params }: Props) {
     config = JSON.parse(page.message);
   } catch {
     config = null;
+  }
+
+  if (config?.type === "love-flipbook") {
+    return (
+      <LoveFlipbook
+        readOnly
+        initialData={sanitizeFlipbook(config)}
+        initialSlug={page.slug}
+      />
+    );
   }
 
   if (config?.type === "family-album") {

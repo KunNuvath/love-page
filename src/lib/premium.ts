@@ -20,6 +20,12 @@ export const PREMIUM_TEMPLATES: Record<string, PremiumTemplate> = {
     price: process.env.NEXT_PUBLIC_PREMIUM_PRICE || "$4.99",
     href: "/album",
   },
+  "love-flipbook": {
+    id: "love-flipbook",
+    name: "Love Flipbook (16-Page Leather Scrapbook)",
+    price: "$9.99",
+    href: "/flipbook",
+  },
 };
 
 export function getUnlockedTemplates(

@@ -292,6 +292,32 @@ export default function TemplateChooserModal({
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
+
+          {/* PREMIUM CATEGORY BANNER 3: Vol. 05 — Love Flipbook (16-Page Leather Scrapbook • $9.99) */}
+          <div className="mt-4 p-4 sm:p-5 rounded-2xl bg-[#2a1209] text-[#f4e9dc] border-2 border-[#e6c26a] shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#e6c26a] text-[#2a1209] text-[10px] font-extrabold uppercase tracking-wider">
+                <Crown className="h-3 w-3 text-[#2a1209] fill-[#2a1209]" />
+                <span>Vol. 05 • Deluxe Edition • $9.99</span>
+              </div>
+              <h4 className="font-extrabold text-base sm:text-lg text-[#f4e9dc] flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-[#e6c26a]" />
+                <span>Love Flipbook (16-Page Leather Scrapbook)</span>
+              </h4>
+              <p className="text-xs text-[#f4e9dc]/80 leading-relaxed max-w-xl">
+                16-page open leather-bound scrapbook with 3D dual-page flip physics, paper-rustle sound, 37 photo slots, photobooth strip, lace frames, heart cutouts, and 9-polaroid couple wishlist.
+              </p>
+            </div>
+
+            <Link
+              href="/flipbook"
+              onClick={onClose}
+              className="w-full sm:w-auto shrink-0 py-3 px-5 rounded-xl bg-[#e6c26a] hover:bg-[#d9b255] text-[#2a1209] font-extrabold text-xs sm:text-sm border-2 border-[#1b0b06] shadow-[3px_3px_0_#1b0b06] flex items-center justify-center gap-1.5 transition-all"
+            >
+              <span>Open 16-Page Flipbook</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
 
         {/* Footer */}
