@@ -8,13 +8,19 @@ import {
   X,
   ShieldCheck,
   Loader2,
-  ExternalLink,
   CreditCard,
 } from "lucide-react";
 import { useAuth } from "@/src/context/AuthContext";
 import { supabase } from "@/src/lib/supabase";
 import { ADVENTURE_TEMPLATE_ID } from "@/src/lib/adventure";
 import styles from "./adventure.module.css";
+
+declare global {
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Paddle?: any;
+  }
+}
 
 interface PremiumUnlockModalProps {
   isOpen: boolean;
@@ -47,7 +53,31 @@ export default function PremiumUnlockModal({
 
   if (!isOpen) return null;
 
-  const startStripeCheckout = async (accessToken?: string) => {
+  const ensurePaddleJs = (): Promise<void> => {
+    if (typeof window !== "undefined" && window.Paddle) {
+      return Promise.resolve();
+    }
+    return new Promise((resolve, reject) => {
+      const existing = document.querySelector<HTMLScriptElement>(
+        'script[src="https://cdn.paddle.com/paddle/v2/paddle.js"]'
+      );
+      if (existing) {
+        existing.addEventListener("load", () => resolve(), { once: true });
+        existing.addEventListener("error", () => reject(new Error("Failed to load Paddle.js")), {
+          once: true,
+        });
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("Failed to load Paddle.js"));
+      document.head.appendChild(script);
+    });
+  };
+
+  const startPaddleCheckout = async (accessToken?: string) => {
     setIsProcessing(true);
     setErrorMsg(null);
     try {
@@ -62,7 +92,7 @@ export default function PremiumUnlockModal({
         return;
       }
 
-      const res = await fetch("/api/payments/stripe/checkout", {
+      const res = await fetch("/api/payments/paddle/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -71,17 +101,73 @@ export default function PremiumUnlockModal({
         body: JSON.stringify({ templateId }),
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.checkoutUrl) {
-        setErrorMsg(data.error || "Could not start Stripe checkout right now.");
+      const cfg = await res.json();
+      if (!res.ok || !cfg.clientToken || !cfg.priceId) {
+        setErrorMsg(cfg.error || "Could not start Paddle checkout right now.");
         setIsProcessing(false);
         return;
       }
 
-      // Redirect user to Stripe's secure hosted checkout page
-      window.location.href = data.checkoutUrl;
+      await ensurePaddleJs();
+      if (!window.Paddle) {
+        setErrorMsg("Paddle checkout failed to initialize.");
+        setIsProcessing(false);
+        return;
+      }
+
+      if (cfg.environment === "sandbox") {
+        window.Paddle.Environment.set("sandbox");
+      }
+
+      window.Paddle.Initialize({
+        token: cfg.clientToken,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        eventCallback: async (event: any) => {
+          if (event?.name === "checkout.completed") {
+            const txnId = event?.data?.transaction_id;
+            try {
+              if (txnId) {
+                await fetch("/api/payments/paddle/verify", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({
+                    transactionId: txnId,
+                    templateId,
+                  }),
+                });
+              }
+              try {
+                localStorage.setItem(`lovepage_unlocked_${templateId}`, "true");
+                if (user?.id) {
+                  localStorage.setItem(`lovepage_unlocked_${templateId}_${user.id}`, "true");
+                }
+              } catch {}
+              await supabase.auth.refreshSession().catch(() => {});
+              onUnlocked();
+            } catch (err) {
+              console.error("Failed to finalize Paddle unlock:", err);
+            }
+          }
+        },
+      });
+
+      setIsProcessing(false);
+
+      window.Paddle.Checkout.open({
+        settings: {
+          displayMode: "overlay",
+          theme: "light",
+          locale: "en",
+        },
+        items: [{ priceId: cfg.priceId, quantity: 1 }],
+        customer: cfg.customerEmail ? { email: cfg.customerEmail } : undefined,
+        customData: cfg.customData,
+      });
     } catch (err: any) {
-      setErrorMsg(err?.message || "Could not connect to Stripe. Please try again.");
+      setErrorMsg(err?.message || "Could not connect to Paddle. Please try again.");
       setIsProcessing(false);
     }
   };
@@ -92,11 +178,11 @@ export default function PremiumUnlockModal({
       openAuthModal({
         title: "Sign In Before Checkout",
         subtitle: "Sign in so your unlocked template is permanently linked to your account.",
-        onSuccess: () => startStripeCheckout(),
+        onSuccess: () => startPaddleCheckout(),
       });
       return;
     }
-    startStripeCheckout();
+    startPaddleCheckout();
   };
 
   const handleRedeemCode = async (e: React.FormEvent) => {
@@ -151,7 +237,7 @@ export default function PremiumUnlockModal({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Unlock Our Little Adventure Premium Scrapbook"
+      aria-label="Unlock Premium Scrapbook"
       className="fixed inset-0 z-50 flex items-center justify-center p-3 xs:p-4 bg-[#141d33]/80 backdrop-blur-sm"
       onClick={onClose}
     >
@@ -172,7 +258,7 @@ export default function PremiumUnlockModal({
         <div className="text-center mb-4">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f7d56a] border-2 border-[#1d2742] text-[#1d2742] text-[11px] font-bold uppercase tracking-wider mb-2.5 shadow-[2px_2px_0_#1d2742]">
             <Crown className="h-3.5 w-3.5 text-[#e5533d] fill-[#e5533d]" />
-            <span>Vol. 03 • Premium Template</span>
+            <span>Premium Template</span>
           </div>
           <h3 className={`${styles.hand} text-3xl sm:text-4xl font-bold text-[#1d2742]`}>
             Unlock &ldquo;{templateTitle}&rdquo;
@@ -204,7 +290,7 @@ export default function PremiumUnlockModal({
           </div>
         )}
 
-        {/* Primary Stripe Hosted Checkout CTA */}
+        {/* Primary Paddle Overlay Checkout CTA */}
         <button
           type="button"
           disabled={isProcessing}
@@ -214,20 +300,19 @@ export default function PremiumUnlockModal({
           {isProcessing && !showCodeBox ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Opening Stripe Checkout...</span>
+              <span>Opening Secure Checkout...</span>
             </>
           ) : (
             <>
               <CreditCard className="h-4 w-4" />
-              <span>Pay {price} with Stripe</span>
-              <ExternalLink className="h-3.5 w-3.5 opacity-85" />
+              <span>Pay {price} • Visa / Mastercard / PayPal</span>
             </>
           )}
         </button>
 
         <div className="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-[#1d2742]/75">
           <ShieldCheck className="h-3.5 w-3.5 text-[#1d2742]" />
-          <span>Secured by Stripe • Visa, Mastercard, Apple Pay &amp; Link</span>
+          <span>Secured by Paddle • Apple Pay, Cards &amp; PayPal Worldwide</span>
         </div>
 
         {/* Optional VIP / Gift Code Drawer */}

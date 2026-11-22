@@ -111,74 +111,46 @@ export default function ScrapbookAlbum({
     }
   }, [readOnly, initialData, initialEditToken, user]);
 
-  // Verify Stripe payment on return (?stripe_session_id=cs_...)
+  // Automatically confirm unlock when returning from Lemon Squeezy (?paid=1)
   useEffect(() => {
     if (readOnly || typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
-    const stripeSessionId = params.get("stripe_session_id");
-    const canceled = params.get("canceled");
-
-    if (canceled === "1") {
-      showToast("Checkout canceled — your album preview is still here.");
-      window.history.replaceState({}, "", "/album");
-      return;
-    }
-
-    if (!stripeSessionId) return;
+    if (params.get("paid") !== "1") return;
 
     let cancelled = false;
     const verify = async () => {
-      showToast("Confirming your Stripe payment...");
-      try {
-        let token = session?.access_token;
-        if (!token) {
-          const { data: sess } = await supabase.auth.getSession();
-          token = sess.session?.access_token;
-        }
-        if (!token) {
-          showToast("Please sign in to finish unlocking your album.");
-          return;
-        }
-
-        const res = await fetch("/api/payments/stripe/verify", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ sessionId: stripeSessionId }),
-        });
-
-        const json = await res.json();
+      showToast("Confirming your payment...");
+      for (let attempt = 0; attempt < 5; attempt++) {
         if (cancelled) return;
-
-        if (res.ok && json.success) {
+        const { data: refreshed } = await supabase.auth.refreshSession().catch(() => ({
+          data: { user: null },
+        }));
+        const latestUser = refreshed?.user || user;
+        if (hasTemplateAccess(latestUser, ALBUM_TEMPLATE_ID)) {
           try {
             localStorage.setItem(`lovepage_unlocked_${ALBUM_TEMPLATE_ID}`, "true");
-            if (user?.id) {
+            if (latestUser?.id) {
               localStorage.setItem(
-                `lovepage_unlocked_${ALBUM_TEMPLATE_ID}_${user.id}`,
+                `lovepage_unlocked_${ALBUM_TEMPLATE_ID}_${latestUser.id}`,
                 "true"
               );
             }
           } catch {}
-          await supabase.auth.refreshSession().catch(() => {});
           setIsUnlocked(true);
           showToast("🎉 Album unlocked! Tap any photo slot or text to begin.");
           window.history.replaceState({}, "", "/album");
-        } else {
-          showToast(json.error || "Could not confirm payment yet.");
+          return;
         }
-      } catch {
-        if (!cancelled) showToast("Could not confirm payment right now.");
+        await new Promise((r) => setTimeout(r, 1500));
       }
+      showToast("Payment received! Refresh in a moment if your unlock hasn't appeared yet.");
     };
 
     verify();
     return () => {
       cancelled = true;
     };
-  }, [readOnly, session?.access_token, user?.id, showToast]);
+  }, [readOnly, user, showToast]);
 
   const persistDraft = useCallback(
     (next: AlbumData) => {

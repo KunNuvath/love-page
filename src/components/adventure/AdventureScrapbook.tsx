@@ -153,76 +153,46 @@ export default function AdventureScrapbook({
     setIsUnlocked(hasTemplateAccess(user, ADVENTURE_TEMPLATE_ID));
   }, [readOnly, user]);
 
-  // Automatically verify & unlock when returning from Stripe Checkout (?stripe_session_id=cs_...)
+  // Automatically confirm unlock when returning from Lemon Squeezy (?paid=1)
   useEffect(() => {
     if (readOnly || typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
-    const stripeSessionId = params.get("stripe_session_id");
-    const canceled = params.get("canceled");
-
-    if (canceled === "1") {
-      showToast("Checkout canceled — your scrapbook preview is still here whenever you're ready.");
-      window.history.replaceState({}, "", "/adventure");
-      return;
-    }
-
-    if (!stripeSessionId) return;
+    if (params.get("paid") !== "1") return;
 
     let cancelled = false;
-    const verifyStripeSession = async () => {
-      showToast("Confirming your Stripe payment...");
-      try {
-        let token = session?.access_token;
-        if (!token) {
-          const { data: sessData } = await supabase.auth.getSession();
-          token = sessData.session?.access_token;
-        }
-        if (!token) {
-          showToast("Please sign in to finish unlocking your purchase.");
-          return;
-        }
-
-        const res = await fetch("/api/payments/stripe/verify", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ sessionId: stripeSessionId }),
-        });
-
-        const json = await res.json();
+    const verifyAfterCheckout = async () => {
+      showToast("Confirming your payment...");
+      for (let attempt = 0; attempt < 5; attempt++) {
         if (cancelled) return;
-
-        if (res.ok && json.success) {
+        const { data: refreshed } = await supabase.auth.refreshSession().catch(() => ({
+          data: { user: null },
+        }));
+        const latestUser = refreshed?.user || user;
+        if (hasTemplateAccess(latestUser, ADVENTURE_TEMPLATE_ID)) {
           try {
             localStorage.setItem(`lovepage_unlocked_${ADVENTURE_TEMPLATE_ID}`, "true");
-            if (user?.id) {
+            if (latestUser?.id) {
               localStorage.setItem(
-                `lovepage_unlocked_${ADVENTURE_TEMPLATE_ID}_${user.id}`,
+                `lovepage_unlocked_${ADVENTURE_TEMPLATE_ID}_${latestUser.id}`,
                 "true"
               );
             }
           } catch {}
-          await supabase.auth.refreshSession().catch(() => {});
           setIsUnlocked(true);
-          showToast("🎉 Payment confirmed via Stripe! Welcome to Our Little Adventure!");
+          showToast("🎉 Payment confirmed! Welcome to Our Little Adventure!");
           window.history.replaceState({}, "", "/adventure");
-        } else {
-          showToast(json.error || "Could not confirm payment yet. Please refresh.");
+          return;
         }
-      } catch {
-        if (!cancelled) {
-          showToast("Could not confirm payment right now. Please refresh.");
-        }
+        await new Promise((r) => setTimeout(r, 1500));
       }
+      showToast("Payment received! Refresh in a moment if your unlock hasn't appeared yet.");
     };
 
-    verifyStripeSession();
+    verifyAfterCheckout();
     return () => {
       cancelled = true;
     };
-  }, [readOnly, session?.access_token, user?.id, showToast]);
+  }, [readOnly, user, showToast]);
 
   const persistDraft = useCallback((next: AdventureScrapbookData) => {
     setData(next);
