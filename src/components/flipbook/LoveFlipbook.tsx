@@ -52,7 +52,7 @@ export default function LoveFlipbook({
   const [cur, setCur] = useState(0); // 0..7 (spread index)
   const [movingLeaf, setMovingLeaf] = useState<number | null>(null);
   const [castDir, setCastDir] = useState<"" | "f" | "b">("");
-  const [scale, setScale] = useState(0.85);
+  const [scale, setScale] = useState<number | null>(null);
   const [interactionMode, setInteractionMode] = useState<"edit" | "flip">("edit");
 
   const [isUnlocked, setIsUnlocked] = useState<boolean>(
@@ -71,6 +71,7 @@ export default function LoveFlipbook({
 
   const busyRef = useRef(false);
   const touchStartX = useRef<number | null>(null);
+  const stageWrapRef = useRef<HTMLElement | null>(null);
   const singleFileInputRef = useRef<HTMLInputElement | null>(null);
   const batchFileInputRef = useRef<HTMLInputElement | null>(null);
   const activeSlotRef = useRef<number | null>(null);
@@ -142,24 +143,33 @@ export default function LoveFlipbook({
     };
   }, [readOnly, user, showToast]);
 
-  // Fit book to viewport with symmetric margins across all phone/tablet/desktop models
+  // Fit book to exact container dimensions so it is dead-center on every phone, tablet & desktop
   useEffect(() => {
     const updateFit = () => {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const sideMargin = vw < 640 ? 24 : 48;
-      const topReserve = readOnly ? (vw < 640 ? 155 : 140) : vw < 640 ? 220 : 190;
-      const availW = Math.max(280, vw - sideMargin);
-      const availH = Math.max(220, vh - topReserve);
-      const s = Math.min(availW / 1004, availH / 724, 1.3);
-      setScale(Math.max(0.26, s));
+      const containerW =
+        stageWrapRef.current?.clientWidth ||
+        Math.max(280, document.documentElement.clientWidth - 24);
+      const vw = document.documentElement.clientWidth || window.innerWidth;
+      const vh = window.visualViewport?.height || window.innerHeight;
+      const sidePad = vw < 640 ? 8 : 24;
+      const topReserve = readOnly ? (vw < 640 ? 150 : 140) : vw < 640 ? 230 : 195;
+      const availW = Math.max(260, containerW - sidePad);
+      const availH = Math.max(200, vh - topReserve);
+      const s = Math.min(availW / 1004, availH / 724, 1.25);
+      setScale(Math.max(0.24, s));
     };
     updateFit();
     window.addEventListener("resize", updateFit);
     window.addEventListener("orientationchange", updateFit);
+    const ro =
+      typeof ResizeObserver !== "undefined" && stageWrapRef.current
+        ? new ResizeObserver(updateFit)
+        : null;
+    if (ro && stageWrapRef.current) ro.observe(stageWrapRef.current);
     return () => {
       window.removeEventListener("resize", updateFit);
       window.removeEventListener("orientationchange", updateFit);
+      ro?.disconnect();
     };
   }, [readOnly]);
 
@@ -1069,117 +1079,128 @@ export default function LoveFlipbook({
         )}
       </div>
 
-      {/* Spread Heading */}
-      <h1 className={styles.ttl}>{spreadLabel}</h1>
-
-      {/* 3D Leather Book Stage */}
-      <div
-        className={styles.stage}
-        style={{
-          width: 1004 * scale,
-          height: 724 * scale,
-        }}
+      {/* Centered Book Workspace (Top Bar stays at top; Book is dead-center on all phones & desktops) */}
+      <main
+        ref={stageWrapRef}
+        className="flex-1 w-full flex flex-col items-center justify-center py-2 z-10"
       >
+        {/* Spread Heading */}
+        <h1 className={styles.ttl}>{spreadLabel}</h1>
+
+        {/* 3D Leather Book Stage */}
         <div
-          className={styles.sc}
+          className={styles.stage}
           style={{
-            transform: `translate(${22 * scale}px, ${22 * scale}px) scale(${scale})`,
+            width: scale ? 1004 * scale : "100%",
+            height: scale ? 724 * scale : 260,
+            margin: "0 auto",
+            opacity: scale ? 1 : 0,
+            transition: "opacity 160ms ease-out",
           }}
         >
-          <div
-            className={styles.book}
-            onClick={(e) => {
-              const r = e.currentTarget.getBoundingClientRect();
-              const isRight = (e.clientX - r.left) / r.width > 0.5;
-              go(isRight ? 1 : -1);
-            }}
-          >
-            <div className={styles.cover} />
-            <div className={`${styles.stk} ${styles.stkL}`} />
-            <div className={`${styles.stk} ${styles.stkR}`} />
-
-            {/* Base Left Page (Page 1) */}
-            <div className={styles.half}>
+          {scale !== null && (
+            <div
+              className={styles.sc}
+              style={{
+                transform: `translate(${22 * scale}px, ${22 * scale}px) scale(${scale})`,
+              }}
+            >
               <div
-                className={`${styles.face} ${styles.baseFace} ${styles[PAGE_THEMES[0]]}`}
+                className={styles.book}
+                onClick={(e) => {
+                  const r = e.currentTarget.getBoundingClientRect();
+                  const isRight = (e.clientX - r.left) / r.width > 0.5;
+                  go(isRight ? 1 : -1);
+                }}
               >
-                {renderPageContent(1)}
+                <div className={styles.cover} />
+                <div className={`${styles.stk} ${styles.stkL}`} />
+                <div className={`${styles.stk} ${styles.stkR}`} />
+
+                {/* Base Left Page (Page 1) */}
+                <div className={styles.half}>
+                  <div
+                    className={`${styles.face} ${styles.baseFace} ${styles[PAGE_THEMES[0]]}`}
+                  >
+                    {renderPageContent(1)}
+                  </div>
+                </div>
+
+                {/* 8 Flipping Leaves (Pages 2..16) */}
+                <div>
+                  {Array.from({ length: LEAF_COUNT }, (_, i) => {
+                    const frontPageNum = 2 * i + 2; // 2, 4, 6, 8, 10, 12, 14, 16
+                    const backPageNum = 2 * i + 3; // 3, 5, 7, 9, 11, 13, 15, (17 unused)
+                    const isFlipped = i < cur;
+                    const isMoving = movingLeaf === i;
+                    const zIndex = isMoving ? 100 : i < cur ? 10 + i : 60 - i;
+                    const frontTheme = PAGE_THEMES[frontPageNum - 1] || "br";
+                    const backTheme =
+                      backPageNum <= 16 ? PAGE_THEMES[backPageNum - 1] || "br" : "br";
+
+                    return (
+                      <div
+                        key={i}
+                        style={{ zIndex }}
+                        className={`${styles.leaf} ${
+                          readOnly || interactionMode === "flip" ? styles.leafPeek : ""
+                        } ${isFlipped ? styles.leafFlipped : ""} ${
+                          isMoving ? styles.moving : ""
+                        }`}
+                      >
+                        <div className={`${styles.face} ${styles[frontTheme]}`}>
+                          {renderPageContent(frontPageNum)}
+                          <s className={styles.fx} />
+                        </div>
+                        <div
+                          className={`${styles.face} ${styles.back} ${styles[backTheme]}`}
+                        >
+                          {backPageNum <= 16 ? renderPageContent(backPageNum) : null}
+                          <s className={styles.fx} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className={styles.gut} />
+                <div
+                  className={`${styles.cast} ${
+                    castDir === "f"
+                      ? styles.castF
+                      : castDir === "b"
+                        ? styles.castB
+                        : ""
+                  }`}
+                />
               </div>
             </div>
-
-            {/* 8 Flipping Leaves (Pages 2..16) */}
-            <div>
-              {Array.from({ length: LEAF_COUNT }, (_, i) => {
-                const frontPageNum = 2 * i + 2; // 2, 4, 6, 8, 10, 12, 14, 16
-                const backPageNum = 2 * i + 3; // 3, 5, 7, 9, 11, 13, 15, (17 unused)
-                const isFlipped = i < cur;
-                const isMoving = movingLeaf === i;
-                const zIndex = isMoving ? 100 : i < cur ? 10 + i : 60 - i;
-                const frontTheme = PAGE_THEMES[frontPageNum - 1] || "br";
-                const backTheme =
-                  backPageNum <= 16 ? PAGE_THEMES[backPageNum - 1] || "br" : "br";
-
-                return (
-                  <div
-                    key={i}
-                    style={{ zIndex }}
-                    className={`${styles.leaf} ${
-                      readOnly || interactionMode === "flip" ? styles.leafPeek : ""
-                    } ${isFlipped ? styles.leafFlipped : ""} ${
-                      isMoving ? styles.moving : ""
-                    }`}
-                  >
-                    <div className={`${styles.face} ${styles[frontTheme]}`}>
-                      {renderPageContent(frontPageNum)}
-                      <s className={styles.fx} />
-                    </div>
-                    <div
-                      className={`${styles.face} ${styles.back} ${styles[backTheme]}`}
-                    >
-                      {backPageNum <= 16 ? renderPageContent(backPageNum) : null}
-                      <s className={styles.fx} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className={styles.gut} />
-            <div
-              className={`${styles.cast} ${
-                castDir === "f"
-                  ? styles.castF
-                  : castDir === "b"
-                    ? styles.castB
-                    : ""
-              }`}
-            />
-          </div>
+          )}
         </div>
-      </div>
 
-      {/* Bottom Spread Navigation Controls */}
-      <div className={styles.ui}>
-        <button
-          type="button"
-          onClick={() => go(-1)}
-          disabled={cur === 0}
-          aria-label="Previous spread"
-          className={styles.navBtn}
-        >
-          ‹
-        </button>
-        <div className={styles.lbl}>{spreadLabel}</div>
-        <button
-          type="button"
-          onClick={() => go(1)}
-          disabled={cur === LEAF_COUNT - 1}
-          aria-label="Next spread"
-          className={styles.navBtn}
-        >
-          ›
-        </button>
-      </div>
+        {/* Bottom Spread Navigation Controls */}
+        <div className={styles.ui}>
+          <button
+            type="button"
+            onClick={() => go(-1)}
+            disabled={cur === 0}
+            aria-label="Previous spread"
+            className={styles.navBtn}
+          >
+            ‹
+          </button>
+          <div className={styles.lbl}>{spreadLabel}</div>
+          <button
+            type="button"
+            onClick={() => go(1)}
+            disabled={cur === LEAF_COUNT - 1}
+            aria-label="Next spread"
+            className={styles.navBtn}
+          >
+            ›
+          </button>
+        </div>
+      </main>
 
       {/* Share Links Banner After Publishing */}
       {!readOnly && savedSlug && (
