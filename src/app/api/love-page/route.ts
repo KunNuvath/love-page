@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
 import { getAdminClient } from "@/src/lib/supabase-admin";
+import { getUserFromRequest } from "@/src/lib/server-auth";
+import {
+  extractPhotoUrls,
+  insertTrackedLovePage,
+  type TemplateType,
+} from "@/src/lib/db-tracking";
 
 export const dynamic = "force-dynamic";
 
@@ -8,51 +14,69 @@ function generateSlug(length = 8): string {
   return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
 }
 
+function detectTemplateType(raw: unknown): TemplateType {
+  if (raw === "little-book") return "little-book";
+  if (raw === "adventure-scrapbook") return "adventure-scrapbook";
+  if (raw === "family-album") return "family-album";
+  if (raw === "love-flipbook") return "love-flipbook";
+  return "polaroid-scrapbook";
+}
+
 export async function POST(request: Request) {
-  const adminClient = getAdminClient();
+  const user = await getUserFromRequest(request).catch(() => null);
+
   try {
     const body = await request.json();
-    const { title, message, config, image_url, type = "polaroid-scrapbook" } = body;
+    const { title, message, config, image_url } = body;
 
     if (!title) {
-      return NextResponse.json(
-        { error: "Title is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
-    // Prepare message payload without corrupting or double-encoding already-stringified JSON
+    let parsedMsg: Record<string, unknown> | null = null;
+    if (typeof message === "string" && message.trim().startsWith("{")) {
+      try {
+        parsedMsg = JSON.parse(message);
+      } catch {}
+    }
+
+    const templateType = detectTemplateType(
+      body.type || config?.type || parsedMsg?.type
+    );
+
     let messagePayload = typeof message === "string" ? message : "";
     if (config && typeof config === "object") {
       messagePayload = JSON.stringify({
-        type: body.type || config.type || "polaroid-scrapbook",
+        type: templateType,
         ...config,
         title,
       });
     } else if (!messagePayload) {
       messagePayload = JSON.stringify({
-        type: body.type || "polaroid-scrapbook",
+        type: templateType,
         title,
         message: "",
       });
     }
 
+    const photoUrls = extractPhotoUrls(config || parsedMsg || { image_url });
     const slug = generateSlug();
-    const { data: page, error } = await adminClient
-      .from("love_pages")
-      .insert({
-        slug,
-        title,
-        message: messagePayload,
-        image_url: image_url || null,
-      })
-      .select()
-      .single();
 
-    if (error) {
+    const { data: page, error } = await insertTrackedLovePage({
+      slug,
+      title,
+      message: messagePayload,
+      image_url: image_url || photoUrls[0] || null,
+      template_type: templateType,
+      user_id: user?.id || null,
+      user_email: user?.email || null,
+      photo_urls: photoUrls,
+    });
+
+    if (error || !page) {
       console.error("Supabase insert error:", error);
       return NextResponse.json(
-        { error: error.message || "Failed to create love page" },
+        { error: error?.message || "Failed to create love page" },
         { status: 500 }
       );
     }
@@ -63,10 +87,10 @@ export async function POST(request: Request) {
       slug: page.slug,
       shareUrl: `/p/${page.slug}`,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("API /api/love-page error:", error);
     return NextResponse.json(
-      { error: error?.message || "Failed to create love page" },
+      { error: error instanceof Error ? error.message : "Failed to create love page" },
       { status: 500 }
     );
   }
@@ -89,7 +113,7 @@ export async function GET(request: Request) {
     }
 
     return NextResponse.json({ pages: data || [] });
-  } catch (error: any) {
+  } catch {
     return NextResponse.json({ pages: [] });
   }
 }

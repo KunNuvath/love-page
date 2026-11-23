@@ -341,7 +341,7 @@ function PolaroidCard({
     // 2. Upload immediately to Supabase Storage in the background
     setIsUploading(true);
     try {
-      const publicUrl = await uploadImage(file);
+      const publicUrl = await uploadImage(file, { templateType: "polaroid-scrapbook" });
       if (publicUrl) {
         setSrc(publicUrl);
         onChange?.(id, { src: publicUrl });
@@ -1010,7 +1010,7 @@ function LovePageContent() {
 
           if (file) {
             try {
-              const url = await uploadImage(file);
+              const url = await uploadImage(file, { templateType: "polaroid-scrapbook" });
               return { ...p, src: url };
             } catch (e) {
               console.error(`Failed to upload photo for slot ${p.id}:`, e);

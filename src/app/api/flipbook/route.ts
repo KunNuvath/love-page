@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { getAdminClient } from "@/src/lib/supabase-admin";
 import {
   getFlipbookCover,
   sanitizeFlipbook,
@@ -10,10 +9,14 @@ import {
   generateShortSlug,
   hashToken,
 } from "@/src/lib/album-server";
+import { getUserFromRequest } from "@/src/lib/server-auth";
+import { extractPhotoUrls, insertTrackedLovePage } from "@/src/lib/db-tracking";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  const user = await getUserFromRequest(request).catch(() => null);
+
   let raw: unknown;
   try {
     raw = await request.json();
@@ -31,18 +34,18 @@ export async function POST(request: Request) {
   const slug = generateShortSlug(8);
   const title = data.texts["p3-title"] || data.texts["p1-title"] || "Love Flipbook";
   const coverUrl = getFlipbookCover(data);
+  const photoUrls = extractPhotoUrls(data.photos);
 
-  const admin = getAdminClient();
-  const { data: page, error } = await admin
-    .from("love_pages")
-    .insert({
-      slug,
-      title,
-      message: JSON.stringify(stored),
-      image_url: coverUrl,
-    })
-    .select("slug")
-    .single();
+  const { data: page, error } = await insertTrackedLovePage({
+    slug,
+    title,
+    message: JSON.stringify(stored),
+    image_url: coverUrl,
+    template_type: "love-flipbook",
+    user_id: user?.id || null,
+    user_email: user?.email || null,
+    photo_urls: photoUrls,
+  });
 
   if (error || !page) {
     console.error("flipbook insert failed:", error);

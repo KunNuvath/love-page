@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { getAdminClient } from "@/src/lib/supabase-admin";
 import {
   getFlipbookCover,
   sanitizeFlipbook,
@@ -7,6 +6,8 @@ import {
 } from "@/src/lib/flipbook";
 import { loadFlipbook } from "@/src/lib/flipbook-server";
 import { tokensMatch } from "@/src/lib/album-server";
+import { getUserFromRequest } from "@/src/lib/server-auth";
+import { extractPhotoUrls, updateTrackedLovePage } from "@/src/lib/db-tracking";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,7 @@ export async function PUT(
   request: Request,
   { params }: { params: { slug: string } }
 ) {
+  const user = await getUserFromRequest(request).catch(() => null);
   const loaded = await loadFlipbook(params.slug);
   if (!loaded) {
     return NextResponse.json({ error: "Flipbook not found." }, { status: 404 });
@@ -42,17 +44,17 @@ export async function PUT(
 
   const title = data.texts["p3-title"] || data.texts["p1-title"] || "Love Flipbook";
   const coverUrl = getFlipbookCover(data);
+  const photoUrls = extractPhotoUrls(data.photos);
 
-  const admin = getAdminClient();
-  const { error } = await admin
-    .from("love_pages")
-    .update({
-      title,
-      message: JSON.stringify(stored),
-      image_url: coverUrl,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("slug", loaded.page.slug);
+  const { error } = await updateTrackedLovePage({
+    slug: loaded.page.slug,
+    title,
+    message: JSON.stringify(stored),
+    image_url: coverUrl,
+    photo_urls: photoUrls,
+    user_id: user?.id || null,
+    user_email: user?.email || null,
+  });
 
   if (error) {
     console.error("flipbook update failed:", error);

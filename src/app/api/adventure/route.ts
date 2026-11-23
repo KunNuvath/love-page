@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { getAdminClient } from "@/src/lib/supabase-admin";
 import { SLOT_ORDER, sanitizeAdventure } from "@/src/lib/adventure";
+import { getUserFromRequest } from "@/src/lib/server-auth";
+import { extractPhotoUrls, insertTrackedLovePage } from "@/src/lib/db-tracking";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,8 @@ function generateSlug(length = 8): string {
 
 /** Save an "Our Little Adventure" scrapbook to love_pages and return its public /adventure/[id] URL. */
 export async function POST(request: Request) {
+  const user = await getUserFromRequest(request).catch(() => null);
+
   let raw: unknown;
   try {
     raw = await request.json();
@@ -20,19 +23,19 @@ export async function POST(request: Request) {
 
   const data = sanitizeAdventure(raw);
   const coverPhoto = SLOT_ORDER.map((s) => data.photos[s]).find(Boolean) || null;
+  const photoUrls = extractPhotoUrls(data.photos);
 
-  const admin = getAdminClient();
   const slug = generateSlug();
-  const { data: page, error } = await admin
-    .from("love_pages")
-    .insert({
-      slug,
-      title: data.title,
-      message: JSON.stringify(data),
-      image_url: coverPhoto,
-    })
-    .select()
-    .single();
+  const { data: page, error } = await insertTrackedLovePage({
+    slug,
+    title: data.title,
+    message: JSON.stringify(data),
+    image_url: coverPhoto,
+    template_type: "adventure-scrapbook",
+    user_id: user?.id || null,
+    user_email: user?.email || null,
+    photo_urls: photoUrls,
+  });
 
   if (error || !page) {
     console.error("adventure save failed:", error);

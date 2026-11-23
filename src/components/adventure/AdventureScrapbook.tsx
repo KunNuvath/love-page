@@ -232,7 +232,10 @@ export default function AdventureScrapbook({
     // 2. Compress (~1600px max) & upload to storage
     setUploadingSlot(shape);
     try {
-      const publicUrl = await uploadImage(file);
+      const publicUrl = await uploadImage(file, {
+        templateType: "adventure-scrapbook",
+        slotName: shape,
+      });
       setData((prev) => {
         const next: AdventureScrapbookData = {
           ...prev,

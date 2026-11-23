@@ -208,7 +208,7 @@ export function PhotoFrame({
     // 2. Immediate background upload to Supabase for permanent URL
     setIsUploading(true);
     try {
-      const publicUrl = await uploadImage(file);
+      const publicUrl = await uploadImage(file, { templateType: "little-book" });
       if (publicUrl) {
         onPhotoChange(id, publicUrl);
         try {
@@ -667,7 +667,7 @@ export default function LittleBook() {
         } catch {}
       });
       // Also upload to Supabase in the background
-      uploadImage(file)
+      uploadImage(file, { templateType: "little-book" })
         .then((url) => {
           if (url) {
             handlePhotoChange(targetId, url);
@@ -732,7 +732,10 @@ export default function LittleBook() {
           try {
             const blob = dataUrlToBlob(src);
             const file = new File([blob], `little-book-${id}.jpg`, { type: blob.type || "image/jpeg" });
-            photoUrls[id] = await uploadImage(file);
+            photoUrls[id] = await uploadImage(file, {
+              templateType: "little-book",
+              slotName: `frame-${id}`,
+            });
           } catch (e) {
             console.error(`Failed to upload LittleBook photo ${id}:`, e);
             photoUrls[id] = src;

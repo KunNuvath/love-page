@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAdminClient } from "@/src/lib/supabase-admin";
 import { getUserFromRequest } from "@/src/lib/server-auth";
 import { PREMIUM_TEMPLATES, getUnlockedTemplates } from "@/src/lib/premium";
+import { recordPayment } from "@/src/lib/db-tracking";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,17 @@ export async function POST(request: Request) {
       await admin.auth.admin.updateUserById(user.id, {
         app_metadata: { ...user.app_metadata, unlocked_templates: unlocked },
         user_metadata: { ...user.user_metadata, is_premium: true, unlocked_templates: unlocked },
+      });
+      await recordPayment({
+        user_id: user.id,
+        user_email: user.email || null,
+        template_id: templateId,
+        provider: "vip_code",
+        transaction_id: `vip_${user.id}_${templateId}_${Date.now()}`,
+        amount: 0,
+        currency: "USD",
+        status: "completed",
+        metadata: { code: (body.code || "").trim().toUpperCase() },
       });
       return NextResponse.json({ success: true, unlocked });
     } catch (err) {

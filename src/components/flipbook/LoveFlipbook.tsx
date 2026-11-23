@@ -17,7 +17,7 @@ import {
   Eye,
   Pencil,
 } from "lucide-react";
-import { supabase, uploadImage } from "@/src/lib/supabase";
+import { supabase, uploadImage, getAuthHeaders } from "@/src/lib/supabase";
 import { useAuth } from "@/src/context/AuthContext";
 import { hasTemplateAccess } from "@/src/lib/premium";
 import {
@@ -264,7 +264,10 @@ export default function LoveFlipbook({
 
     setUploadingIndex(slotIdx);
     try {
-      const publicUrl = await uploadImage(file);
+      const publicUrl = await uploadImage(file, {
+        templateType: "love-flipbook",
+        slotName: `photo-${slotIdx + 1}`,
+      });
       setData((prev) => {
         const nextPhotos = [...prev.photos];
         nextPhotos[slotIdx] = publicUrl;
@@ -308,7 +311,10 @@ export default function LoveFlipbook({
       const file = files[idx];
       setUploadingIndex(slotIdx);
       try {
-        const publicUrl = await uploadImage(file);
+        const publicUrl = await uploadImage(file, {
+          templateType: "love-flipbook",
+          slotName: `photo-${slotIdx + 1}`,
+        });
         setData((prev) => {
           const nextPhotos = [...prev.photos];
           nextPhotos[slotIdx] = publicUrl;
@@ -331,10 +337,11 @@ export default function LoveFlipbook({
   const executeSave = async () => {
     setIsSaving(true);
     try {
+      const authHeaders = await getAuthHeaders();
       if (savedSlug && editToken) {
         const res = await fetch(`/api/flipbook/${savedSlug}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...authHeaders },
           body: JSON.stringify({ editToken, data }),
         });
         const json = await res.json();
@@ -345,7 +352,7 @@ export default function LoveFlipbook({
 
       const res = await fetch("/api/flipbook", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeaders },
         body: JSON.stringify(data),
       });
       const json = await res.json();

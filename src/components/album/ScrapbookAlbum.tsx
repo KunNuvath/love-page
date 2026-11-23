@@ -16,7 +16,7 @@ import {
   KeyRound,
   ExternalLink,
 } from "lucide-react";
-import { supabase, uploadImage } from "@/src/lib/supabase";
+import { supabase, uploadImage, getAuthHeaders } from "@/src/lib/supabase";
 import { useAuth } from "@/src/context/AuthContext";
 import { hasTemplateAccess } from "@/src/lib/premium";
 import {
@@ -262,7 +262,10 @@ export default function ScrapbookAlbum({
 
       setUploadingSlot(slotId);
       try {
-        const publicUrl = await uploadImage(file);
+        const publicUrl = await uploadImage(file, {
+          templateType: "family-album",
+          slotName: slotId,
+        });
         if (!publicUrl || publicUrl.startsWith("data:")) {
           showToast("Photo added locally — save when online to sync.");
         } else {
@@ -292,11 +295,12 @@ export default function ScrapbookAlbum({
   const executeSave = async () => {
     setIsSaving(true);
     try {
+      const authHeaders = await getAuthHeaders();
       // If we already have a slug + secret editToken, update the existing album
       if (savedSlug && editToken) {
         const res = await fetch(`/api/album/${savedSlug}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...authHeaders },
           body: JSON.stringify({ editToken, data }),
         });
         const json = await res.json();
@@ -308,7 +312,7 @@ export default function ScrapbookAlbum({
       // Otherwise create a new album with a unique short slug + secret owner token
       const res = await fetch("/api/album", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeaders },
         body: JSON.stringify(data),
       });
       const json = await res.json();

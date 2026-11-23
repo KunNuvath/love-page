@@ -9,6 +9,18 @@ const supabaseAnonKey =
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+/** Return Authorization header for the currently signed-in user (if any). */
+export async function getAuthHeaders(): Promise<Record<string, string>> {
+  if (typeof window === "undefined") return {};
+  try {
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch {
+    return {};
+  }
+}
+
 // ──────────────────────────────────────────────────────────────────────────────
 // Types
 // ──────────────────────────────────────────────────────────────────────────────
@@ -34,9 +46,10 @@ export async function createLovePage(data: {
   image_url?: string | null;
 }): Promise<LovePage> {
   try {
+    const authHeaders = await getAuthHeaders();
     const res = await fetch("/api/love-page", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...authHeaders },
       body: JSON.stringify({
         title: data.title,
         message: data.message,
@@ -180,14 +193,21 @@ async function compressImageFile(file: File, maxDim = 1600, quality = 0.85): Pro
 }
 
 /** Upload an image File and return its permanent public URL */
-export async function uploadImage(file: File): Promise<string> {
+export async function uploadImage(
+  file: File,
+  meta?: { templateType?: string; slotName?: string }
+): Promise<string> {
   try {
     const optimizedFile = await compressImageFile(file);
     const formData = new FormData();
     formData.append("file", optimizedFile);
+    if (meta?.templateType) formData.append("templateType", meta.templateType);
+    if (meta?.slotName) formData.append("slotName", meta.slotName);
 
+    const authHeaders = await getAuthHeaders();
     const res = await fetch("/api/upload", {
       method: "POST",
+      headers: authHeaders,
       body: formData,
     });
 
@@ -208,13 +228,19 @@ export async function uploadImage(file: File): Promise<string> {
 }
 
 /** Upload an audio File (MP3, M4A, WAV) and return its public URL */
-export async function uploadAudio(file: File): Promise<string> {
+export async function uploadAudio(
+  file: File,
+  meta?: { templateType?: string }
+): Promise<string> {
   try {
     const formData = new FormData();
     formData.append("file", file);
+    if (meta?.templateType) formData.append("templateType", meta.templateType);
 
+    const authHeaders = await getAuthHeaders();
     const res = await fetch("/api/upload", {
       method: "POST",
+      headers: authHeaders,
       body: formData,
     });
 
