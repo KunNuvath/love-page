@@ -22,6 +22,7 @@ import { hasTemplateAccess } from "@/src/lib/premium";
 import { ADVENTURE_TEMPLATE_ID } from "@/src/lib/adventure";
 import { ALBUM_TEMPLATE_ID } from "@/src/lib/album";
 import { FLIPBOOK_TEMPLATE_ID } from "@/src/lib/flipbook";
+import { LOVE_STORY_TEMPLATE_ID } from "@/src/lib/love-story";
 import PremiumUnlockModal from "@/src/components/adventure/PremiumUnlockModal";
 
 export default function TemplatesPage() {
@@ -31,12 +32,14 @@ export default function TemplatesPage() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isAlbumUnlocked, setIsAlbumUnlocked] = useState(false);
   const [isFlipbookUnlocked, setIsFlipbookUnlocked] = useState(false);
+  const [isLoveStoryUnlocked, setIsLoveStoryUnlocked] = useState(false);
   const [modalTemplate, setModalTemplate] = useState<string | null>(null);
 
   useEffect(() => {
     setIsUnlocked(hasTemplateAccess(user, ADVENTURE_TEMPLATE_ID));
     setIsAlbumUnlocked(hasTemplateAccess(user, ALBUM_TEMPLATE_ID));
     setIsFlipbookUnlocked(hasTemplateAccess(user, FLIPBOOK_TEMPLATE_ID));
+    setIsLoveStoryUnlocked(hasTemplateAccess(user, LOVE_STORY_TEMPLATE_ID));
   }, [user]);
 
   return (
@@ -84,7 +87,7 @@ export default function TemplatesPage() {
                 : "text-[#68584f] hover:text-[#2d221e]"
             }`}
           >
-            All Templates (5)
+            All Templates (6)
           </button>
           <button
             type="button"
@@ -107,7 +110,7 @@ export default function TemplatesPage() {
             }`}
           >
             <Crown className="h-3.5 w-3.5 text-[#e5533d] fill-[#f7d56a]" />
-            <span>Premium Category (3)</span>
+            <span>Premium Category (4)</span>
           </button>
         </div>
       </div>
@@ -634,6 +637,124 @@ export default function TemplatesPage() {
               </div>
             </div>
           </div>
+
+          {/* ── VOL. 06 PREMIUM: Love Story (12-Page Vintage Scrapbook • $5.99) ── */}
+          <div className="mt-8 rounded-3xl p-5 xs:p-6 sm:p-9 bg-[#3a0c13] text-[#f2e7d0] border-2 border-[#c9a24a]/65 shadow-[0_24px_60px_rgba(26,5,8,0.45)] relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-[#c9a24a] text-[#2a070c] text-[10px] font-extrabold uppercase tracking-widest px-5 py-1.5 rounded-bl-2xl flex items-center gap-1">
+              <Crown className="h-3 w-3 text-[#4a0f17] fill-[#4a0f17]" />
+              <span>{isLoveStoryUnlocked ? "PREMIUM UNLOCKED" : "VOL. 06 • $5.99 PREMIUM"}</span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
+              {/* Left: Mini 12-Page Vintage Portrait Flipbook Preview */}
+              <div className="lg:col-span-6 bg-[#1a0508] p-4 sm:p-5 rounded-2xl border border-[#c9a24a]/30 shadow-inner">
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-[#c9a24a] mb-3">
+                  <span>12-PAGE 9:16 VINTAGE FLIPBOOK</span>
+                  <span className="px-2 py-0.5 rounded-full bg-[#c9a24a]/20 text-[#c9a24a]">
+                    18 PHOTOS • 12 PAGES
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2.5 text-[10px] font-bold">
+                  <div className="bg-[#4a0f17] border border-[#c9a24a]/35 rounded-xl p-3 flex flex-col justify-between">
+                    <span className="text-[#c9a24a] text-xs">Pages 1–3 • Plaid &amp; Film</span>
+                    <span className="text-[#f2e7d0]/75 font-normal mt-1">
+                      Plaid cover, wine corduroy letter &amp; 3-frame vertical film strip
+                    </span>
+                  </div>
+                  <div className="bg-[#ecdfc2] text-[#3b2a1d] border border-[#3b2a1d]/25 rounded-xl p-3 flex flex-col justify-between">
+                    <span className="text-[#4a0f17] text-xs">Pages 4–6 • Ticket &amp; Notes</span>
+                    <span className="text-[#3b2a1d]/75 font-normal mt-1">
+                      Star-badged milestones, vintage ticket &amp; taped polaroid memories
+                    </span>
+                  </div>
+                  <div className="bg-[#5b1119] border border-[#c9a24a]/30 rounded-xl p-3 flex flex-col justify-between">
+                    <span className="text-[#c9a24a] text-xs">Pages 7–9 • Cassette &amp; Collage</span>
+                    <span className="text-[#f2e7d0]/75 font-normal mt-1">
+                      Moonlight quote, mixtape playlist &amp; 4-photo plaid collage
+                    </span>
+                  </div>
+                  <div className="bg-[#e3d2ae] text-[#3b2a1d] border border-[#3b2a1d]/25 rounded-xl p-3 flex flex-col justify-between">
+                    <span className="text-[#4a0f17] text-xs">Pages 10–12 • Promises &amp; Finale</span>
+                    <span className="text-[#3b2a1d]/75 font-normal mt-1">
+                      &ldquo;Things I love about you&rdquo;, our promises &amp; &ldquo;Forever &amp; always&rdquo;
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Description & Unlock / Launch CTA */}
+              <div className="lg:col-span-6 flex flex-col justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c9a24a]/15 border border-[#c9a24a]/40 text-[#c9a24a] text-xs font-bold uppercase tracking-wider mb-3">
+                    <BookOpen className="h-3.5 w-3.5 text-[#c9a24a]" />
+                    <span>Vol. 06 • 12-Page Vintage Scrapbook • $5.99</span>
+                  </div>
+
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-[#f2e7d0] mb-2">
+                    Love Story
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#f2e7d0]/80 mb-5 leading-relaxed">
+                    A tactile 12-page 9:16 portrait 3D flipbook layered with burgundy plaid, wine corduroy, vintage film strip, and warm parchment pages — decorated with 18 antique stickers, cassette playlist, milestone stars, and taped polaroids.
+                  </p>
+
+                  <div className="space-y-2 text-xs sm:text-sm text-[#f2e7d0]/90 mb-6">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#c9a24a] shrink-0" />
+                      <span>
+                        <strong>12 Portrait 3D Pages &amp; 18 Photos:</strong> Film strip, taped polaroids, 2×2 plaid collage &amp; love letter card
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#c9a24a] shrink-0" />
+                      <span>
+                        <strong>18 Vintage Stickers Included:</strong> Cassette, ticket stub, moon, coffee, daisies, butterflies &amp; antique wax heart
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#c9a24a] shrink-0" />
+                      <span>
+                        <strong>Mobile-First Fit + Share Links:</strong> Batch photo upload, editable notes, permanent link &amp; owner edit URL
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  {isLoveStoryUnlocked ? (
+                    <Link
+                      href="/love-story"
+                      className="flex-1 py-4 px-6 rounded-2xl bg-[#c9a24a] hover:bg-[#d8b35b] text-[#2a070c] font-extrabold text-sm sm:text-base shadow-lg flex items-center justify-center gap-2 transition-all"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      <span>Open Love Story</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setModalTemplate(LOVE_STORY_TEMPLATE_ID)}
+                        className="flex-1 py-4 px-6 rounded-2xl bg-[#c9a24a] hover:bg-[#d8b35b] text-[#2a070c] font-extrabold text-sm sm:text-base border-2 border-[#1a0508] shadow-[4px_4px_0_#1a0508] flex items-center justify-center gap-2 transition-all cursor-pointer"
+                      >
+                        <Lock className="h-4 w-4 text-[#4a0f17]" />
+                        <span>Unlock Love Story • $5.99</span>
+                      </button>
+
+                      <Link
+                        href="/love-story"
+                        className="py-4 px-5 rounded-2xl bg-white/10 hover:bg-white/20 text-[#f2e7d0] border border-white/25 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all"
+                      >
+                        <BookOpen className="h-4 w-4 text-[#c9a24a]" />
+                        <span>Preview</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -656,14 +777,22 @@ export default function TemplatesPage() {
       <PremiumUnlockModal
         isOpen={modalTemplate !== null}
         onClose={() => setModalTemplate(null)}
-        price={modalTemplate === FLIPBOOK_TEMPLATE_ID ? "$9.99" : "$4.99"}
+        price={
+          modalTemplate === FLIPBOOK_TEMPLATE_ID
+            ? "$9.99"
+            : modalTemplate === LOVE_STORY_TEMPLATE_ID
+              ? "$5.99"
+              : "$4.99"
+        }
         templateId={modalTemplate || ADVENTURE_TEMPLATE_ID}
         templateTitle={
           modalTemplate === FLIPBOOK_TEMPLATE_ID
             ? "Love Flipbook (16-Page Leather Scrapbook)"
-            : modalTemplate === ALBUM_TEMPLATE_ID
-              ? "Scrapbook Album (9-Page Flip Album)"
-              : "Our Little Adventure"
+            : modalTemplate === LOVE_STORY_TEMPLATE_ID
+              ? "Love Story (12-Page Vintage Scrapbook)"
+              : modalTemplate === ALBUM_TEMPLATE_ID
+                ? "Scrapbook Album (9-Page Flip Album)"
+                : "Our Little Adventure"
         }
         onUnlocked={() => {
           const target = modalTemplate;
@@ -671,6 +800,9 @@ export default function TemplatesPage() {
           if (target === FLIPBOOK_TEMPLATE_ID) {
             setIsFlipbookUnlocked(true);
             router.push("/flipbook");
+          } else if (target === LOVE_STORY_TEMPLATE_ID) {
+            setIsLoveStoryUnlocked(true);
+            router.push("/love-story");
           } else if (target === ALBUM_TEMPLATE_ID) {
             setIsAlbumUnlocked(true);
             router.push("/album");

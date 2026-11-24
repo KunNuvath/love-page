@@ -5,7 +5,8 @@ export type TemplateType =
   | "little-book"
   | "adventure-scrapbook"
   | "family-album"
-  | "love-flipbook";
+  | "love-flipbook"
+  | "love-story";
 
 /** Extract all non-empty HTTP/data photo URLs from any of the 5 template configs. */
 export function extractPhotoUrls(input: unknown): string[] {

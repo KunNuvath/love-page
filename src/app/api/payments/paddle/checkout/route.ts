@@ -27,6 +27,7 @@ export async function POST(request: Request) {
   const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN || "";
   const priceId =
     (templateId === "love-flipbook" && process.env.NEXT_PUBLIC_PADDLE_FLIPBOOK_PRICE_ID) ||
+    (templateId === "love-story" && process.env.NEXT_PUBLIC_PADDLE_LOVE_STORY_PRICE_ID) ||
     (templateId === "family-album" && process.env.NEXT_PUBLIC_PADDLE_ALBUM_PRICE_ID) ||
     process.env.NEXT_PUBLIC_PADDLE_PRICE_ID ||
     "";

@@ -318,6 +318,32 @@ export default function TemplateChooserModal({
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
+
+          {/* PREMIUM CATEGORY BANNER 4: Vol. 06 — Love Story (12-Page Vintage Scrapbook • $5.99) */}
+          <div className="mt-4 p-4 sm:p-5 rounded-2xl bg-[#3a0c13] text-[#f2e7d0] border-2 border-[#c9a24a] shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#c9a24a] text-[#2a070c] text-[10px] font-extrabold uppercase tracking-wider">
+                <Crown className="h-3 w-3 text-[#4a0f17] fill-[#4a0f17]" />
+                <span>Vol. 06 • Premium • $5.99</span>
+              </div>
+              <h4 className="font-extrabold text-base sm:text-lg text-[#f2e7d0] flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-[#c9a24a]" />
+                <span>Love Story (12-Page Vintage Scrapbook)</span>
+              </h4>
+              <p className="text-xs text-[#f2e7d0]/80 leading-relaxed max-w-xl">
+                12-page 9:16 portrait 3D flipbook on burgundy plaid, wine corduroy, film strip &amp; parchment with 18 photo slots, cassette playlist, milestone stars, and 18 vintage stickers.
+              </p>
+            </div>
+
+            <Link
+              href="/love-story"
+              onClick={onClose}
+              className="w-full sm:w-auto shrink-0 py-3 px-5 rounded-xl bg-[#c9a24a] hover:bg-[#d8b35b] text-[#2a070c] font-extrabold text-xs sm:text-sm border-2 border-[#1a0508] shadow-[3px_3px_0_#1a0508] flex items-center justify-center gap-1.5 transition-all"
+            >
+              <span>Open Love Story</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
 
         {/* Footer */}
