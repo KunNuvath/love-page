@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import type { LovePage } from "@/src/lib/supabase";
-import { getAdminClient } from "@/src/lib/supabase-admin";
+import { getCachedLovePageBySlug } from "@/src/lib/page-cache";
 import { sanitizeAlbum, type AlbumData } from "@/src/lib/album";
 
 /** Server-only helpers for the Family Album (token hashing + loading). */
@@ -35,13 +35,8 @@ export interface LoadedAlbum {
 /** Load an album by slug. Returns null if missing or not an album. */
 export async function loadAlbum(slug: string): Promise<LoadedAlbum | null> {
   if (!/^[a-z0-9]{4,16}$/.test(slug)) return null;
-  const admin = getAdminClient();
-  const { data: page, error } = await admin
-    .from("love_pages")
-    .select("*")
-    .eq("slug", slug)
-    .single();
-  if (error || !page) return null;
+  const page = await getCachedLovePageBySlug(slug);
+  if (!page) return null;
 
   let parsed: Record<string, unknown> | null = null;
   try {

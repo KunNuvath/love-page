@@ -1,5 +1,5 @@
 import type { LovePage } from "@/src/lib/supabase";
-import { getAdminClient } from "@/src/lib/supabase-admin";
+import { getCachedLovePageBySlug } from "@/src/lib/page-cache";
 import { sanitizeFlipbook, type FlipbookData } from "@/src/lib/flipbook";
 
 export interface LoadedFlipbook {
@@ -10,13 +10,8 @@ export interface LoadedFlipbook {
 
 export async function loadFlipbook(slug: string): Promise<LoadedFlipbook | null> {
   if (!/^[a-z0-9]{4,16}$/.test(slug)) return null;
-  const admin = getAdminClient();
-  const { data: page, error } = await admin
-    .from("love_pages")
-    .select("*")
-    .eq("slug", slug)
-    .single();
-  if (error || !page) return null;
+  const page = await getCachedLovePageBySlug(slug);
+  if (!page) return null;
 
   let parsed: Record<string, unknown> | null = null;
   try {

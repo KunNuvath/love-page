@@ -8,6 +8,7 @@ import { loadFlipbook } from "@/src/lib/flipbook-server";
 import { tokensMatch } from "@/src/lib/album-server";
 import { getUserFromRequest } from "@/src/lib/server-auth";
 import { extractPhotoUrls, updateTrackedLovePage } from "@/src/lib/db-tracking";
+import { invalidateLovePageCache } from "@/src/lib/page-cache";
 
 export const dynamic = "force-dynamic";
 
@@ -60,6 +61,8 @@ export async function PUT(
     console.error("flipbook update failed:", error);
     return NextResponse.json({ error: "Could not update flipbook." }, { status: 500 });
   }
+
+  invalidateLovePageCache(loaded.page.slug, [`/flipbook/${loaded.page.slug}`]);
 
   return NextResponse.json({
     success: true,

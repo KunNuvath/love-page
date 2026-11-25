@@ -6,6 +6,7 @@ import { recordUserUpload } from "@/src/lib/db-tracking";
 export const dynamic = "force-dynamic";
 
 const BUCKET = "love-page-images";
+const MAX_UPLOAD_BYTES = 15 * 1024 * 1024; // 15 MB hard cap to protect serverless memory
 
 function sanitizePathSegment(val: string | null | undefined, fallback: string): string {
   const clean = (val || "").toLowerCase().replace(/[^a-z0-9_-]/g, "");
@@ -31,6 +32,12 @@ export async function POST(request: Request) {
       if (!file) {
         return NextResponse.json({ error: "No file provided" }, { status: 400 });
       }
+      if (file.size > MAX_UPLOAD_BYTES) {
+        return NextResponse.json(
+          { error: "File is too large (max 15 MB)." },
+          { status: 413 }
+        );
+      }
 
       const buffer = Buffer.from(await file.arrayBuffer());
       const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
@@ -53,6 +60,7 @@ export async function POST(request: Request) {
           .from(BUCKET)
           .upload(storagePath, buffer, {
             contentType: mimeType,
+            cacheControl: "31536000",
             upsert: true,
           });
 
@@ -123,6 +131,7 @@ export async function POST(request: Request) {
             .from(BUCKET)
             .upload(storagePath, buffer, {
               contentType: mimeType,
+              cacheControl: "31536000",
               upsert: true,
             });
 

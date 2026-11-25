@@ -3,6 +3,7 @@ import { getAlbumCover, sanitizeAlbum, type StoredAlbum } from "@/src/lib/album"
 import { loadAlbum, tokensMatch } from "@/src/lib/album-server";
 import { getUserFromRequest } from "@/src/lib/server-auth";
 import { extractPhotoUrls, updateTrackedLovePage } from "@/src/lib/db-tracking";
+import { invalidateLovePageCache } from "@/src/lib/page-cache";
 
 export const dynamic = "force-dynamic";
 
@@ -55,6 +56,8 @@ export async function PUT(
     console.error("album update failed:", error);
     return NextResponse.json({ error: "Could not update album." }, { status: 500 });
   }
+
+  invalidateLovePageCache(loaded.page.slug, [`/album/${loaded.page.slug}`]);
 
   return NextResponse.json({
     success: true,

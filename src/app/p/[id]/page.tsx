@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import type { LovePage } from "@/src/lib/supabase";
-import { getAdminClient } from "@/src/lib/supabase-admin";
+import { getCachedLovePageBySlug } from "@/src/lib/page-cache";
 import { sanitizeAdventure } from "@/src/lib/adventure";
 import { sanitizeAlbum } from "@/src/lib/album";
 import { sanitizeFlipbook } from "@/src/lib/flipbook";
@@ -14,27 +14,18 @@ import ShareView from "@/src/app/share/[slug]/ShareView";
 import LittleBookShareView from "@/src/app/share/[slug]/LittleBookShareView";
 
 // ─── WHY THIS LINE IS HERE ────────────────────────────────────────────────────
-// Every /p/<id> URL is created at runtime by a real user — there are zero pages
-// at build time.  Without this, Vercel pre-renders nothing and returns 404 for
-// every link.  "force-dynamic" means: render fresh on every request.
-export const dynamic = "force-dynamic";
+// On-demand ISR: render any runtime /p/<id> URL on first visit, then cache at
+// Vercel's CDN edge for 120s so viral share links don't hammer Supabase.
+export const revalidate = 120;
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface Props {
   params: { id: string };
 }
 
-/** Server-side fetch using the admin client so RLS doesn't block reads. */
+/** Cached server-side fetch so repeated views hit Next.js Data Cache instead of Supabase. */
 async function getPageBySlug(slug: string): Promise<LovePage | null> {
-  const adminClient = getAdminClient();
-  const { data, error } = await adminClient
-    .from("love_pages")
-    .select("*")
-    .eq("slug", slug)
-    .single();
-
-  if (error || !data) return null;
-  return data as LovePage;
+  return getCachedLovePageBySlug(slug);
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

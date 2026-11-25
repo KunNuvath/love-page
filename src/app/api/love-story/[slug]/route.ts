@@ -8,6 +8,7 @@ import { loadLoveStory } from "@/src/lib/love-story-server";
 import { tokensMatch } from "@/src/lib/album-server";
 import { getUserFromRequest } from "@/src/lib/server-auth";
 import { extractPhotoUrls, updateTrackedLovePage } from "@/src/lib/db-tracking";
+import { invalidateLovePageCache } from "@/src/lib/page-cache";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,8 @@ export async function PUT(
       { status: 500 }
     );
   }
+
+  invalidateLovePageCache(loaded.page.slug, [`/love-story/${loaded.page.slug}`]);
 
   return NextResponse.json({
     success: true,

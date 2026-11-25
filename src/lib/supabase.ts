@@ -132,13 +132,14 @@ export async function updateLovePage(
 // Storage helpers — routed via /api/upload using Admin Client to bypass RLS
 // ──────────────────────────────────────────────────────────────────────────────
 
-/** Downscale large photos in browser before upload to prevent HTTP 413 and mobile lag */
-async function compressImageFile(file: File, maxDim = 1600, quality = 0.85): Promise<File> {
+/** Downscale & convert photos to WebP (JPEG fallback) in browser before upload to cut storage & bandwidth ~90% */
+async function compressImageFile(file: File, maxDim = 1440, quality = 0.8): Promise<File> {
   if (
     typeof window === "undefined" ||
     !file.type.startsWith("image/") ||
     file.type === "image/svg+xml" ||
-    file.size < 400 * 1024
+    file.type === "image/gif" ||
+    file.size < 160 * 1024
   ) {
     return file;
   }
@@ -168,21 +169,35 @@ async function compressImageFile(file: File, maxDim = 1600, quality = 0.85): Pro
         return;
       }
       ctx.drawImage(img, 0, 0, width, height);
-      canvas.toBlob(
-        (blob) => {
-          if (blob && blob.size < file.size) {
-            resolve(
-              new File([blob], file.name.replace(/\.[^/.]+$/, ".jpg"), {
-                type: "image/jpeg",
-              })
-            );
-          } else {
-            resolve(file);
-          }
-        },
-        "image/jpeg",
-        quality
-      );
+
+      const encode = (mime: "image/webp" | "image/jpeg", ext: string) =>
+        new Promise<File | null>((res) => {
+          canvas.toBlob(
+            (blob) => {
+              if (blob && blob.type === mime && blob.size < file.size) {
+                res(
+                  new File([blob], file.name.replace(/\.[^/.]+$/, `.${ext}`), {
+                    type: mime,
+                  })
+                );
+              } else {
+                res(null);
+              }
+            },
+            mime,
+            quality
+          );
+        });
+
+      encode("image/webp", "webp").then((webpFile) => {
+        if (webpFile) {
+          resolve(webpFile);
+          return;
+        }
+        encode("image/jpeg", "jpg").then((jpgFile) => {
+          resolve(jpgFile || file);
+        });
+      });
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
