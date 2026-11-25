@@ -34,7 +34,159 @@ import {
   Check,
   Flame,
   Mail,
+  Crown,
 } from "lucide-react";
+
+interface HomeTemplateCard {
+  id: string;
+  vol: string;
+  name: string;
+  subtitle: string;
+  href: string;
+  tier: "free" | "premium";
+  price: string;
+  priceNote: string;
+  photos: string;
+  pages: string;
+  highlights: string[];
+  accentBg: string;
+  accentText: string;
+  cardBg: string;
+  cardText: string;
+  borderColor: string;
+  badgeBg: string;
+  badgeText: string;
+  previewStyle: "polaroid" | "spiral" | "adventure" | "album" | "flipbook" | "lovestory";
+}
+
+const HOME_TEMPLATES: HomeTemplateCard[] = [
+  {
+    id: "polaroid-scrapbook",
+    vol: "Vol. 01",
+    name: "Retro Polaroid Scrapbook",
+    subtitle: "Classic craft paper with 6 rotatable polaroids, handwritten love letter & couple song player.",
+    href: "/scrapbook",
+    tier: "free",
+    price: "Free",
+    priceNote: "100% Free Forever",
+    photos: "6 Photos",
+    pages: "Single Sheet",
+    highlights: ["6 rotatable polaroid frames", "Background couple song player", "Cursive love letter & ink stamps"],
+    accentBg: "bg-[#cf493e] hover:bg-[#b53a30]",
+    accentText: "text-white",
+    cardBg: "bg-[#fbf6ec]",
+    cardText: "text-[#2d221e]",
+    borderColor: "border-[#d8c3a8]",
+    badgeBg: "bg-emerald-700/12",
+    badgeText: "text-emerald-800",
+    previewStyle: "polaroid",
+  },
+  {
+    id: "little-book",
+    vol: "Vol. 02",
+    name: "Our Little Book",
+    subtitle: "Cutting-mat desk spiral journal with 17-hole metal coil, 4 tab spreads & 6 washi tape patterns.",
+    href: "/book",
+    tier: "free",
+    price: "Free",
+    priceNote: "100% Free Forever",
+    photos: "18 Photos",
+    pages: "4 Spreads",
+    highlights: ["18 interactive photo frames", "Cutting-mat desk & spiral coil", "Custom song & 30s trimmer"],
+    accentBg: "bg-[#2f6b58] hover:bg-[#245445]",
+    accentText: "text-white",
+    cardBg: "bg-[#fbf6ec]",
+    cardText: "text-[#2d221e]",
+    borderColor: "border-[#2f6b58]/40",
+    badgeBg: "bg-emerald-700/12",
+    badgeText: "text-emerald-800",
+    previewStyle: "spiral",
+  },
+  {
+    id: "adventure-scrapbook",
+    vol: "Vol. 03",
+    name: "Our Little Adventure",
+    subtitle: "Torn kraft-paper travel collage on deep navy with ransom-note letters & THE DAILY US newspaper.",
+    href: "/adventure",
+    tier: "premium",
+    price: "$4.99",
+    priceNote: "One-time unlock",
+    photos: "6 Cutouts",
+    pages: "Scroll Story",
+    highlights: ["Torn, Circle, Ticket, Film, Arch & Heart", "Editable THE DAILY US newspaper", "Scroll-following heart journey path"],
+    accentBg: "bg-[#f7d56a] hover:bg-[#ecc44b]",
+    accentText: "text-[#1d2742]",
+    cardBg: "bg-[#24395f]",
+    cardText: "text-[#fbf6ea]",
+    borderColor: "border-[#1d2742]",
+    badgeBg: "bg-[#f7d56a]",
+    badgeText: "text-[#1d2742]",
+    previewStyle: "adventure",
+  },
+  {
+    id: "family-album",
+    vol: "Vol. 04",
+    name: "Scrapbook Album",
+    subtitle: "Soft 9-page 3D flip photo album with scalloped borders, clothesline pegs & FAMILY photo-letters.",
+    href: "/album",
+    tier: "premium",
+    price: "$4.99",
+    priceNote: "One-time unlock",
+    photos: "30+ Photos",
+    pages: "9 3D Pages",
+    highlights: ["1s double-sided 3D page turns", "Clothesline pegs & photo-clipped letters", "Public link + secret owner edit URL"],
+    accentBg: "bg-[#4a3f38] hover:bg-[#362d28]",
+    accentText: "text-[#faf6ef]",
+    cardBg: "bg-[#f9f3e7]",
+    cardText: "text-[#4a3f38]",
+    borderColor: "border-[#8aa67c]",
+    badgeBg: "bg-[#8aa67c]",
+    badgeText: "text-white",
+    previewStyle: "album",
+  },
+  {
+    id: "love-story",
+    vol: "Vol. 06",
+    name: "Love Story",
+    subtitle: "12-page 9:16 portrait vintage flipbook on burgundy plaid, wine corduroy, film strip & parchment.",
+    href: "/love-story",
+    tier: "premium",
+    price: "$5.99",
+    priceNote: "One-time unlock",
+    photos: "18 Photos",
+    pages: "12 3D Pages",
+    highlights: ["18 antique stickers (cassette, ticket, moon)", "Film strip, taped polaroids & playlist", "Mobile-first 9:16 portrait fit"],
+    accentBg: "bg-[#c9a24a] hover:bg-[#d8b35b]",
+    accentText: "text-[#2a070c]",
+    cardBg: "bg-[#3a0c13]",
+    cardText: "text-[#f2e7d0]",
+    borderColor: "border-[#c9a24a]/70",
+    badgeBg: "bg-[#c9a24a]",
+    badgeText: "text-[#2a070c]",
+    previewStyle: "lovestory",
+  },
+  {
+    id: "love-flipbook",
+    vol: "Vol. 05",
+    name: "Love Flipbook",
+    subtitle: "Heirloom 16-page open leather-bound scrapbook with 8 spreads, lace borders & 9-polaroid wishlist.",
+    href: "/flipbook",
+    tier: "premium",
+    price: "$9.99",
+    priceNote: "Deluxe one-time",
+    photos: "37 Photos",
+    pages: "16 3D Pages",
+    highlights: ["8 open 3D leather spreads & 37 slots", "B&W photobooth strip & heart cutouts", "Batch photo upload + secret edit link"],
+    accentBg: "bg-[#e6c26a] hover:bg-[#d9b255]",
+    accentText: "text-[#2a1209]",
+    cardBg: "bg-[#2a1209]",
+    cardText: "text-[#f4e9dc]",
+    borderColor: "border-[#e6c26a]/70",
+    badgeBg: "bg-[#e6c26a]",
+    badgeText: "text-[#2a1209]",
+    previewStyle: "flipbook",
+  },
+];
 
 // Occasion Presets with pre-filled messages & song suggestions
 const OCCASIONS = [
@@ -153,6 +305,7 @@ export default function LandingPage() {
 
   // Template Chooser Modal State
   const [isChooserOpen, setIsChooserOpen] = useState(false);
+  const [templateFilter, setTemplateFilter] = useState<"all" | "free" | "premium">("all");
 
   // Quick Personalization Studio State
   const [partnerName, setPartnerName] = useState("Lina");
@@ -205,7 +358,8 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#f7ebe6] text-[#362e2b] selection:bg-[#cf493e]/20 font-sans overflow-x-hidden">
+    <div className="relative min-h-screen vintage-grid-bg text-[#362e2b] selection:bg-[#cf493e]/20 font-sans overflow-x-hidden">
+      <div className="pointer-events-none fixed inset-0 vintage-grain-overlay opacity-70 z-0" />
       <FloatingHeartParticles />
 
       {/* ─────────────────────────────────────────────────────────────
@@ -214,26 +368,26 @@ export default function LandingPage() {
       <Navbar onLaunchTemplate={() => setIsChooserOpen(true)} />
 
       {/* ─────────────────────────────────────────────────────────────
-          2. HERO SECTION
+          2. HERO SECTION (Vintage Editorial Keepsake)
       ───────────────────────────────────────────────────────────── */}
-      <section className="relative pt-6 sm:pt-16 pb-14 sm:pb-24 px-4 xs:px-5 sm:px-6 max-w-6xl mx-auto flex flex-col items-center text-center overflow-hidden">
+      <section className="relative pt-6 sm:pt-14 pb-12 sm:pb-20 px-4 xs:px-5 sm:px-6 max-w-6xl mx-auto flex flex-col items-center text-center overflow-hidden z-10">
         {/* Glowing Ambient Backdrop */}
         <div className="absolute top-10 left-1/2 -translate-x-1/2 w-3/4 max-w-2xl h-80 glow-romantic -z-10 blur-3xl pointer-events-none" />
 
-        {/* Top Floating Badge */}
-        <div className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/80 border border-[#e8d7c5] shadow-xs mb-5 sm:mb-8 animate-fade-up max-w-full">
+        {/* Top Vintage Stamp Badge */}
+        <div className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-[#fbf6ec]/95 border border-[#d6bfa2] shadow-xs mb-5 sm:mb-7 animate-fade-up max-w-full">
           <Heart className="h-3.5 w-3.5 fill-[#cf493e] text-[#cf493e] animate-pulse shrink-0" />
-          <span className="text-[11px] xs:text-xs sm:text-sm font-semibold tracking-wide text-[#5a483e] truncate">
-            The Sweetest Digital Keepsakes • 2 Templates
+          <span className="font-typewriter text-[11px] xs:text-xs sm:text-xs font-bold tracking-wider uppercase text-[#5a4236] truncate">
+            Vintage Keepsake Studio • 6 Templates • Free – $9.99
           </span>
-          <span className="text-xs shrink-0">✨</span>
+          <span className="text-xs shrink-0">✦</span>
         </div>
 
         {/* Headline */}
-        <h1 className="text-2xl xs:text-3xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-[#2d221e] max-w-4xl leading-[1.2] sm:leading-[1.12] mb-5 sm:mb-6 px-1">
-          Turn Your Cherished Moments Into A{" "}
+        <h1 className="text-2xl xs:text-3xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-[#2b1f1a] max-w-4xl leading-[1.18] sm:leading-[1.1] mb-5 sm:mb-6 px-1">
+          Craft A Vintage Digital{" "}
           <span className="font-handwriting font-bold text-3xl xs:text-4xl sm:text-7xl md:text-8xl text-[#cf493e] inline-block -rotate-1 relative mx-0.5 sm:mx-1">
-            Timeless Love Story
+            Love Scrapbook
             <svg
               className="absolute -bottom-1.5 sm:-bottom-2 left-0 w-full text-[#cf493e]/40 h-2.5 sm:h-3"
               viewBox="0 0 100 20"
@@ -250,28 +404,27 @@ export default function LandingPage() {
         </h1>
 
         {/* Subtitle */}
-        <p className="text-xs xs:text-sm sm:text-xl text-[#6b584d] max-w-2xl leading-relaxed mb-7 sm:mb-10 px-2">
-          Create a personalized romantic keepsake: choose between our <strong>Retro Polaroid Scrapbook</strong> or the brand new <strong>Spiral Bound Little Book</strong> with 18 photo frames on a craft cutting mat.
+        <p className="text-xs xs:text-sm sm:text-lg text-[#624f43] max-w-2xl leading-relaxed mb-7 sm:mb-9 px-2">
+          Six handcrafted analog-inspired keepsakes — from <strong>2 Free Scrapbooks</strong> to our <strong>3D Page-Flipping Albums &amp; Vintage Plaid Love Story</strong> ($4.99–$9.99 one-time, no subscriptions).
         </p>
 
         {/* Dual Primary Call to Actions */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full sm:w-auto mb-10 sm:mb-20 max-w-sm sm:max-w-none px-1">
-          <button
-            type="button"
-            onClick={() => setIsChooserOpen(true)}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 sm:py-4 rounded-full bg-[#cf493e] text-white font-bold text-xs xs:text-sm sm:text-base shadow-[0_8px_24px_rgba(207,73,62,0.38)] hover:bg-[#b83b31] hover:shadow-[0_10px_28px_rgba(207,73,62,0.48)] hover:scale-102 active:scale-95 transition-all group cursor-pointer"
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full sm:w-auto mb-10 sm:mb-16 max-w-sm sm:max-w-none px-1">
+          <a
+            href="#collection"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 sm:py-4 rounded-full bg-[#4a0f17] text-[#f2e7d0] font-bold text-xs xs:text-sm sm:text-base border border-[#c9a24a]/60 shadow-[0_10px_24px_rgba(74,15,23,0.32)] hover:bg-[#5e141f] hover:scale-102 active:scale-95 transition-all group cursor-pointer"
           >
-            <Sparkles className="h-4 w-4 fill-white group-hover:scale-110 transition-transform shrink-0" />
-            <span>Choose &amp; Launch Template</span>
+            <Layers className="h-4 w-4 text-[#c9a24a] shrink-0" />
+            <span>Browse 6 Templates &amp; Pricing</span>
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform shrink-0" />
-          </button>
+          </a>
 
           <a
             href="#studio"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 sm:py-4 rounded-full bg-white/90 text-[#3d332a] font-semibold text-xs xs:text-sm sm:text-base border border-[#d8c7b4] shadow-xs hover:bg-white hover:border-[#cf493e]/50 hover:shadow-md hover:scale-102 active:scale-95 transition-all"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 sm:py-4 rounded-full bg-[#fbf6ec] text-[#3d2e26] font-semibold text-xs xs:text-sm sm:text-base border border-[#d6bfa2] shadow-xs hover:bg-white hover:border-[#cf493e]/50 hover:shadow-md hover:scale-102 active:scale-95 transition-all"
           >
             <Wand2 className="h-4 w-4 text-[#cf493e] shrink-0" />
-            <span>Quick Personalize &amp; Preview</span>
+            <span>Quick Personalize Free</span>
           </a>
         </div>
 
@@ -424,6 +577,299 @@ export default function LandingPage() {
                 </Link>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          2B. VINTAGE TEMPLATE COLLECTION & PRICING GRID (ALL 6 VOLUMES)
+      ───────────────────────────────────────────────────────────── */}
+      <section
+        id="collection"
+        className="relative z-10 py-14 sm:py-22 px-4 sm:px-6 border-y border-[#dac6ad] bg-[#efe3d1]/85"
+      >
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-9 sm:mb-12">
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#4a0f17]/10 text-[#4a0f17] border border-[#4a0f17]/20 font-typewriter text-[11px] font-bold tracking-widest uppercase mb-3">
+              <Crown className="h-3.5 w-3.5 text-[#c9a24a]" />
+              <span>Catalogue &amp; One-Time Pricing</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#2b1f1a] tracking-tight mb-3">
+              6 Vintage Templates, Zero Subscriptions
+            </h2>
+            <p className="text-[#624f43] text-xs sm:text-base leading-relaxed">
+              Start with our 2 free scrapbooks or unlock an heirloom 3D flipbook once and keep it forever. Preview any template live before you unlock.
+            </p>
+
+            {/* Filter Tabs */}
+            <div className="mt-6 inline-flex items-center p-1.5 rounded-2xl bg-[#fbf6ec] border border-[#d6bfa2] shadow-xs gap-1 flex-wrap justify-center">
+              <button
+                type="button"
+                onClick={() => setTemplateFilter("all")}
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                  templateFilter === "all"
+                    ? "bg-[#2b1f1a] text-[#fbf6ec] shadow-xs"
+                    : "text-[#624f43] hover:text-[#2b1f1a]"
+                }`}
+              >
+                All Volumes (6)
+              </button>
+              <button
+                type="button"
+                onClick={() => setTemplateFilter("free")}
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                  templateFilter === "free"
+                    ? "bg-[#2f6b58] text-white shadow-xs"
+                    : "text-[#624f43] hover:text-[#2f6b58]"
+                }`}
+              >
+                Free (2)
+              </button>
+              <button
+                type="button"
+                onClick={() => setTemplateFilter("premium")}
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  templateFilter === "premium"
+                    ? "bg-[#4a0f17] text-[#f2e7d0] shadow-xs"
+                    : "text-[#4a0f17] hover:bg-[#4a0f17]/10"
+                }`}
+              >
+                <Crown className="h-3.5 w-3.5 text-[#c9a24a] fill-[#c9a24a]" />
+                <span>Premium • $4.99–$9.99 (4)</span>
+              </button>
+            </div>
+          </div>
+
+          {/* 3-Column Vintage Template Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+            {HOME_TEMPLATES.filter((t) =>
+              templateFilter === "all" ? true : t.tier === templateFilter
+            ).map((tpl) => {
+              const isDark =
+                tpl.previewStyle === "adventure" ||
+                tpl.previewStyle === "lovestory" ||
+                tpl.previewStyle === "flipbook";
+              return (
+                <div
+                  key={tpl.id}
+                  className={`rounded-2xl p-5 sm:p-6 border-2 ${tpl.cardBg} ${tpl.cardText} ${tpl.borderColor} shadow-[0_14px_32px_-12px_rgba(43,31,26,0.28)] hover:-translate-y-1 transition-all flex flex-col justify-between relative overflow-hidden group`}
+                >
+                  <div>
+                    {/* Top Vol + Vintage Price Stamp */}
+                    <div className="flex items-start justify-between gap-2 mb-3.5">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span
+                          className={`font-typewriter text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${tpl.badgeBg} ${tpl.badgeText}`}
+                        >
+                          {tpl.vol} • {tpl.pages}
+                        </span>
+                      </div>
+
+                      <div className="text-right shrink-0">
+                        <span
+                          className={`inline-block font-typewriter text-sm sm:text-base font-extrabold px-2.5 py-0.5 rounded-md border border-dashed ${
+                            isDark
+                              ? "border-[#e6c26a]/70 bg-black/25 text-[#f7d56a]"
+                              : "border-[#cf493e]/50 bg-white/80 text-[#cf493e]"
+                          }`}
+                        >
+                          {tpl.price}
+                        </span>
+                        <span
+                          className={`block text-[10px] mt-0.5 ${
+                            isDark ? "text-white/65" : "text-[#7a675a]"
+                          }`}
+                        >
+                          {tpl.priceNote}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Mini Aesthetic Preview Strip */}
+                    <div
+                      className={`h-24 rounded-xl mb-4 p-2.5 border relative overflow-hidden flex items-center justify-between gap-2 ${
+                        tpl.previewStyle === "polaroid"
+                          ? "bg-[#f6ede0] border-dashed border-[#cbbeaa]"
+                          : tpl.previewStyle === "spiral"
+                            ? "bg-[#2f6b58] border-[#1f4f40]"
+                            : tpl.previewStyle === "adventure"
+                              ? "bg-[#d3b088] border-[#1d2742]"
+                              : tpl.previewStyle === "album"
+                                ? "bg-[#efe6d8] border-[#8aa67c]/40"
+                                : tpl.previewStyle === "lovestory"
+                                  ? "bg-[#1a0508] border-[#c9a24a]/40"
+                                  : "bg-[#1b0b06] border-[#e6c26a]/40"
+                      }`}
+                    >
+                      {tpl.previewStyle === "polaroid" && (
+                        <div className="grid grid-cols-3 gap-1.5 w-full">
+                          <div className="bg-white p-1 rounded-xs shadow-2xs -rotate-2 text-center">
+                            <div className="h-10 bg-rose-100 rounded-2xs mb-0.5" />
+                            <span className="font-handwriting text-[10px] text-[#332b27]">First Date</span>
+                          </div>
+                          <div className="bg-white p-1 rounded-xs shadow-2xs rotate-2 text-center">
+                            <div className="h-10 bg-amber-100 rounded-2xs mb-0.5" />
+                            <span className="font-handwriting text-[10px] text-[#332b27]">Us</span>
+                          </div>
+                          <div className="bg-white p-1 rounded-xs shadow-2xs -rotate-1 text-center">
+                            <div className="h-10 bg-pink-100 rounded-2xs mb-0.5" />
+                            <span className="font-handwriting text-[10px] text-[#332b27]">Always</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {tpl.previewStyle === "spiral" && (
+                        <div className="flex items-center w-full h-full bg-[#fbfaf4] rounded-xs p-2 text-[10px] text-[#2d221e]">
+                          <div className="flex-1 text-center border-r border-dashed border-neutral-300 pr-2">
+                            <span className="font-bold">Hello, You</span>
+                            <div className="h-7 bg-amber-100 rounded-2xs mt-1" />
+                          </div>
+                          <div className="flex-1 text-center pl-2">
+                            <div className="h-7 bg-teal-100 rounded-2xs mb-1" />
+                            <span className="font-bold text-[#cf493e]">18 Frames</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {tpl.previewStyle === "adventure" && (
+                        <div className="w-full flex flex-col justify-between h-full text-[#1d2742]">
+                          <div className="flex items-center justify-center gap-1">
+                            {["O", "U", "R", " ", "T", "R", "I", "P"].map((ch, idx) =>
+                              ch === " " ? (
+                                <span key={idx} className="w-1.5" />
+                              ) : (
+                                <span
+                                  key={idx}
+                                  className="px-1.5 py-0.5 text-[10px] font-extrabold bg-[#fbf6ea] border border-[#1d2742] shadow-[1px_1px_0_#1d2742]"
+                                >
+                                  {ch}
+                                </span>
+                              )
+                            )}
+                          </div>
+                          <div className="bg-[#f3ecda] border border-[#1d2742] px-2 py-1 text-[9px] font-mono font-bold flex justify-between">
+                            <span>THE DAILY US</span>
+                            <span className="text-[#e5533d]">♥ 6 Cutouts</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {tpl.previewStyle === "album" && (
+                        <div className="grid grid-cols-3 gap-1.5 w-full text-[9px] font-bold text-[#4a3f38] text-center">
+                          <div className="bg-[#faf6ef] p-1.5 rounded-lg border border-[#4a3f38]/15">Polaroids</div>
+                          <div className="bg-[#e9c46a] p-1.5 rounded-lg border border-[#4a3f38]/15">FAMILY</div>
+                          <div className="bg-[#8aa67c] text-white p-1.5 rounded-lg border border-[#4a3f38]/15">9 Pages</div>
+                        </div>
+                      )}
+
+                      {tpl.previewStyle === "lovestory" && (
+                        <div className="grid grid-cols-3 gap-1.5 w-full h-full items-center text-[9px] font-typewriter text-center">
+                          <div className="bg-[#4a0f17] border border-[#c9a24a]/50 rounded-md p-1.5 text-[#f2e7d0]">
+                            Plaid Cover
+                          </div>
+                          <div className="bg-[#ecdfc2] rounded-md p-1.5 text-[#3b2a1d] font-bold">
+                            Film Strip
+                          </div>
+                          <div className="bg-[#5b1119] border border-[#c9a24a]/50 rounded-md p-1.5 text-[#c9a24a]">
+                            12 Pages
+                          </div>
+                        </div>
+                      )}
+
+                      {tpl.previewStyle === "flipbook" && (
+                        <div className="grid grid-cols-2 gap-2 w-full h-full items-center text-[9px] font-bold">
+                          <div className="bg-[#2a1209] border border-dashed border-[#e6c26a]/50 rounded-lg p-2 text-[#e6c26a]">
+                            Leather &amp; Lace
+                            <span className="block text-[8px] font-normal text-[#f4e9dc]/75">
+                              Photobooth + Hearts
+                            </span>
+                          </div>
+                          <div className="bg-[#f2ebd9] rounded-lg p-2 text-[#2a1209]">
+                            37 Photos
+                            <span className="block text-[8px] font-normal text-[#2a1209]/75">
+                              16 Pages • 8 Spreads
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Title & Description */}
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <h3 className="text-xl font-extrabold tracking-tight">{tpl.name}</h3>
+                      <span
+                        className={`text-[10px] font-typewriter font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                          isDark
+                            ? "bg-white/10 text-white/85"
+                            : "bg-[#2b1f1a]/8 text-[#5c4a3e]"
+                        }`}
+                      >
+                        {tpl.photos}
+                      </span>
+                    </div>
+                    <p
+                      className={`text-xs leading-relaxed mb-4 ${
+                        isDark ? "text-white/75" : "text-[#68574c]"
+                      }`}
+                    >
+                      {tpl.subtitle}
+                    </p>
+
+                    {/* Key Highlights */}
+                    <ul
+                      className={`space-y-1.5 text-xs mb-5 ${
+                        isDark ? "text-white/90" : "text-[#4e3f36]"
+                      }`}
+                    >
+                      {tpl.highlights.map((h, i) => (
+                        <li key={i} className="flex items-center gap-1.5">
+                          <CheckCircle2
+                            className={`h-3.5 w-3.5 shrink-0 ${
+                              isDark ? "text-[#e6c26a]" : "text-emerald-700"
+                            }`}
+                          />
+                          <span>{h}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* CTA Button */}
+                  <Link
+                    href={tpl.href}
+                    className={`w-full py-3 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all active:scale-98 shadow-sm ${tpl.accentBg} ${tpl.accentText}`}
+                  >
+                    <span>
+                      {tpl.tier === "free"
+                        ? `Create Free • ${tpl.vol}`
+                        : `Preview & Unlock • ${tpl.price}`}
+                    </span>
+                    <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Compact Pricing Summary Strip */}
+          <div className="mt-8 p-4 sm:p-5 rounded-2xl bg-[#fbf6ec] border border-dashed border-[#c8b295] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#5a483e]">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-4 font-typewriter">
+              <span className="font-bold text-[#2b1f1a]">PRICING SUMMARY:</span>
+              <span>Vol. 01 &amp; 02 — <strong>Free</strong></span>
+              <span>•</span>
+              <span>Vol. 03 &amp; 04 — <strong>$4.99</strong></span>
+              <span>•</span>
+              <span>Vol. 06 Love Story — <strong>$5.99</strong></span>
+              <span>•</span>
+              <span>Vol. 05 Love Flipbook — <strong>$9.99</strong></span>
+            </div>
+            <Link
+              href="/templates"
+              className="font-bold text-[#cf493e] hover:underline shrink-0 flex items-center gap-1"
+            >
+              <span>Compare all details</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
         </div>
       </section>
@@ -725,7 +1171,7 @@ export default function LandingPage() {
               Have A Unique Story?
             </h3>
             <p className="text-xs text-[#6e5e52] mb-4 max-w-xs">
-              Choose from our curated templates: classic polaroids or spiral journal.
+              Explore all 6 handcrafted templates — from free polaroids &amp; spiral journals to 3D vintage flipbooks.
             </p>
             <Link
               href="/templates"
@@ -838,11 +1284,10 @@ export default function LandingPage() {
                 <Lock className="h-6 w-6" />
               </div>
               <h3 className="text-lg font-bold text-[#2d221e] mb-2">
-                100% Free & Private
+                Free + One-Time Premium
               </h3>
               <p className="text-xs sm:text-sm text-[#6b584d] leading-relaxed">
-                No subscription, no accounts required. Free to host forever on
-                Vercel or Netlify with full privacy.
+                Vol. 01 &amp; 02 are 100% free forever. Premium 3D books are a single one-time payment ($4.99–$9.99) with no subscriptions and a 14-day refund policy.
               </p>
             </div>
           </div>
@@ -941,7 +1386,7 @@ export default function LandingPage() {
             {[
               {
                 q: "What is the pricing for LovePage templates?",
-                a: "Our classic templates (Vol. 01 Polaroid Scrapbook and Vol. 02 Little Book of Us) are 100% free to customize and share. Our artisanal Premium templates (Vol. 03 Our Little Adventure and Vol. 04 9-Page Scrapbook Album) are a one-time payment of $4.99 USD with lifetime access and a 14-day refund policy.",
+                a: "Vol. 01 (Polaroid Scrapbook) and Vol. 02 (Our Little Book) are 100% free to customize and share. Our Premium one-time templates are: Vol. 03 (Our Little Adventure) $4.99, Vol. 04 (9-Page Scrapbook Album) $4.99, Vol. 06 (12-Page Love Story) $5.99, and Vol. 05 (16-Page Leather Love Flipbook) $9.99 USD — all one-time payments with lifetime access and a 14-day refund policy.",
               },
               {
                 q: "How do I add my own photos and music file?",
@@ -1047,19 +1492,19 @@ export default function LandingPage() {
               href="/templates"
               className="hover:text-[#cf493e] transition-colors font-semibold text-[#cf493e]"
             >
-              Templates & Pricing
+              All 6 Templates &amp; Pricing
             </Link>
             <Link
-              href="/book"
+              href="/love-story"
               className="hover:text-[#cf493e] transition-colors"
             >
-              Little Book (Spiral)
+              Love Story ($5.99)
             </Link>
             <Link
-              href="/scrapbook"
+              href="/flipbook"
               className="hover:text-[#cf493e] transition-colors"
             >
-              Polaroid Scrapbook
+              Love Flipbook ($9.99)
             </Link>
             <Link
               href="/terms"
