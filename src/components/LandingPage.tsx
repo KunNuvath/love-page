@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import TemplateChooserModal from "@/src/components/TemplateChooserModal";
 import Navbar from "@/src/components/Navbar";
-import BrandLogo from "@/src/components/BrandLogo";
 import ContactFeedbackSection from "@/src/components/ContactFeedbackSection";
 import {
   Heart,
@@ -1560,59 +1559,164 @@ export default function LandingPage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          9. FOOTER
+          9. FOOTER (Clean Editorial Multi-Column, matching Navbar)
       ───────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-[#e2d0bf] bg-[#faf3ed] py-10 px-4 sm:px-6 text-center text-xs text-[#7e6d60]">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <BrandLogo size="sm" />
-            <span className="font-handwriting text-xl text-[#362e2b] font-bold">
-              LovePage Scrapbook & Little Book
-            </span>
+      <footer className="relative z-10 border-t border-[#e5d7c4] bg-[#faf4ea] text-[#5a483e]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-12 gap-8 lg:gap-10">
+            {/* Brand Column */}
+            <div className="col-span-2 sm:col-span-4 lg:col-span-4 space-y-3.5">
+              <Link
+                href="/"
+                className="inline-flex items-baseline select-none group"
+                aria-label="LovePage Home"
+              >
+                <span className="text-2xl font-black tracking-[-0.045em] text-[#2b1f1a] leading-none group-hover:text-[#4a0f17] transition-colors">
+                  lovepage
+                </span>
+                <span className="text-[26px] font-black text-[#cf493e] leading-none">
+                  .
+                </span>
+              </Link>
+              <p className="text-xs sm:text-[13px] text-[#6e5c50] leading-relaxed max-w-xs">
+                Handcrafted vintage digital scrapbooks &amp; 3D keepsake flipbooks made to celebrate your favorite person. One-time pricing, zero subscriptions.
+              </p>
+              <a
+                href="mailto:support@lovepage.site"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#4a0f17] hover:text-[#cf493e] transition-colors"
+              >
+                <Mail className="h-3.5 w-3.5" />
+                <span>support@lovepage.site</span>
+              </a>
+            </div>
+
+            {/* Explore Column */}
+            <div className="col-span-1 sm:col-span-1 lg:col-span-2">
+              <h3 className="text-[11px] font-bold uppercase tracking-widest text-[#2b1f1a] mb-3.5">
+                Explore
+              </h3>
+              <ul className="space-y-2.5 text-xs sm:text-[13px] font-medium">
+                <li>
+                  <Link href="/templates" className="hover:text-[#4a0f17] transition-colors">
+                    All Templates (8)
+                  </Link>
+                </li>
+                <li>
+                  <a href="#collection" className="hover:text-[#4a0f17] transition-colors">
+                    Pricing
+                  </a>
+                </li>
+                <li>
+                  <a href="#studio" className="hover:text-[#4a0f17] transition-colors">
+                    Quick Studio
+                  </a>
+                </li>
+                <li>
+                  <a href="#how-it-works" className="hover:text-[#4a0f17] transition-colors">
+                    How It Works
+                  </a>
+                </li>
+                <li>
+                  <a href="/#faq" className="hover:text-[#4a0f17] transition-colors">
+                    FAQ
+                  </a>
+                </li>
+                <li>
+                  <a href="/#contact" className="hover:text-[#4a0f17] transition-colors">
+                    Contact
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Scrapbooks Column */}
+            <div className="col-span-1 sm:col-span-1 lg:col-span-3">
+              <h3 className="text-[11px] font-bold uppercase tracking-widest text-[#2b1f1a] mb-3.5">
+                Scrapbooks
+              </h3>
+              <ul className="space-y-2.5 text-xs sm:text-[13px] font-medium">
+                <li>
+                  <Link href="/scrapbook" className="hover:text-[#4a0f17] transition-colors flex items-center justify-between gap-2 max-w-[210px]">
+                    <span>Polaroid Scrapbook</span>
+                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-700/10 px-1.5 py-0.5 rounded-full">Free</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/book" className="hover:text-[#4a0f17] transition-colors flex items-center justify-between gap-2 max-w-[210px]">
+                    <span>Our Little Book</span>
+                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-700/10 px-1.5 py-0.5 rounded-full">Free</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/adventure" className="hover:text-[#4a0f17] transition-colors flex items-center justify-between gap-2 max-w-[210px]">
+                    <span>Our Little Adventure</span>
+                    <span className="text-[10px] font-semibold text-[#7d6a5d]">$4.99</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/album" className="hover:text-[#4a0f17] transition-colors flex items-center justify-between gap-2 max-w-[210px]">
+                    <span>Scrapbook Album</span>
+                    <span className="text-[10px] font-semibold text-[#7d6a5d]">$4.99</span>
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* 3D Flipbooks Column */}
+            <div className="col-span-2 sm:col-span-2 lg:col-span-3">
+              <h3 className="text-[11px] font-bold uppercase tracking-widest text-[#2b1f1a] mb-3.5">
+                3D Flipbooks
+              </h3>
+              <ul className="space-y-2.5 text-xs sm:text-[13px] font-medium">
+                <li>
+                  <Link href="/love-story" className="hover:text-[#4a0f17] transition-colors flex items-center justify-between gap-2 max-w-[230px]">
+                    <span>Love Story (12p)</span>
+                    <span className="text-[10px] font-semibold text-[#7d6a5d]">$5.99</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/ten-things" className="hover:text-[#4a0f17] transition-colors flex items-center justify-between gap-2 max-w-[230px]">
+                    <span>10 Things I Love About You</span>
+                    <span className="text-[10px] font-semibold text-[#7d6a5d]">$6.00</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/anniversary" className="hover:text-[#4a0f17] transition-colors flex items-center justify-between gap-2 max-w-[230px]">
+                    <span>1 Year With You (Velvet)</span>
+                    <span className="text-[10px] font-semibold text-[#7d6a5d]">$7.99</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/flipbook" className="hover:text-[#4a0f17] transition-colors flex items-center justify-between gap-2 max-w-[230px]">
+                    <span>Love Flipbook (16p)</span>
+                    <span className="text-[10px] font-semibold text-[#7d6a5d]">$9.99</span>
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 font-medium">
-            <Link
-              href="/templates"
-              className="hover:text-[#cf493e] transition-colors font-semibold text-[#cf493e]"
-            >
-              All 8 Templates &amp; Pricing
-            </Link>
-            <Link
-              href="/love-story"
-              className="hover:text-[#cf493e] transition-colors"
-            >
-              Love Story ($5.99)
-            </Link>
-            <Link
-              href="/flipbook"
-              className="hover:text-[#cf493e] transition-colors"
-            >
-              Love Flipbook ($9.99)
-            </Link>
-            <Link
-              href="/terms"
-              className="hover:text-[#cf493e] transition-colors"
-            >
-              Terms of Service
-            </Link>
-            <Link
-              href="/privacy"
-              className="hover:text-[#cf493e] transition-colors"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href="/refund"
-              className="hover:text-[#cf493e] transition-colors"
-            >
-              Refund Policy
-            </Link>
-          </div>
+          {/* Bottom Legal & Copyright Strip */}
+          <div className="mt-10 pt-6 border-t border-[#e8dccb] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#7e6d60]">
+            <p className="text-center sm:text-left">
+              © {new Date().getFullYear()} lovepage. Crafted with love by Vath.
+            </p>
 
-          <p className="font-typewriter text-[11px] text-[#9c897c]">
-            Crafted with love by Vath • © {new Date().getFullYear()} LovePage
-          </p>
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-medium">
+              <Link href="/terms" className="hover:text-[#2b1f1a] transition-colors">
+                Terms of Service
+              </Link>
+              <Link href="/privacy" className="hover:text-[#2b1f1a] transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="/refund" className="hover:text-[#2b1f1a] transition-colors">
+                14-Day Refund Policy
+              </Link>
+              <a href="/#contact" className="hover:text-[#2b1f1a] transition-colors">
+                Support
+              </a>
+            </div>
+          </div>
         </div>
       </footer>
 

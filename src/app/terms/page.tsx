@@ -89,8 +89,8 @@ export default function TermsOfServicePage() {
             <h2 className="text-lg font-bold text-[#2d221e]">6. Contact Information</h2>
             <p>
               If you have any questions about these Terms of Service or need support with your LovePage account, please contact us at{" "}
-              <a href="mailto:hello@lovepage.site" className="text-[#cf493e] font-semibold underline">
-                hello@lovepage.site
+              <a href="mailto:support@lovepage.site" className="text-[#cf493e] font-semibold underline">
+                support@lovepage.site
               </a>
               .
             </p>

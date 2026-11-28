@@ -82,8 +82,8 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-lg font-bold text-[#2d221e]">4. Your Rights &amp; Data Deletion</h2>
             <p>
               You may edit or delete your scrapbook content at any time. To request complete deletion of your account and associated data, email us at{" "}
-              <a href="mailto:hello@lovepage.site" className="text-[#cf493e] font-semibold underline">
-                hello@lovepage.site
+              <a href="mailto:support@lovepage.site" className="text-[#cf493e] font-semibold underline">
+                support@lovepage.site
               </a>
               .
             </p>

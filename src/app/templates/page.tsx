@@ -995,8 +995,8 @@ export default function TemplatesPage() {
         <Link href="/refund" className="hover:text-[#cf493e] transition-colors">
           14-Day Refund Policy
         </Link>
-        <a href="mailto:hello@lovepage.site" className="hover:text-[#cf493e] transition-colors">
-          hello@lovepage.site
+        <a href="mailto:support@lovepage.site" className="hover:text-[#cf493e] transition-colors">
+          support@lovepage.site
         </a>
       </div>
 

@@ -51,8 +51,8 @@ export default function RefundPolicyPage() {
             <ul className="list-disc pl-5 space-y-1.5">
               <li>
                 Email us directly at{" "}
-                <a href="mailto:hello@lovepage.site" className="text-[#cf493e] font-semibold underline">
-                  hello@lovepage.site
+                <a href="mailto:support@lovepage.site" className="text-[#cf493e] font-semibold underline">
+                  support@lovepage.site
                 </a>{" "}
                 with the email address used at checkout or your Paddle receipt number, or
               </li>
