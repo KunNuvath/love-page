@@ -7,7 +7,8 @@ export type TemplateType =
   | "family-album"
   | "love-flipbook"
   | "love-story"
-  | "anniversary-velvet";
+  | "anniversary-velvet"
+  | "ten-things";
 
 /** Extract all non-empty HTTP/data photo URLs from any of the 5 template configs. */
 export function extractPhotoUrls(input: unknown): string[] {

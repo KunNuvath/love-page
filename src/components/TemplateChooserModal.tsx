@@ -370,6 +370,32 @@ export default function TemplateChooserModal({
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
+
+          {/* PREMIUM CATEGORY BANNER 6: Vol. 08 — 10 Things I Love About You ($6.00) */}
+          <div className="mt-4 p-4 sm:p-5 rounded-2xl bg-[#5a0d12] text-[#f7efe0] border-2 border-[#f6e9a6] shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#f6e9a6] text-[#4a0c10] text-[10px] font-extrabold uppercase tracking-wider">
+                <Crown className="h-3 w-3 text-[#5a0d12] fill-[#5a0d12]" />
+                <span>Vol. 08 • Romantic Flipbook • $6.00</span>
+              </div>
+              <h4 className="font-extrabold text-base sm:text-lg text-[#f7efe0] flex items-center gap-2">
+                <Heart className="h-4 w-4 text-[#f6e9a6] fill-[#f6e9a6]" />
+                <span>10 Things I Love About You (3D Flipbook)</span>
+              </h4>
+              <p className="text-xs text-[#f7efe0]/80 leading-relaxed max-w-xl">
+                Double-heart locket cover opening into 10 dedicated chapters (#1 Your Smile to #10 Simply You) with 28 photo slots, envelope polaroids, iMessage assurance bubbles, retro phone frame &amp; film strip.
+              </p>
+            </div>
+
+            <Link
+              href="/ten-things"
+              onClick={onClose}
+              className="w-full sm:w-auto shrink-0 py-3 px-5 rounded-xl bg-[#f6e9a6] hover:bg-[#faefba] text-[#4a0c10] font-extrabold text-xs sm:text-sm border-2 border-[#36080c] shadow-[3px_3px_0_#36080c] flex items-center justify-center gap-1.5 transition-all"
+            >
+              <span>Open 10 Things Book</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
 
         {/* Footer */}

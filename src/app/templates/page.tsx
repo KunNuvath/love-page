@@ -24,6 +24,7 @@ import { ALBUM_TEMPLATE_ID } from "@/src/lib/album";
 import { FLIPBOOK_TEMPLATE_ID } from "@/src/lib/flipbook";
 import { LOVE_STORY_TEMPLATE_ID } from "@/src/lib/love-story";
 import { ANNIVERSARY_TEMPLATE_ID } from "@/src/lib/anniversary";
+import { TEN_THINGS_TEMPLATE_ID } from "@/src/lib/ten-things";
 import PremiumUnlockModal from "@/src/components/adventure/PremiumUnlockModal";
 
 export default function TemplatesPage() {
@@ -35,6 +36,7 @@ export default function TemplatesPage() {
   const [isFlipbookUnlocked, setIsFlipbookUnlocked] = useState(false);
   const [isLoveStoryUnlocked, setIsLoveStoryUnlocked] = useState(false);
   const [isAnniversaryUnlocked, setIsAnniversaryUnlocked] = useState(false);
+  const [isTenThingsUnlocked, setIsTenThingsUnlocked] = useState(false);
   const [modalTemplate, setModalTemplate] = useState<string | null>(null);
 
   useEffect(() => {
@@ -43,6 +45,7 @@ export default function TemplatesPage() {
     setIsFlipbookUnlocked(hasTemplateAccess(user, FLIPBOOK_TEMPLATE_ID));
     setIsLoveStoryUnlocked(hasTemplateAccess(user, LOVE_STORY_TEMPLATE_ID));
     setIsAnniversaryUnlocked(hasTemplateAccess(user, ANNIVERSARY_TEMPLATE_ID));
+    setIsTenThingsUnlocked(hasTemplateAccess(user, TEN_THINGS_TEMPLATE_ID));
   }, [user]);
 
   return (
@@ -90,7 +93,7 @@ export default function TemplatesPage() {
                 : "text-[#68584f] hover:text-[#2d221e]"
             }`}
           >
-            All Templates (7)
+            All Templates (8)
           </button>
           <button
             type="button"
@@ -113,7 +116,7 @@ export default function TemplatesPage() {
             }`}
           >
             <Crown className="h-3.5 w-3.5 text-[#e5533d] fill-[#f7d56a]" />
-            <span>Premium Category (5)</span>
+            <span>Premium Category (6)</span>
           </button>
         </div>
       </div>
@@ -868,6 +871,116 @@ export default function TemplatesPage() {
               </div>
             </div>
           </div>
+
+          {/* ── VOL. 08 PREMIUM: 10 Things I Love About You ($6.00) ── */}
+          <div className="mt-8 rounded-3xl p-5 xs:p-6 sm:p-9 bg-[#5a0d12] text-[#f7efe0] border-2 border-[#f6e9a6]/75 shadow-[0_24px_60px_rgba(48,8,12,0.42)] relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-[#f6e9a6] text-[#4a0c10] text-[10px] font-extrabold uppercase tracking-widest px-5 py-1.5 rounded-bl-2xl flex items-center gap-1">
+              <Crown className="h-3 w-3 text-[#5a0d12] fill-[#5a0d12]" />
+              <span>{isTenThingsUnlocked ? "PREMIUM UNLOCKED" : "VOL. 08 • $6.00 ROMANTIC"}</span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
+              <div className="lg:col-span-6 bg-[#f3e29a]/18 p-4 sm:p-5 rounded-2xl border border-[#f6e9a6]/35 shadow-inner">
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-[#f6e9a6] mb-3">
+                  <span>COVER + 10 CHAPTERS + BACK COVER</span>
+                  <span className="px-2 py-0.5 rounded-full bg-[#f6e9a6]/20 text-[#f6e9a6]">
+                    28 PHOTOS • 6 LEAVES
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2.5 text-[10px] font-bold">
+                  <div className="bg-[#3d0b0e] border border-[#f6e9a6]/40 rounded-xl p-3">
+                    <span className="text-[#f6e9a6] text-xs block">Heart Locket &amp; #1–#3</span>
+                    <span className="text-[#f7efe0]/80 font-normal">
+                      Double-heart silver locket cover, oval smiles, 4-photo strip &amp; starbursts
+                    </span>
+                  </div>
+                  <div className="bg-[#f2ecd6] text-[#4a0c10] border border-[#8b1218]/25 rounded-xl p-3">
+                    <span className="text-[#8b1218] text-xs block">#4 Efforts &amp; #5 Voice</span>
+                    <span className="text-[#4a0c10]/80 font-normal">
+                      Red-framed 4-photo story &amp; maroon envelope with tilted B&amp;W polaroids
+                    </span>
+                  </div>
+                  <div className="bg-[#650b10] border border-[#f6e9a6]/30 rounded-xl p-3">
+                    <span className="text-[#f6e9a6] text-xs block">#6 Assurance &amp; #7 Listen</span>
+                    <span className="text-[#f7efe0]/80 font-normal">
+                      Tilted smartphone with 5 chat bubbles &amp; polka-dot retro telephone page
+                    </span>
+                  </div>
+                  <div className="bg-[#f6e9a6] text-[#8b1218] border border-[#8b1218]/30 rounded-xl p-3">
+                    <span className="text-[#5a0d12] text-xs block">#8–#10 Simply You</span>
+                    <span className="text-[#5a0d12]/80 font-normal">
+                      Scattered consistency collage, 2-frame film strip &amp; butter-yellow letter
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:col-span-6 flex flex-col justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f6e9a6]/15 border border-[#f6e9a6]/40 text-[#f6e9a6] text-xs font-bold uppercase tracking-wider mb-3">
+                    <Heart className="h-3.5 w-3.5 text-[#f6e9a6] fill-[#f6e9a6]" />
+                    <span>Vol. 08 • 10-Chapter 3D Flipbook • $6.00</span>
+                  </div>
+
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-[#f7efe0] mb-2">
+                    10 Things I Love About You
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#f7efe0]/80 mb-5 leading-relaxed">
+                    A deeply personal 3D flipbook opening from a maroon double-heart locket cover into 10 lovingly designed chapters — from Your Smile and Your Voice envelope polaroids to iMessage assurance bubbles, retro telephone frame, film strip, and a butter-yellow &ldquo;Simply You&rdquo; finale.
+                  </p>
+
+                  <div className="space-y-2 text-xs sm:text-sm text-[#f7efe0]/90 mb-6">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#f6e9a6] shrink-0" />
+                      <span><strong>28 Photo Slots across 10 Chapters:</strong> Double-heart locket, 4-photo strip, envelope polaroids &amp; film strip</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#f6e9a6] shrink-0" />
+                      <span><strong>Every Text Editable In-Place:</strong> Customize all 10 chapters, iMessage bubbles, captions &amp; closing letter</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#f6e9a6] shrink-0" />
+                      <span><strong>Batch Upload + Permanent Share Link:</strong> Public read-only link + secret owner edit link</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  {isTenThingsUnlocked ? (
+                    <Link
+                      href="/ten-things"
+                      className="flex-1 py-4 px-6 rounded-2xl bg-[#f6e9a6] hover:bg-[#faefba] text-[#4a0c10] font-extrabold text-sm sm:text-base shadow-lg flex items-center justify-center gap-2 transition-all"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      <span>Open 10 Things I Love About You</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setModalTemplate(TEN_THINGS_TEMPLATE_ID)}
+                        className="flex-1 py-4 px-6 rounded-2xl bg-[#f6e9a6] hover:bg-[#faefba] text-[#4a0c10] font-extrabold text-sm sm:text-base border-2 border-[#36080c] shadow-[4px_4px_0_#36080c] flex items-center justify-center gap-2 transition-all cursor-pointer"
+                      >
+                        <Lock className="h-4 w-4 text-[#5a0d12]" />
+                        <span>Unlock 10 Things • $6.00</span>
+                      </button>
+
+                      <Link
+                        href="/ten-things"
+                        className="py-4 px-5 rounded-2xl bg-white/10 hover:bg-white/20 text-[#f7efe0] border border-white/25 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all"
+                      >
+                        <BookOpen className="h-4 w-4 text-[#f6e9a6]" />
+                        <span>Preview</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -895,9 +1008,11 @@ export default function TemplatesPage() {
             ? "$9.99"
             : modalTemplate === ANNIVERSARY_TEMPLATE_ID
               ? "$7.99"
-              : modalTemplate === LOVE_STORY_TEMPLATE_ID
-                ? "$5.99"
-                : "$4.99"
+              : modalTemplate === TEN_THINGS_TEMPLATE_ID
+                ? "$6.00"
+                : modalTemplate === LOVE_STORY_TEMPLATE_ID
+                  ? "$5.99"
+                  : "$4.99"
         }
         templateId={modalTemplate || ADVENTURE_TEMPLATE_ID}
         templateTitle={
@@ -905,11 +1020,13 @@ export default function TemplatesPage() {
             ? "Love Flipbook (16-Page Leather Scrapbook)"
             : modalTemplate === ANNIVERSARY_TEMPLATE_ID
               ? "1 Year With You (Velvet Anniversary Flipbook)"
-              : modalTemplate === LOVE_STORY_TEMPLATE_ID
-                ? "Love Story (12-Page Vintage Scrapbook)"
-                : modalTemplate === ALBUM_TEMPLATE_ID
-                  ? "Scrapbook Album (9-Page Flip Album)"
-                  : "Our Little Adventure"
+              : modalTemplate === TEN_THINGS_TEMPLATE_ID
+                ? "10 Things I Love About You (3D Flipbook)"
+                : modalTemplate === LOVE_STORY_TEMPLATE_ID
+                  ? "Love Story (12-Page Vintage Scrapbook)"
+                  : modalTemplate === ALBUM_TEMPLATE_ID
+                    ? "Scrapbook Album (9-Page Flip Album)"
+                    : "Our Little Adventure"
         }
         onUnlocked={() => {
           const target = modalTemplate;
@@ -920,6 +1037,9 @@ export default function TemplatesPage() {
           } else if (target === ANNIVERSARY_TEMPLATE_ID) {
             setIsAnniversaryUnlocked(true);
             router.push("/anniversary");
+          } else if (target === TEN_THINGS_TEMPLATE_ID) {
+            setIsTenThingsUnlocked(true);
+            router.push("/ten-things");
           } else if (target === LOVE_STORY_TEMPLATE_ID) {
             setIsLoveStoryUnlocked(true);
             router.push("/love-story");

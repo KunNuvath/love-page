@@ -38,6 +38,12 @@ export const PREMIUM_TEMPLATES: Record<string, PremiumTemplate> = {
     price: "$7.99",
     href: "/anniversary",
   },
+  "ten-things": {
+    id: "ten-things",
+    name: "10 Things I Love About You (3D Flipbook)",
+    price: "$6.00",
+    href: "/ten-things",
+  },
 };
 
 export function getUnlockedTemplates(

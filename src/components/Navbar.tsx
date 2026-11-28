@@ -25,6 +25,7 @@ const MOBILE_TEMPLATES = [
   { name: "Our Little Adventure", vol: "Vol. 03", href: "/adventure", price: "$4.99", premium: true },
   { name: "Scrapbook Album (9p)", vol: "Vol. 04", href: "/album", price: "$4.99", premium: true },
   { name: "Love Story (12p)", vol: "Vol. 06", href: "/love-story", price: "$5.99", premium: true },
+  { name: "10 Things I Love About You", vol: "Vol. 08", href: "/ten-things", price: "$6.00", premium: true },
   { name: "1 Year With You (Velvet)", vol: "Vol. 07", href: "/anniversary", price: "$7.99", premium: true },
   { name: "Love Flipbook (16p)", vol: "Vol. 05", href: "/flipbook", price: "$9.99", premium: true },
 ];
@@ -115,7 +116,7 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
           >
             <span>Templates</span>
             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#4a0f17]/10 text-[#4a0f17] leading-none">
-              7
+              8
             </span>
           </Link>
 
@@ -280,7 +281,7 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
                 <span>All Templates &amp; Pricing</span>
               </span>
               <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#4a0f17]/10 text-[#4a0f17]">
-                7
+                8
               </span>
             </Link>
             <a

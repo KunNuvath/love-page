@@ -1,0 +1,1153 @@
+@import url("https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@600;700&family=Quicksand:wght@400;500;700&display=swap");
+
+.root {
+  --maroon: #5a0d12;
+  --wine: #4a1414;
+  --red: #8b1218;
+  --cream: #f2ecd6;
+  --tan: #d9c4a8;
+  --butter: #f6e9a6;
+  --ink: #2b1a14;
+  /* Full-screen flipbook sizing (~1:1.38 page ratio, fills viewport cleanly) */
+  --pw: min(46.5vw, calc((100dvh - 132px) / 1.38), 540px);
+  --ph: calc(var(--pw) * 1.38);
+  --script: "Great Vibes", "Snell Roundhand", "Brush Script MT", cursive;
+  --sans: "Quicksand", "Trebuchet MS", sans-serif;
+  --bold: "Poppins", "Arial Black", sans-serif;
+
+  min-height: 100dvh;
+  height: 100dvh;
+  width: 100%;
+  font-family: var(--sans);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: max(10px, env(safe-area-inset-top, 0px)) 12px
+    max(12px, env(safe-area-inset-bottom, 0px));
+  overflow: hidden;
+  position: relative;
+  background: #1a1210 url("/ten-things/bg-knit.jpg") center / cover no-repeat fixed;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.rootReadOnly {
+  --pw: min(47.5vw, calc((100dvh - 96px) / 1.38), 580px);
+}
+
+.root *,
+.root *::before,
+.root *::after {
+  box-sizing: border-box;
+}
+
+/* Soft dark vignette over the striped knit photo so the book stands out */
+.root::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 45%,
+    rgba(0, 0, 0, 0.08) 32%,
+    rgba(0, 0, 0, 0.62) 100%
+  );
+  z-index: 0;
+}
+
+/* ── Compact Floating Top Bar ── */
+.topBar {
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  max-width: 1180px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.topBarGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pillBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(246, 233, 184, 0.38);
+  background: rgba(26, 12, 10, 0.72);
+  color: #f7efe0;
+  font: 600 12px / 1 var(--sans);
+  cursor: pointer;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+  transition: background 0.18s, transform 0.14s, border-color 0.18s;
+}
+
+.pillBtn:hover:not(:disabled) {
+  background: rgba(74, 12, 16, 0.92);
+  border-color: #f6e9b8;
+}
+
+.pillBtn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.pillBtn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.pillBtnActive {
+  background: #f6e9b8;
+  color: #4a0c10;
+  border-color: #f6e9b8;
+}
+
+.pillBtnGold {
+  background: linear-gradient(135deg, #f6e9a6, #dfb656);
+  color: #36080c;
+  border-color: #36080c;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.pillBtnGold:hover:not(:disabled) {
+  background: linear-gradient(135deg, #fbf0ba, #e9c264);
+  color: #2b0609;
+}
+
+/* ── Book Stage (fills remaining viewport) ── */
+.stageWrap {
+  position: relative;
+  z-index: 5;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+}
+
+.stage {
+  perspective: 2400px;
+  position: relative;
+  z-index: 1;
+}
+
+.book {
+  width: calc(var(--pw) * 2);
+  height: var(--ph);
+  position: relative;
+  transition: transform 0.8s cubic-bezier(0.5, 0.1, 0.2, 1);
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 26px 32px rgba(0, 0, 0, 0.58));
+}
+
+.leaf {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: var(--pw);
+  height: var(--ph);
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 0.9s cubic-bezier(0.45, 0.05, 0.25, 1);
+}
+
+.flipped {
+  transform: rotateY(-180deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  font-size: calc(var(--pw) * 0.036);
+  line-height: 1.52;
+}
+
+.front {
+  cursor: pointer;
+}
+
+.back {
+  transform: rotateY(180deg);
+  cursor: pointer;
+}
+
+/* Soft spine shadow */
+.front::after,
+.back::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 12%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.front::after {
+  left: 0;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.3), transparent);
+}
+
+.back::after {
+  right: 0;
+  background: linear-gradient(270deg, rgba(0, 0, 0, 0.3), transparent);
+}
+
+.face > * {
+  position: absolute;
+}
+
+.num {
+  top: 3.5%;
+  right: 6%;
+  font: 700 1.5em var(--bold);
+  color: var(--maroon);
+  z-index: 3;
+}
+
+.script {
+  font-family: var(--script);
+  font-weight: 400;
+  line-height: 1.05;
+  color: var(--maroon);
+}
+
+.face p {
+  font-weight: 500;
+  margin: 0;
+}
+
+/* ── Photo Slots (no forced filters) ── */
+.ph {
+  display: block;
+  background: linear-gradient(135deg, #a9825a, #6b4a30 60%, #3d2a1c);
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  font-style: normal;
+}
+
+.phHas {
+  background-image: var(--img);
+}
+
+.phEditable {
+  cursor: pointer;
+}
+
+.phEditable::after {
+  content: "+";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 700 1.25em var(--sans);
+  color: rgba(255, 240, 210, 0.88);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  background: rgba(26, 12, 8, 0.08);
+  opacity: 0.72;
+  transition: background 0.18s, opacity 0.18s;
+}
+
+.phEditable:hover::after {
+  background: rgba(26, 12, 8, 0.32);
+  opacity: 1;
+}
+
+.phHas.phEditable::after {
+  content: "change";
+  font-size: 0.72em;
+  opacity: 0;
+}
+
+.phHas.phEditable:hover::after {
+  opacity: 1;
+}
+
+.editableText {
+  outline: none;
+  border-radius: 3px;
+  cursor: text;
+}
+
+.editableText:hover {
+  box-shadow: 0 0 0 1px rgba(246, 233, 184, 0.55);
+}
+
+.editableText:focus {
+  box-shadow: 0 0 0 1.5px #e5c678;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.oval {
+  border-radius: 50%;
+  border: 0.18em solid var(--maroon);
+}
+
+/* ── Cover (Leaf 0 Front) ── */
+.cover {
+  background: linear-gradient(120deg, #4a0c10, #5e1015 50%, #3d0b0e);
+  color: #fff;
+}
+
+.coverBig {
+  top: 6.5%;
+  left: 8%;
+  font: 700 7.2em / 1 var(--bold);
+  color: #f7efe0;
+}
+
+.coverT1 {
+  top: 7.5%;
+  left: 41%;
+  font: 700 2.35em / 1.1 var(--bold);
+  color: #fff;
+  white-space: pre-line;
+}
+
+.coverT2 {
+  top: 20.5%;
+  left: 23%;
+  font-size: 4.3em;
+  color: #f7efe0;
+  white-space: nowrap;
+}
+
+.locket {
+  top: 39%;
+  left: 7%;
+  width: 60%;
+  height: 27%;
+  filter: drop-shadow(0 0.25em 0.55em rgba(0, 0, 0, 0.45));
+}
+
+.locket::before {
+  content: "";
+  position: absolute;
+  left: 45%;
+  top: -9%;
+  width: 7%;
+  height: 12%;
+  border: 0.2em solid #d6d7de;
+  border-radius: 50%;
+}
+
+.locketHeart {
+  position: absolute;
+  width: 48%;
+  height: 92%;
+  top: 8%;
+  clip-path: polygon(
+    50% 100%,
+    5% 55%,
+    0 30%,
+    10% 6%,
+    28% 0,
+    50% 14%,
+    72% 0,
+    90% 6%,
+    100% 30%,
+    95% 55%
+  );
+  background: linear-gradient(135deg, #e4e5ec, #b5b7c0 55%, #d9dae2);
+}
+
+.locketA {
+  left: 0;
+  transform: rotate(-8deg);
+}
+
+.locketB {
+  left: 46%;
+}
+
+.locketPh {
+  position: absolute;
+  inset: 6% 5%;
+  clip-path: inherit;
+}
+
+.tlist {
+  top: 69%;
+  left: 10%;
+  right: 6%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.28em 0.9em;
+  font-size: 0.92em;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tlist b {
+  font-weight: 700;
+  color: #fff;
+}
+
+.tlist li {
+  color: #f1e4d3;
+  white-space: nowrap;
+}
+
+/* ── #1 Your Smile (Leaf 0 Back) ── */
+.p1 {
+  background: var(--cream);
+}
+
+.p1O1 {
+  left: 9%;
+  top: 11%;
+  width: 36%;
+  height: 15%;
+}
+
+.p1O2 {
+  left: 15%;
+  top: 28%;
+  width: 36%;
+  height: 15%;
+}
+
+.p1Script {
+  top: 21%;
+  left: 52%;
+  font-size: 2.4em;
+}
+
+.p1Txt {
+  top: 31%;
+  left: 52%;
+  right: 6%;
+  text-align: justify;
+  font-size: 0.92em;
+  line-height: 1.46;
+}
+
+.p1Big {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 42%;
+}
+
+.p1Tag {
+  left: 15%;
+  bottom: 12%;
+  background: #1d2a38;
+  color: #fff;
+  font-size: 0.65em;
+  padding: 0.3em 0.7em;
+  border-radius: 0.4em;
+  z-index: 2;
+}
+
+/* ── #2 Your Heart (Leaf 1 Front) ── */
+.p2 {
+  background: var(--tan);
+}
+
+.p2Band {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 30%;
+  background: #5b3e2e;
+  background-image: radial-gradient(
+      circle at 20% 15%,
+      #e8d6bd 0 10%,
+      transparent 11%
+    ),
+    radial-gradient(circle at 90% 45%, #e8d6bd 0 12%, transparent 13%),
+    radial-gradient(circle at 20% 75%, #e8d6bd 0 11%, transparent 12%),
+    radial-gradient(circle at 80% 100%, #e8d6bd 0 12%, transparent 13%);
+}
+
+.p2Strip {
+  left: 5%;
+  top: 8%;
+  width: 21%;
+  height: 84%;
+  background: var(--maroon);
+  padding: 0.35em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35em;
+  box-shadow: 0 0.3em 0.8em rgba(0, 0, 0, 0.4);
+}
+
+.p2StripPh {
+  flex: 1;
+  position: relative;
+}
+
+.p2Script {
+  left: 36%;
+  top: 10%;
+  font-size: 3.3em;
+  white-space: pre-line;
+}
+
+.p2Txt {
+  left: 36%;
+  right: 7%;
+  top: 37%;
+  font-size: 0.9em;
+  line-height: 1.5;
+  text-align: justify;
+}
+
+/* ── #3 Your Face (Leaf 1 Back) ── */
+.p3 {
+  background: #fff;
+}
+
+.p3O1 {
+  left: 12%;
+  top: 9%;
+  width: 78%;
+  height: 27%;
+  border: 0.12em solid var(--red);
+}
+
+.p3O2 {
+  left: 12%;
+  top: 49%;
+  width: 78%;
+  height: 27%;
+  border: 0.12em solid var(--red);
+}
+
+.star1 {
+  left: 9%;
+  top: 5%;
+  width: 20%;
+  height: 14%;
+  background: var(--maroon);
+  z-index: 2;
+  clip-path: polygon(
+    50% 0,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+
+.star2 {
+  left: 46%;
+  top: 42%;
+  width: 22%;
+  height: 15%;
+  background: #faf0b4;
+  z-index: 2;
+  clip-path: polygon(
+    50% 0,
+    60% 28%,
+    86% 14%,
+    72% 40%,
+    100% 50%,
+    72% 60%,
+    86% 86%,
+    60% 72%,
+    50% 100%,
+    40% 72%,
+    14% 86%,
+    28% 60%,
+    0 50%,
+    28% 40%,
+    14% 14%,
+    40% 28%
+  );
+}
+
+.p3Lab {
+  left: 5%;
+  top: 39%;
+  background: var(--maroon);
+  color: #fff;
+  font: 700 1.05em var(--sans);
+  padding: 0.35em 0.9em;
+  z-index: 2;
+}
+
+.p3Cap {
+  right: 4%;
+  bottom: 4%;
+  width: 44%;
+  background: var(--maroon);
+  color: #fff;
+  font-size: 0.62em;
+  line-height: 1.35;
+  padding: 0.6em 0.7em;
+  text-align: justify;
+  z-index: 2;
+}
+
+/* ── #4 Your Efforts (Leaf 2 Front) ── */
+.p4 {
+  background: #fff;
+}
+
+.p4Script {
+  right: 6%;
+  top: 8.5%;
+  font-size: 2.3em;
+  text-align: right;
+}
+
+.p4Frame {
+  border: 0.15em solid var(--red);
+}
+
+.p4A1 {
+  left: 7%;
+  top: 17%;
+  width: 40%;
+  height: 22%;
+}
+
+.p4A2 {
+  left: 51%;
+  top: 17%;
+  width: 42%;
+  height: 22%;
+}
+
+.p4B1 {
+  left: 3%;
+  top: 63%;
+  width: 45%;
+  height: 24%;
+}
+
+.p4B2 {
+  left: 52%;
+  top: 63%;
+  width: 45%;
+  height: 24%;
+}
+
+.p4Txt {
+  left: 7%;
+  right: 7%;
+  top: 41.5%;
+  color: var(--red);
+  font-size: 0.86em;
+  line-height: 1.45;
+  text-align: justify;
+}
+
+/* ── #5 Your Voice (Leaf 2 Back) ── */
+.p5 {
+  background: var(--cream);
+}
+
+.p5::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 5%;
+  background: radial-gradient(
+      circle at 50% 100%,
+      transparent 55%,
+      #e4d9bb 56% 70%,
+      transparent 71%
+    )
+    0 0 / 1.6em 100%;
+}
+
+.p5Num {
+  top: 6%;
+}
+
+.p5Txt {
+  left: 8%;
+  right: 10%;
+  top: 12%;
+  font-weight: 700;
+  color: var(--red);
+  font-size: 0.92em;
+  line-height: 1.48;
+  text-align: justify;
+}
+
+.env {
+  left: 12%;
+  right: 12%;
+  bottom: 0;
+  height: 50%;
+}
+
+.envFlap {
+  position: absolute;
+  inset: auto 0 0;
+  height: 62%;
+  background: linear-gradient(#7a1018, #5e0a10);
+  clip-path: polygon(0 0, 50% 40%, 100% 0, 100% 100%, 0 100%);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.envPol {
+  position: absolute;
+  width: 44%;
+  height: 60%;
+  background: #f4f1e8;
+  padding: 0.3em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  box-shadow: 0 0.2em 0.6em rgba(0, 0, 0, 0.33);
+}
+
+.envPolPh {
+  flex: 1;
+  position: relative;
+}
+
+.envPolL {
+  left: 6%;
+  top: -8%;
+  transform: rotate(-3deg);
+  z-index: 1;
+}
+
+.envPolR {
+  left: 44%;
+  top: -14%;
+  transform: rotate(6deg);
+  z-index: 2;
+}
+
+.envCap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8%;
+  text-align: center;
+  color: #fff;
+  z-index: 4;
+  font-size: 0.9em;
+}
+
+/* ── #6 Your Assurance (Leaf 3 Front) ── */
+.p6 {
+  background: #650b10;
+}
+
+.p6Num {
+  color: #fff;
+}
+
+.p6Script {
+  left: 0;
+  right: 0;
+  top: 8.5%;
+  text-align: center;
+  font-size: 3.1em;
+  color: #f5e6c8;
+}
+
+.phone {
+  left: 22%;
+  top: 24%;
+  width: 42%;
+  height: 48%;
+  border: 0.45em solid #111;
+  border-radius: 1.4em;
+  background: #000;
+  overflow: hidden;
+  transform: rotate(3deg);
+}
+
+.phonePh {
+  position: absolute;
+  inset: 0;
+}
+
+.bub {
+  background: #e9e9ee;
+  color: #222;
+  font-size: 0.56em;
+  padding: 0.3em 0.78em;
+  border-radius: 1em;
+  line-height: 1.2;
+  z-index: 2;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 0.15em 0.4em rgba(0, 0, 0, 0.28);
+}
+
+.p6Txt {
+  left: 9%;
+  right: 9%;
+  bottom: 5.5%;
+  color: #f5e6c8;
+  font-size: 0.88em;
+  line-height: 1.46;
+  text-align: justify;
+}
+
+/* ── #7 The Way You Listen (Leaf 3 Back) ── */
+.p7 {
+  background: #fffdf7;
+}
+
+.p7::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 52%;
+  background: radial-gradient(#3a3a3e 22%, transparent 24%) 0 0 / 11% 15%;
+}
+
+.p7Num {
+  top: 2%;
+}
+
+.frame {
+  left: 15%;
+  top: 11%;
+  width: 75%;
+  height: 34%;
+  background: #0a0a0a;
+  padding: 7%;
+  border-radius: 1em;
+  box-shadow: 0 0 0 0.35em #0a0a0a, 0 0 0 0.6em #fffdf7, 0 0 0 0.8em #0a0a0a;
+}
+
+.framePh {
+  position: absolute;
+  inset: 7%;
+}
+
+.p7Script {
+  left: 0;
+  right: 0;
+  top: 55%;
+  text-align: center;
+  font-size: 2.45em;
+}
+
+.p7Txt {
+  left: 9%;
+  right: 9%;
+  top: 67%;
+  font-size: 0.86em;
+  line-height: 1.46;
+  text-align: justify;
+}
+
+.cord {
+  left: 6%;
+  top: 0;
+  width: 0.5em;
+  height: 14%;
+  border-left: 0.2em dotted #222;
+  border-right: 0.2em dotted #222;
+}
+
+.handset {
+  left: 2%;
+  top: 13%;
+  width: 11%;
+  height: 21%;
+  background: #111;
+  border-radius: 1em 0.6em 1em 0.6em;
+  transform: rotate(-10deg);
+}
+
+/* ── #8 Your Consistency (Leaf 4 Front) ── */
+.p8 {
+  background: #4a1214;
+}
+
+.p8Num {
+  color: #fff;
+}
+
+.p8Title {
+  left: 9%;
+  top: 7%;
+  font: 700 1.5em / 1.1 var(--bold);
+  color: #f6e9b8;
+  width: 70%;
+  margin: 0;
+  white-space: pre-line;
+}
+
+.p8Ph {
+  width: 23%;
+  height: 16%;
+  border: 0;
+}
+
+.word {
+  color: #fff;
+  font-size: 1.02em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.st {
+  width: 17%;
+  height: 11%;
+  background: #faf0b4;
+  clip-path: polygon(
+    50% 0,
+    60% 28%,
+    86% 14%,
+    72% 40%,
+    100% 50%,
+    72% 60%,
+    86% 86%,
+    60% 72%,
+    50% 100%,
+    40% 72%,
+    14% 86%,
+    28% 60%,
+    0 50%,
+    28% 40%,
+    14% 14%,
+    40% 28%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ── #9 Your Presence (Leaf 4 Back) ── */
+.p9 {
+  background: #fff;
+}
+
+.p9Script {
+  right: 5%;
+  top: 9%;
+  font-size: 2.6em;
+  text-align: right;
+  z-index: 2;
+}
+
+.p9T1 {
+  left: 9%;
+  right: 9%;
+  top: 22%;
+  font-size: 0.86em;
+  line-height: 1.46;
+  text-align: justify;
+}
+
+.film {
+  left: 10%;
+  right: 10%;
+  top: 48%;
+  height: 18%;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 0.55em,
+      #f2ecd6 0.55em 1.05em,
+      transparent 1.05em 1.5em
+    )
+    0 0.28em / 100% 0.42em no-repeat,
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 0.55em,
+      #f2ecd6 0.55em 1.05em,
+      transparent 1.05em 1.5em
+    )
+    0 calc(100% - 0.28em) / 100% 0.42em no-repeat,
+    #111;
+  padding: 1.05em 0.45em;
+  display: flex;
+  gap: 0.35em;
+}
+
+.filmPh {
+  flex: 1;
+  position: relative;
+}
+
+.p9T2 {
+  left: 9%;
+  right: 9%;
+  top: 70%;
+  font-size: 0.86em;
+  line-height: 1.46;
+  text-align: justify;
+}
+
+/* ── #10 Simply You (Leaf 5 Front) ── */
+.p10 {
+  background: linear-gradient(90deg, #e9d98f, #f6e9a6 8%);
+}
+
+.p10Num {
+  color: var(--red);
+}
+
+.p10Title {
+  left: 11%;
+  top: 15%;
+  font: 700 1.9em var(--bold);
+  color: var(--red);
+  margin: 0;
+}
+
+.p10Txt {
+  left: 11%;
+  right: 11%;
+  top: 26%;
+  color: var(--red);
+  font-size: 0.88em;
+  line-height: 1.56;
+  text-align: justify;
+}
+
+/* ── Back Cover (Leaf 5 Back — clean maroon, no extra text) ── */
+.endc {
+  background: linear-gradient(240deg, #4a0c10, #5e1015 50%, #3d0b0e);
+}
+
+/* ── Bottom Controls ── */
+.ctl {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 5;
+  font: 700 14px var(--sans);
+  color: #f6e9b8;
+}
+
+.ctl button {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid #f6e9b8;
+  background: rgba(26, 12, 10, 0.7);
+  color: #f6e9b8;
+  font-size: 20px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.ctl button:hover:not(:disabled) {
+  background: #f6e9b8;
+  color: var(--maroon);
+}
+
+.ctl button:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.ctl button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.ctl button:focus-visible {
+  outline: 3px solid #b3202a;
+  outline-offset: 3px;
+}
+
+.pgLabel {
+  min-width: 108px;
+  text-align: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(26, 12, 10, 0.72);
+  color: #f6e9b8;
+  border: 1px solid rgba(246, 233, 184, 0.35);
+  font: 700 13px var(--sans);
+}
+
+/* ── Share Banner & Toast ── */
+.shareBanner {
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  max-width: 780px;
+  background: rgba(26, 12, 10, 0.92);
+  color: #f7efe0;
+  border: 1px solid rgba(246, 233, 184, 0.45);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+}
+
+.shareRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+
+.shareUrl {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: #f6e9b8;
+  word-break: break-all;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  background: #2b0a0d;
+  color: #f7efe0;
+  border: 1px solid #f6e9b8;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font: 600 13px var(--sans);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+  max-width: 92vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leaf,
+  .book {
+    transition-duration: 0.01s;
+  }
+}
