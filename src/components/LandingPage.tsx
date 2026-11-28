@@ -56,7 +56,14 @@ interface HomeTemplateCard {
   borderColor: string;
   badgeBg: string;
   badgeText: string;
-  previewStyle: "polaroid" | "spiral" | "adventure" | "album" | "flipbook" | "lovestory";
+  previewStyle:
+    | "polaroid"
+    | "spiral"
+    | "adventure"
+    | "album"
+    | "flipbook"
+    | "lovestory"
+    | "anniversary";
 }
 
 const HOME_TEMPLATES: HomeTemplateCard[] = [
@@ -164,6 +171,27 @@ const HOME_TEMPLATES: HomeTemplateCard[] = [
     badgeBg: "bg-[#c9a24a]",
     badgeText: "text-[#2a070c]",
     previewStyle: "lovestory",
+  },
+  {
+    id: "anniversary-velvet",
+    vol: "Vol. 07",
+    name: "1 Year With You",
+    subtitle: "Closed wine-velvet 3D flipbook on stone plaster with 8 bespoke spreads, lace heart, ring binder & star-map.",
+    href: "/anniversary",
+    tier: "premium",
+    price: "$7.99",
+    priceNote: "Velvet one-time",
+    photos: "38 Photos",
+    pages: "16 3D Pages",
+    highlights: ["Closed velvet cover → 8 spreads → back", "Corduroy lace heart & metal ring binder", "Olive star-map & striped fabric finale"],
+    accentBg: "bg-[#e5c678] hover:bg-[#edd38e]",
+    accentText: "text-[#2a0a0f]",
+    cardBg: "bg-[#54121b]",
+    cardText: "text-[#f4ecdc]",
+    borderColor: "border-[#e5c678]/75",
+    badgeBg: "bg-[#e5c678]",
+    badgeText: "text-[#2a0a0f]",
+    previewStyle: "anniversary",
   },
   {
     id: "love-flipbook",
@@ -378,7 +406,7 @@ export default function LandingPage() {
         <div className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-[#fbf6ec]/95 border border-[#d6bfa2] shadow-xs mb-5 sm:mb-7 animate-fade-up max-w-full">
           <Heart className="h-3.5 w-3.5 fill-[#cf493e] text-[#cf493e] animate-pulse shrink-0" />
           <span className="font-typewriter text-[11px] xs:text-xs sm:text-xs font-bold tracking-wider uppercase text-[#5a4236] truncate">
-            Vintage Keepsake Studio • 6 Templates • Free – $9.99
+            Vintage Keepsake Studio • 7 Templates • Free – $9.99
           </span>
           <span className="text-xs shrink-0">✦</span>
         </div>
@@ -405,7 +433,7 @@ export default function LandingPage() {
 
         {/* Subtitle */}
         <p className="text-xs xs:text-sm sm:text-lg text-[#624f43] max-w-2xl leading-relaxed mb-7 sm:mb-9 px-2">
-          Six handcrafted analog-inspired keepsakes — from <strong>2 Free Scrapbooks</strong> to our <strong>3D Page-Flipping Albums &amp; Vintage Plaid Love Story</strong> ($4.99–$9.99 one-time, no subscriptions).
+          Seven handcrafted analog-inspired keepsakes — from <strong>2 Free Scrapbooks</strong> to our <strong>3D Page-Flipping Velvet &amp; Leather Flipbooks</strong> ($4.99–$9.99 one-time, no subscriptions).
         </p>
 
         {/* Dual Primary Call to Actions */}
@@ -415,7 +443,7 @@ export default function LandingPage() {
             className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 sm:py-4 rounded-full bg-[#4a0f17] text-[#f2e7d0] font-bold text-xs xs:text-sm sm:text-base border border-[#c9a24a]/60 shadow-[0_10px_24px_rgba(74,15,23,0.32)] hover:bg-[#5e141f] hover:scale-102 active:scale-95 transition-all group cursor-pointer"
           >
             <Layers className="h-4 w-4 text-[#c9a24a] shrink-0" />
-            <span>Browse 6 Templates &amp; Pricing</span>
+            <span>Browse 7 Templates &amp; Pricing</span>
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform shrink-0" />
           </a>
 
@@ -595,7 +623,7 @@ export default function LandingPage() {
               <span>Catalogue &amp; One-Time Pricing</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#2b1f1a] tracking-tight mb-3">
-              6 Vintage Templates, Zero Subscriptions
+              7 Vintage Templates, Zero Subscriptions
             </h2>
             <p className="text-[#624f43] text-xs sm:text-base leading-relaxed">
               Start with our 2 free scrapbooks or unlock an heirloom 3D flipbook once and keep it forever. Preview any template live before you unlock.
@@ -612,7 +640,7 @@ export default function LandingPage() {
                     : "text-[#624f43] hover:text-[#2b1f1a]"
                 }`}
               >
-                All Volumes (6)
+                All Volumes (7)
               </button>
               <button
                 type="button"
@@ -635,7 +663,7 @@ export default function LandingPage() {
                 }`}
               >
                 <Crown className="h-3.5 w-3.5 text-[#c9a24a] fill-[#c9a24a]" />
-                <span>Premium • $4.99–$9.99 (4)</span>
+                <span>Premium • $4.99–$9.99 (5)</span>
               </button>
             </div>
           </div>
@@ -648,6 +676,7 @@ export default function LandingPage() {
               const isDark =
                 tpl.previewStyle === "adventure" ||
                 tpl.previewStyle === "lovestory" ||
+                tpl.previewStyle === "anniversary" ||
                 tpl.previewStyle === "flipbook";
               return (
                 <div
@@ -776,6 +805,20 @@ export default function LandingPage() {
                         </div>
                       )}
 
+                      {tpl.previewStyle === "anniversary" && (
+                        <div className="grid grid-cols-3 gap-1.5 w-full h-full items-center text-[9px] font-typewriter text-center">
+                          <div className="bg-[#36080f] border border-[#e5c678]/60 rounded-md p-1.5 text-[#f4ecdc]">
+                            Velvet Cover
+                          </div>
+                          <div className="bg-[#6b161f] border border-[#e5c678]/40 rounded-md p-1.5 text-[#f4ecdc]">
+                            Lace Heart
+                          </div>
+                          <div className="bg-[#4a5438] border border-[#e5c678]/40 rounded-md p-1.5 text-[#f6f4eb]">
+                            Star Map
+                          </div>
+                        </div>
+                      )}
+
                       {tpl.previewStyle === "flipbook" && (
                         <div className="grid grid-cols-2 gap-2 w-full h-full items-center text-[9px] font-bold">
                           <div className="bg-[#2a1209] border border-dashed border-[#e6c26a]/50 rounded-lg p-2 text-[#e6c26a]">
@@ -860,6 +903,8 @@ export default function LandingPage() {
               <span>Vol. 03 &amp; 04 — <strong>$4.99</strong></span>
               <span>•</span>
               <span>Vol. 06 Love Story — <strong>$5.99</strong></span>
+              <span>•</span>
+              <span>Vol. 07 Velvet Book — <strong>$7.99</strong></span>
               <span>•</span>
               <span>Vol. 05 Love Flipbook — <strong>$9.99</strong></span>
             </div>
@@ -1386,7 +1431,7 @@ export default function LandingPage() {
             {[
               {
                 q: "What is the pricing for LovePage templates?",
-                a: "Vol. 01 (Polaroid Scrapbook) and Vol. 02 (Our Little Book) are 100% free to customize and share. Our Premium one-time templates are: Vol. 03 (Our Little Adventure) $4.99, Vol. 04 (9-Page Scrapbook Album) $4.99, Vol. 06 (12-Page Love Story) $5.99, and Vol. 05 (16-Page Leather Love Flipbook) $9.99 USD — all one-time payments with lifetime access and a 14-day refund policy.",
+                a: "Vol. 01 (Polaroid Scrapbook) and Vol. 02 (Our Little Book) are 100% free to customize and share. Our Premium one-time templates are: Vol. 03 (Our Little Adventure) $4.99, Vol. 04 (9-Page Scrapbook Album) $4.99, Vol. 06 (12-Page Love Story) $5.99, Vol. 07 (1 Year With You Velvet Flipbook) $7.99, and Vol. 05 (16-Page Leather Love Flipbook) $9.99 USD — all one-time payments with lifetime access and a 14-day refund policy.",
               },
               {
                 q: "How do I add my own photos and music file?",

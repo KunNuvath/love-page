@@ -344,6 +344,32 @@ export default function TemplateChooserModal({
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
+
+          {/* PREMIUM CATEGORY BANNER 5: Vol. 07 — 1 Year With You (Velvet Flipbook • $7.99) */}
+          <div className="mt-4 p-4 sm:p-5 rounded-2xl bg-[#54121b] text-[#f4ecdc] border-2 border-[#e5c678] shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#e5c678] text-[#2a0a0f] text-[10px] font-extrabold uppercase tracking-wider">
+                <Crown className="h-3 w-3 text-[#54121b] fill-[#54121b]" />
+                <span>Vol. 07 • Velvet Edition • $7.99</span>
+              </div>
+              <h4 className="font-extrabold text-base sm:text-lg text-[#f4ecdc] flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-[#e5c678]" />
+                <span>1 Year With You (Velvet Anniversary Flipbook)</span>
+              </h4>
+              <p className="text-xs text-[#f4ecdc]/80 leading-relaxed max-w-xl">
+                Closed wine-velvet cover opening into 8 bespoke spreads (16 pages) on a stone-plaster surface with 38 photo slots, lace-edged heart, ring binder, 8-photo slate collage &amp; olive star-map.
+              </p>
+            </div>
+
+            <Link
+              href="/anniversary"
+              onClick={onClose}
+              className="w-full sm:w-auto shrink-0 py-3 px-5 rounded-xl bg-[#e5c678] hover:bg-[#edd38e] text-[#2a0a0f] font-extrabold text-xs sm:text-sm border-2 border-[#2a0a0f] shadow-[3px_3px_0_#2a0a0f] flex items-center justify-center gap-1.5 transition-all"
+            >
+              <span>Open Velvet Flipbook</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
 
         {/* Footer */}

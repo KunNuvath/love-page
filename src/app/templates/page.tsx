@@ -23,6 +23,7 @@ import { ADVENTURE_TEMPLATE_ID } from "@/src/lib/adventure";
 import { ALBUM_TEMPLATE_ID } from "@/src/lib/album";
 import { FLIPBOOK_TEMPLATE_ID } from "@/src/lib/flipbook";
 import { LOVE_STORY_TEMPLATE_ID } from "@/src/lib/love-story";
+import { ANNIVERSARY_TEMPLATE_ID } from "@/src/lib/anniversary";
 import PremiumUnlockModal from "@/src/components/adventure/PremiumUnlockModal";
 
 export default function TemplatesPage() {
@@ -33,6 +34,7 @@ export default function TemplatesPage() {
   const [isAlbumUnlocked, setIsAlbumUnlocked] = useState(false);
   const [isFlipbookUnlocked, setIsFlipbookUnlocked] = useState(false);
   const [isLoveStoryUnlocked, setIsLoveStoryUnlocked] = useState(false);
+  const [isAnniversaryUnlocked, setIsAnniversaryUnlocked] = useState(false);
   const [modalTemplate, setModalTemplate] = useState<string | null>(null);
 
   useEffect(() => {
@@ -40,6 +42,7 @@ export default function TemplatesPage() {
     setIsAlbumUnlocked(hasTemplateAccess(user, ALBUM_TEMPLATE_ID));
     setIsFlipbookUnlocked(hasTemplateAccess(user, FLIPBOOK_TEMPLATE_ID));
     setIsLoveStoryUnlocked(hasTemplateAccess(user, LOVE_STORY_TEMPLATE_ID));
+    setIsAnniversaryUnlocked(hasTemplateAccess(user, ANNIVERSARY_TEMPLATE_ID));
   }, [user]);
 
   return (
@@ -87,7 +90,7 @@ export default function TemplatesPage() {
                 : "text-[#68584f] hover:text-[#2d221e]"
             }`}
           >
-            All Templates (6)
+            All Templates (7)
           </button>
           <button
             type="button"
@@ -110,7 +113,7 @@ export default function TemplatesPage() {
             }`}
           >
             <Crown className="h-3.5 w-3.5 text-[#e5533d] fill-[#f7d56a]" />
-            <span>Premium Category (4)</span>
+            <span>Premium Category (5)</span>
           </button>
         </div>
       </div>
@@ -755,6 +758,116 @@ export default function TemplatesPage() {
               </div>
             </div>
           </div>
+
+          {/* ── VOL. 07 PREMIUM: 1 Year With You (Velvet Flipbook • $7.99) ── */}
+          <div className="mt-8 rounded-3xl p-5 xs:p-6 sm:p-9 bg-[#54121b] text-[#f4ecdc] border-2 border-[#e5c678]/70 shadow-[0_24px_60px_rgba(32,6,10,0.45)] relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-[#e5c678] text-[#2a0a0f] text-[10px] font-extrabold uppercase tracking-widest px-5 py-1.5 rounded-bl-2xl flex items-center gap-1">
+              <Crown className="h-3 w-3 text-[#54121b] fill-[#54121b]" />
+              <span>{isAnniversaryUnlocked ? "PREMIUM UNLOCKED" : "VOL. 07 • $7.99 VELVET"}</span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
+              <div className="lg:col-span-6 bg-[#9a9d90]/25 p-4 sm:p-5 rounded-2xl border border-[#e5c678]/35 shadow-inner">
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-[#e5c678] mb-3">
+                  <span>CLOSED COVER + 8 SPREADS (16 PAGES)</span>
+                  <span className="px-2 py-0.5 rounded-full bg-[#e5c678]/20 text-[#e5c678]">
+                    38 PHOTOS • 3:2 BOOK
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2.5 text-[10px] font-bold">
+                  <div className="bg-[#36080f] border border-[#e5c678]/40 rounded-xl p-3">
+                    <span className="text-[#e5c678] text-xs block">Cover &amp; About Us</span>
+                    <span className="text-[#f4ecdc]/75 font-normal">
+                      Wine velvet cover, B&amp;W photo, crumpled paper &amp; script drop-cap
+                    </span>
+                  </div>
+                  <div className="bg-[#8f6e49] text-[#f4ecdc] border border-[#f4ecdc]/25 rounded-xl p-3">
+                    <span className="text-[#f7e0a8] text-xs block">Start of Forever &amp; Letter</span>
+                    <span className="text-[#f4ecdc]/85 font-normal">
+                      Stacked 1/2/10, 2×3 grid, wine Letter &amp; navy oval portraits
+                    </span>
+                  </div>
+                  <div className="bg-[#6b161f] border border-[#e5c678]/30 rounded-xl p-3">
+                    <span className="text-[#e5c678] text-xs block">Corduroy &amp; Ring Binder</span>
+                    <span className="text-[#f4ecdc]/80 font-normal">
+                      Past + past = lace heart, typewriter poem &amp; 3 binder polaroids
+                    </span>
+                  </div>
+                  <div className="bg-[#4a5438] text-[#f6f4eb] border border-[#e5c678]/30 rounded-xl p-3">
+                    <span className="text-[#e5c678] text-xs block">Slate Collage &amp; Stars</span>
+                    <span className="text-[#f6f4eb]/80 font-normal">
+                      8-photo slate collage, olive star-map &amp; striped fabric finale
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:col-span-6 flex flex-col justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e5c678]/15 border border-[#e5c678]/40 text-[#e5c678] text-xs font-bold uppercase tracking-wider mb-3">
+                    <BookOpen className="h-3.5 w-3.5 text-[#e5c678]" />
+                    <span>Vol. 07 • Wine-Velvet 3D Book • $7.99</span>
+                  </div>
+
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-[#f4ecdc] mb-2">
+                    1 Year With You (Velvet Flipbook)
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#f4ecdc]/80 mb-5 leading-relaxed">
+                    A museum-grade 3D flipbook resting on a warm stone-plaster surface: opens from a centred wine-red velvet cover into 8 distinct handmade spreads — kraft paper, red corduroy, metal ring binder, slate collage, olive star-map &amp; striped fabric.
+                  </p>
+
+                  <div className="space-y-2 text-xs sm:text-sm text-[#f4ecdc]/90 mb-6">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#e5c678] shrink-0" />
+                      <span><strong>Closed Cover → 8 Spreads → Back Cover:</strong> Realistic 3D page edges, gutter shadows &amp; gold page labels</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#e5c678] shrink-0" />
+                      <span><strong>38 Photo Slots &amp; Tactile Details:</strong> Lace-edged heart, inline avatars, 8-photo slate grid &amp; constellation</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[#e5c678] shrink-0" />
+                      <span><strong>Batch Upload + Permanent Share Link:</strong> Editable notes, public link &amp; secret owner edit URL</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  {isAnniversaryUnlocked ? (
+                    <Link
+                      href="/anniversary"
+                      className="flex-1 py-4 px-6 rounded-2xl bg-[#e5c678] hover:bg-[#edd38e] text-[#2a0a0f] font-extrabold text-sm sm:text-base shadow-lg flex items-center justify-center gap-2 transition-all"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      <span>Open 1 Year With You</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setModalTemplate(ANNIVERSARY_TEMPLATE_ID)}
+                        className="flex-1 py-4 px-6 rounded-2xl bg-[#e5c678] hover:bg-[#edd38e] text-[#2a0a0f] font-extrabold text-sm sm:text-base border-2 border-[#2a0a0f] shadow-[4px_4px_0_#2a0a0f] flex items-center justify-center gap-2 transition-all cursor-pointer"
+                      >
+                        <Lock className="h-4 w-4 text-[#54121b]" />
+                        <span>Unlock Velvet Book • $7.99</span>
+                      </button>
+
+                      <Link
+                        href="/anniversary"
+                        className="py-4 px-5 rounded-2xl bg-white/10 hover:bg-white/20 text-[#f4ecdc] border border-white/25 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all"
+                      >
+                        <BookOpen className="h-4 w-4 text-[#e5c678]" />
+                        <span>Preview</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -780,19 +893,23 @@ export default function TemplatesPage() {
         price={
           modalTemplate === FLIPBOOK_TEMPLATE_ID
             ? "$9.99"
-            : modalTemplate === LOVE_STORY_TEMPLATE_ID
-              ? "$5.99"
-              : "$4.99"
+            : modalTemplate === ANNIVERSARY_TEMPLATE_ID
+              ? "$7.99"
+              : modalTemplate === LOVE_STORY_TEMPLATE_ID
+                ? "$5.99"
+                : "$4.99"
         }
         templateId={modalTemplate || ADVENTURE_TEMPLATE_ID}
         templateTitle={
           modalTemplate === FLIPBOOK_TEMPLATE_ID
             ? "Love Flipbook (16-Page Leather Scrapbook)"
-            : modalTemplate === LOVE_STORY_TEMPLATE_ID
-              ? "Love Story (12-Page Vintage Scrapbook)"
-              : modalTemplate === ALBUM_TEMPLATE_ID
-                ? "Scrapbook Album (9-Page Flip Album)"
-                : "Our Little Adventure"
+            : modalTemplate === ANNIVERSARY_TEMPLATE_ID
+              ? "1 Year With You (Velvet Anniversary Flipbook)"
+              : modalTemplate === LOVE_STORY_TEMPLATE_ID
+                ? "Love Story (12-Page Vintage Scrapbook)"
+                : modalTemplate === ALBUM_TEMPLATE_ID
+                  ? "Scrapbook Album (9-Page Flip Album)"
+                  : "Our Little Adventure"
         }
         onUnlocked={() => {
           const target = modalTemplate;
@@ -800,6 +917,9 @@ export default function TemplatesPage() {
           if (target === FLIPBOOK_TEMPLATE_ID) {
             setIsFlipbookUnlocked(true);
             router.push("/flipbook");
+          } else if (target === ANNIVERSARY_TEMPLATE_ID) {
+            setIsAnniversaryUnlocked(true);
+            router.push("/anniversary");
           } else if (target === LOVE_STORY_TEMPLATE_ID) {
             setIsLoveStoryUnlocked(true);
             router.push("/love-story");

@@ -100,7 +100,7 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
             <Layers className="h-3.5 w-3.5 text-[#cf493e] group-hover:scale-110 transition-transform" />
             <span>Templates</span>
             <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-[#cf493e]/10 text-[#cf493e]">
-              6
+              7
             </span>
           </Link>
 
@@ -363,6 +363,25 @@ export default function Navbar({ onLaunchTemplate }: NavbarProps) {
                 </div>
                 <span className="px-2 py-0.5 rounded-full bg-[#c9a24a] text-[#2a070c] text-[10px] font-extrabold">
                   $5.99
+                </span>
+              </Link>
+
+              <Link
+                href="/anniversary"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="col-span-2 flex items-center justify-between p-2.5 rounded-xl bg-[#54121b] text-[#f4ecdc] border border-[#e5c678] shadow-xs transition-all active:scale-98"
+              >
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#e5c678]">
+                    <BookOpen className="h-3.5 w-3.5 text-[#e5c678]" />
+                    <span>1 Year With You (Velvet Book)</span>
+                  </div>
+                  <span className="text-[10px] text-[#f4ecdc]/80 leading-tight">
+                    Vol. 07 • Wine Velvet 3D Flipbook • 38 Photos
+                  </span>
+                </div>
+                <span className="px-2 py-0.5 rounded-full bg-[#e5c678] text-[#2a0a0f] text-[10px] font-extrabold">
+                  $7.99
                 </span>
               </Link>
             </div>

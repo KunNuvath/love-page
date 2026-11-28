@@ -6,10 +6,12 @@ import { sanitizeAdventure } from "@/src/lib/adventure";
 import { sanitizeAlbum } from "@/src/lib/album";
 import { sanitizeFlipbook } from "@/src/lib/flipbook";
 import { sanitizeLoveStory } from "@/src/lib/love-story";
+import { sanitizeAnniversary } from "@/src/lib/anniversary";
 import AdventureScrapbook from "@/src/components/adventure/AdventureScrapbook";
 import ScrapbookAlbum from "@/src/components/album/ScrapbookAlbum";
 import LoveFlipbook from "@/src/components/flipbook/LoveFlipbook";
 import LoveStoryBook from "@/src/components/love-story/LoveStoryBook";
+import AnniversaryFlipbook from "@/src/components/anniversary/AnniversaryFlipbook";
 import ShareView from "@/src/app/share/[slug]/ShareView";
 import LittleBookShareView from "@/src/app/share/[slug]/LittleBookShareView";
 
@@ -52,6 +54,16 @@ export default async function PublicPage({ params }: Props) {
     config = JSON.parse(page.message);
   } catch {
     config = null;
+  }
+
+  if (config?.type === "anniversary-velvet") {
+    return (
+      <AnniversaryFlipbook
+        readOnly
+        initialData={sanitizeAnniversary(config)}
+        initialSlug={page.slug}
+      />
+    );
   }
 
   if (config?.type === "love-story") {

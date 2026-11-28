@@ -1,0 +1,434 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Lora:ital@0;1&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Poppins:wght@800&family=Special+Elite&display=swap');
+
+.shell {
+  --wine: #7b1f1f;
+  --cream: #f7f1df;
+  --ink: #2a2220;
+  --gold: #eee6b6;
+  --brown: #4f3828;
+  --pf: "Playfair Display", Georgia, serif;
+  --lo: "Lora", Georgia, serif;
+  --te: "Special Elite", "Courier New", monospace;
+  --sc: "Pinyon Script", cursive;
+  --sa: Arial, Helvetica, sans-serif;
+
+  position: relative;
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--gold);
+  overflow-x: clip;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+    max(12px, env(safe-area-inset-bottom, 0px)) env(safe-area-inset-left, 0px);
+}
+
+/* Exact stone/plaster background (.b2) from reference HTML */
+.stoneBg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 6% 22%, rgba(20, 25, 15, 0.42), transparent 32%),
+    radial-gradient(ellipse at 92% 88%, rgba(20, 25, 15, 0.36), transparent 42%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='s' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='6' seed='5' stitchTiles='stitch'/%3E%3CfeDiffuseLighting surfaceScale='5' diffuseConstant='1.1' lighting-color='rgb(168,171,158)'%3E%3CfeDistantLight azimuth='225' elevation='50'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23s)'/%3E%3C/svg%3E")
+      0 0 / 500px 500px,
+    #9a9d90;
+}
+
+.stageWrap {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6vmin;
+  padding: 6px 12px 10px;
+}
+
+.lab {
+  font: italic 500 clamp(20px, 3.6vmin, 36px) / 1 "Cormorant Garamond", serif;
+  height: 1.05em;
+  letter-spacing: 0.02em;
+  color: var(--gold);
+  user-select: none;
+}
+
+/* container-type: inline-size on .wrap so all cqw units match reference HTML 1:1 */
+.wrap {
+  container-type: inline-size;
+  position: relative;
+  width: min(94vw, calc((100dvh - 195px) * 1.5), 1000px);
+}
+
+.wrapReadOnly {
+  width: min(95vw, calc((100dvh - 140px) * 1.5), 1040px);
+}
+
+.wrap::after {
+  content: "";
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: -1.4cqw;
+  height: 3cqw;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.6), transparent 70%);
+  filter: blur(6px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.book {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  perspective: 2600px;
+  transition: transform 0.9s cubic-bezier(0.5, 0, 0.2, 1);
+  touch-action: pan-y;
+}
+
+.bookS {
+  transform: translateX(-25%);
+}
+
+.bookE {
+  transform: translateX(25%);
+}
+
+.leaf {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 1s cubic-bezier(0.5, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.leafF {
+  transform: rotateY(-180deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+  box-shadow:
+    0 2.4cqw 5cqw rgba(0, 0, 0, 0.4),
+    1px 0 0 #e8e2d2,
+    2px 1px 0 #d3ccb9,
+    3px 2px 0 #bdb6a2,
+    4px 3px 0 #a79f8b;
+}
+
+.faceK {
+  transform: rotateY(180deg);
+}
+
+.face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.42),
+    rgba(0, 0, 0, 0.12) 2.5%,
+    rgba(255, 255, 255, 0.1) 6%,
+    transparent 12%
+  );
+  z-index: 20;
+}
+
+.faceK::after {
+  background: linear-gradient(
+    270deg,
+    rgba(0, 0, 0, 0.42),
+    rgba(0, 0, 0, 0.12) 2.5%,
+    rgba(255, 255, 255, 0.1) 6%,
+    transparent 12%
+  );
+}
+
+.a {
+  position: absolute;
+}
+
+/* Photo placeholders (.ph) with exact vintage grain, sepia & dark vignette */
+.ph {
+  position: absolute;
+  background:
+    var(--img, none) center / cover no-repeat,
+    linear-gradient(140deg, var(--a, #8a8378), var(--b, #2f2c29));
+  filter: sepia(0.28) saturate(0.85) contrast(1.06);
+  box-shadow: inset 0 0 3.5cqw rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  user-select: none;
+}
+
+.ph::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .28 0 0 0 0 .18 0 0 0 .38 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23p)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  opacity: 0.8;
+}
+
+.ph::after {
+  content: "photo";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 1cqw var(--te);
+  color: rgba(255, 255, 255, 0.34);
+  pointer-events: none;
+}
+
+.phOn::after {
+  content: none;
+}
+
+.phEditable {
+  cursor: pointer;
+}
+
+.phEditable:hover {
+  filter: sepia(0.16) saturate(0.95) contrast(1.08) brightness(1.06);
+}
+
+.bw {
+  filter: grayscale(1) contrast(1.12) brightness(0.95);
+}
+
+.bw.phEditable:hover {
+  filter: grayscale(1) contrast(1.15) brightness(1.04);
+}
+
+.pol {
+  position: absolute;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .28 0 0 0 0 .18 0 0 0 .38 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23p)'/%3E%3C/svg%3E"),
+    linear-gradient(#f8f5ee, #ece7da);
+  box-shadow:
+    0 0.7cqw 1.6cqw rgba(0, 0, 0, 0.42),
+    0 0 0 0.08cqw rgba(0, 0, 0, 0.1);
+}
+
+.pol::before {
+  content: "";
+  position: absolute;
+  left: 38%;
+  top: -1.3cqw;
+  width: 24%;
+  height: 2.2cqw;
+  background: rgba(233, 218, 170, 0.72);
+  transform: rotate(-3deg);
+  box-shadow: 0 0.1cqw 0.3cqw rgba(0, 0, 0, 0.2);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.polPh {
+  inset: 4% 4% 17% 4%;
+}
+
+.av {
+  display: inline-block;
+  vertical-align: middle;
+  width: 3.6cqw;
+  height: 3.6cqw;
+  border-radius: 50%;
+  margin: 0 0.3cqw;
+  background:
+    var(--img, none) center / cover no-repeat,
+    linear-gradient(140deg, #a77, #322);
+  box-shadow: inset 0 0 0.8cqw rgba(0, 0, 0, 0.35);
+}
+
+.avEditable {
+  cursor: pointer;
+}
+
+.avEditable:hover {
+  outline: 0.2cqw solid #7b1f1f;
+}
+
+.editable {
+  outline: 0;
+  white-space: pre-line;
+}
+
+.editableActive {
+  cursor: text;
+  border-radius: 0.3cqw;
+}
+
+.editableActive:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.editableActive:focus {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.pText {
+  font: 1.02cqw / 1.62 var(--lo);
+}
+
+/* ── Page Palettes & Real Paper/Fabric Textures ──────────────── */
+.white {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .28 0 0 0 0 .18 0 0 0 .38 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23p)'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 24% 18%, #faf8f4, #eae6dc 55%, #e2ddd2 100%);
+}
+
+.cream {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .28 0 0 0 0 .18 0 0 0 .38 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23p)'/%3E%3C/svg%3E"),
+    linear-gradient(155deg, #f9f3e2, #f1e6cc);
+  color: var(--ink);
+}
+
+.brownp {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .28 0 0 0 0 .18 0 0 0 .38 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23p)'/%3E%3C/svg%3E"),
+    linear-gradient(160deg, #5d4330, #463122);
+  color: #efe6d4;
+}
+
+.wood {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .28 0 0 0 0 .18 0 0 0 .38 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23p)'/%3E%3C/svg%3E"),
+    linear-gradient(150deg, #684b38, #4d3525);
+}
+
+.velvet {
+  background:
+    radial-gradient(circle at 50% 45%, transparent 45%, rgba(0, 0, 0, 0.35)),
+    repeating-linear-gradient(90deg, #6a1313 0 0.5cqw, #821b1b 0.5cqw 1cqw);
+}
+
+.velvetSvg {
+  filter: drop-shadow(0 0.7cqw 1.2cqw rgba(0, 0, 0, 0.55));
+}
+
+.velvetHeartPath {
+  stroke-width: 7;
+  stroke-dasharray: 0.1 6;
+  stroke-linecap: round;
+  fill: #efe9da;
+}
+
+.slate {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .28 0 0 0 0 .18 0 0 0 .38 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23p)'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 30% 20%, #8da0bd, #5f7597);
+}
+
+.olive {
+  background: #4d5a24;
+}
+
+.stripe {
+  background: repeating-linear-gradient(
+    90deg,
+    #8c1d68 0 1.1cqw,
+    #b79a6a 1.1cqw 1.9cqw,
+    #d9cfb1 1.9cqw 2.6cqw,
+    #5a4a2c 2.6cqw 3.3cqw,
+    #8c1d68 3.3cqw 4.2cqw
+  );
+}
+
+.cover {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .28 0 0 0 0 .18 0 0 0 .38 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23p)'/%3E%3C/svg%3E"),
+    radial-gradient(circle at 46% 42%, #8e2323 0%, #741919 52%, #520f0f 100%);
+  box-shadow:
+    inset 0 0 7cqw rgba(0, 0, 0, 0.45),
+    0 2.4cqw 5cqw rgba(0, 0, 0, 0.4),
+    3px 2px 0 #3d0c0c;
+}
+
+.cover::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4%;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.cover div {
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.55);
+}
+
+.winePanel {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .28 0 0 0 0 .18 0 0 0 .38 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23p)'/%3E%3C/svg%3E"),
+    linear-gradient(155deg, #872020, #691414);
+  box-shadow: 0 0.5cqw 1.5cqw rgba(0, 0, 0, 0.35);
+}
+
+/* Exact circular prev/next buttons (.ui) from reference HTML */
+.ui {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font: 13px var(--te);
+}
+
+.uiBtn {
+  all: unset;
+  cursor: pointer;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  font: 22px Georgia, serif;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.18);
+  transition: background-color 0.15s ease, transform 0.12s ease;
+}
+
+.uiBtn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.34);
+}
+
+.uiBtn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.uiBtn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.uiBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leaf,
+  .book {
+    transition-duration: 0.01s !important;
+  }
+}

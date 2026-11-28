@@ -32,6 +32,12 @@ export const PREMIUM_TEMPLATES: Record<string, PremiumTemplate> = {
     price: "$5.99",
     href: "/love-story",
   },
+  "anniversary-velvet": {
+    id: "anniversary-velvet",
+    name: "1 Year With You (Velvet Flipbook)",
+    price: "$7.99",
+    href: "/anniversary",
+  },
 };
 
 export function getUnlockedTemplates(
