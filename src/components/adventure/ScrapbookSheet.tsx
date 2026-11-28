@@ -45,8 +45,12 @@ export default function ScrapbookSheet({
         </defs>
       </svg>
 
-      {/* Outer drop-shadow wrapper so the torn top & bottom edges of the kraft sheet cast a soft shadow */}
-      <div className="drop-shadow-[0_26px_42px_rgba(8,14,28,0.55)] overflow-x-clip">
+      {/* Static outer shadow behind the sheet (avoids costly per-frame filter: drop-shadow on the whole 2800px sheet) */}
+      <div className="relative overflow-x-clip">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-3 top-6 bottom-6 rounded-sm bg-[#080e1c]/45 blur-xl -z-10"
+        />
         <article
           ref={sheetRef}
           style={{ clipPath: SHEET_CLIP }}

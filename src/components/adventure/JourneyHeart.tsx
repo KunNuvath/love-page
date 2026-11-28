@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import Sticker from "./Sticker";
 import styles from "./adventure.module.css";
 
@@ -16,15 +16,12 @@ export default function JourneyHeart({
   containerRef: React.RefObject<HTMLElement | null>;
 }) {
   const pathRef = useRef<SVGPathElement | null>(null);
-  const [pos, setPos] = useState<{ xPct: number; yPct: number; angle: number }>({
-    xPct: 50,
-    yPct: 4,
-    angle: 0,
-  });
+  const heartRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const pathEl = pathRef.current;
-    if (!pathEl) return;
+    const heartEl = heartRef.current;
+    if (!pathEl || !heartEl) return;
 
     const reducedMotion =
       typeof window !== "undefined" &&
@@ -45,13 +42,16 @@ export default function JourneyHeart({
       ticking = false;
       const host = containerRef.current;
       let progress = 0;
+      let hostW = 1000;
+      let hostH = 1800;
 
       if (host) {
         const rect = host.getBoundingClientRect();
+        hostW = rect.width || 1000;
+        hostH = rect.height || 1800;
         const winH = window.innerHeight || 800;
-        // Map viewport center relative to the sheet from 0..1
         const centerOffset = winH * 0.55 - rect.top;
-        progress = Math.max(0, Math.min(1, centerOffset / Math.max(1, rect.height)));
+        progress = Math.max(0, Math.min(1, centerOffset / Math.max(1, hostH)));
       } else {
         const doc = document.documentElement;
         const maxScroll = Math.max(1, doc.scrollHeight - window.innerHeight);
@@ -65,13 +65,14 @@ export default function JourneyHeart({
       const dist = progress * totalLen;
       const pt = pathEl.getPointAtLength(dist);
       const ahead = pathEl.getPointAtLength(Math.min(totalLen, dist + 6));
-      const angle = (Math.atan2(ahead.y - pt.y, ahead.x - pt.x) * 180) / Math.PI - 90;
+      const rawAngle = (Math.atan2(ahead.y - pt.y, ahead.x - pt.x) * 180) / Math.PI - 90;
+      const angle = Math.max(-28, Math.min(28, rawAngle * 0.25));
 
-      setPos({
-        xPct: (pt.x / VIEW_W) * 100,
-        yPct: (pt.y / VIEW_H) * 100,
-        angle: Math.max(-28, Math.min(28, angle * 0.25)),
-      });
+      const xPx = (pt.x / VIEW_W) * hostW;
+      const yPx = (pt.y / VIEW_H) * hostH;
+
+      // Pure GPU-composited transform — zero React re-renders or layout thrash on scroll
+      heartEl.style.transform = `translate3d(${xPx.toFixed(1)}px, ${yPx.toFixed(1)}px, 0) translate(-50%, -50%) rotate(${angle.toFixed(1)}deg)`;
     };
 
     const onScrollOrResize = () => {
@@ -113,16 +114,17 @@ export default function JourneyHeart({
         />
       </svg>
 
-      {/* Traveling Red Heart Sticker */}
+      {/* Traveling Red Heart Sticker (GPU-composited via translate3d) */}
       <div
+        ref={heartRef}
         style={{
-          left: `${pos.xPct}%`,
-          top: `${pos.yPct}%`,
-          transform: "translate(-50%, -50%)",
+          left: 0,
+          top: 0,
+          transform: "translate3d(500px, 72px, 0) translate(-50%, -50%)",
         }}
         className={`${styles.journeyHeart} absolute z-10`}
       >
-        <Sticker name="heart" size={42} rotate={pos.angle} />
+        <Sticker name="heart" size={42} rotate={0} />
       </div>
     </div>
   );

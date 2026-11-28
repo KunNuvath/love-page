@@ -70,6 +70,8 @@ export default function PhotoSlot({
           key={`${photoUrl}-${animKey}`}
           src={photoUrl}
           alt={caption}
+          loading="lazy"
+          decoding="async"
           className={`${styles.photo} ${styles.glue}`}
         />
       ) : (
